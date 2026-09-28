@@ -1,0 +1,47 @@
+# dependencies
+node_modules
+.pnpm-store
+
+# builds
+dist
+build
+coverage
+*.tsbuildinfo
+
+# env / secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+*.pem
+*.key
+id_rsa
+id_ed25519
+
+# logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# editors / OS
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+Thumbs.db
+
+# test / e2e
+playwright-report
+test-results
+blob-report
+
+# generated Prisma Client (recreated by `pnpm db:generate`)
+apps/backend/src/generated
+
+# docker volumes
+data/mongo
+data/postgres
+
+# turbo (not used, ignore if created)
+.turbo

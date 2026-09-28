@@ -1,0 +1,35 @@
+{
+  "name": "fullstack-base",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Base fullstack empresarial reutilizável — React SPA + NestJS + PostgreSQL",
+  "packageManager": "pnpm@10.14.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @app/shared build && pnpm --parallel --filter @app/shared --filter @app/backend --filter @app/frontend dev",
+    "build": "pnpm --filter @app/shared build && pnpm --filter @app/backend build && pnpm --filter @app/frontend build",
+    "lint": "pnpm -r --if-present lint",
+    "lint:fix": "pnpm -r --if-present lint:fix",
+    "typecheck": "pnpm --filter @app/shared build && pnpm -r --if-present typecheck",
+    "test": "pnpm --filter @app/shared build && pnpm -r --if-present test",
+    "test:backend": "pnpm --filter @app/shared build && pnpm --filter @app/backend test",
+    "test:frontend": "pnpm --filter @app/frontend test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "generate:entity": "node scripts/generate-entity.mjs",
+    "db:generate": "pnpm --filter @app/backend db:generate",
+    "db:migrate": "pnpm --filter @app/backend db:migrate",
+    "db:migrate:deploy": "pnpm --filter @app/backend db:migrate:deploy",
+    "db:seed": "pnpm --filter @app/backend db:seed",
+    "db:studio": "pnpm --filter @app/backend db:studio",
+    "db:reset": "pnpm --filter @app/backend db:reset"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["argon2", "esbuild"]
+  }
+}

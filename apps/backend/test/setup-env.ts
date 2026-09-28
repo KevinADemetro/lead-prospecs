@@ -1,0 +1,14 @@
+process.env.NODE_ENV = 'test';
+process.env.PORT = '3001';
+process.env.DATABASE_URL = 'postgresql://app:app@127.0.0.1:5432/fullstack_base_test';
+process.env.JWT_ACCESS_SECRET = 'test-jwt-access-secret-32-characters-min';
+process.env.JWT_ACCESS_EXPIRES_IN = '15m';
+process.env.REFRESH_TOKEN_DAYS = '7';
+process.env.COOKIE_SECURE = 'false';
+process.env.COOKIE_SAMESITE = 'lax';
+process.env.CORS_ORIGINS = 'http://localhost:3000';
+process.env.INITIAL_ADMIN_LOGIN = 'admin';
+process.env.INITIAL_ADMIN_PASSWORD = 'ChangeMe!Admin12';
+process.env.APP_NAME = 'Test';
+process.env.ARGON2_MEMORY_COST = '4096';
+process.env.ARGON2_TIME_COST = '2';

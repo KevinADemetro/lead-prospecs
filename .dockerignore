@@ -1,0 +1,13 @@
+**/node_modules
+**/dist
+.git
+coverage
+playwright-report
+test-results
+data
+.env
+*.log
+apps/frontend/dist
+apps/backend/dist
+apps/backend/src/generated
+packages/shared/dist
