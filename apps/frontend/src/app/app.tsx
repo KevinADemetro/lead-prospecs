@@ -14,6 +14,7 @@ import { RoleFormPage } from '@/features/roles/pages/role-form-page';
 import { ProfilePage } from '@/features/profile/pages/profile-page';
 import { CampaignsPage } from '@/features/campaigns/pages/campaigns-page';
 import { CampaignFormPage } from '@/features/campaigns/pages/campaign-form-page';
+import { CampaignDetailPage } from '@/features/campaigns/pages/campaign-detail-page';
 import { LeadsPage } from '@/features/leads/pages/leads-page';
 import { ForbiddenPage, NotFoundPage, ServerErrorPage } from '@/features/errors/pages/error-pages';
 
@@ -56,7 +57,10 @@ const router = createBrowserRouter([
           },
           {
             element: <PermissionGuard permission={PERMISSIONS.CAMPAIGNS_READ} />,
-            children: [{ path: '/campaigns', element: <CampaignsPage /> }],
+            children: [
+              { path: '/campaigns', element: <CampaignsPage /> },
+              { path: '/campaigns/:id', element: <CampaignDetailPage /> },
+            ],
           },
           {
             element: <PermissionGuard permission={PERMISSIONS.CAMPAIGNS_CREATE} />,
@@ -64,7 +68,7 @@ const router = createBrowserRouter([
           },
           {
             element: <PermissionGuard permission={PERMISSIONS.CAMPAIGNS_UPDATE} />,
-            children: [{ path: '/campaigns/:id', element: <CampaignFormPage /> }],
+            children: [{ path: '/campaigns/:id/edit', element: <CampaignFormPage /> }],
           },
           {
             element: <PermissionGuard permission={PERMISSIONS.LEADS_READ} />,

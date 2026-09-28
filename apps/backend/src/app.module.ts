@@ -11,6 +11,7 @@ import { HealthModule } from './modules/health/health.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { LeadsModule } from './modules/leads/leads.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
 import { CsrfGuard } from './common/guards/csrf.guard';
@@ -33,6 +34,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     CampaignsModule,
     CompaniesModule,
     LeadsModule,
+    DashboardModule,
     HealthModule,
   ],
   providers: [

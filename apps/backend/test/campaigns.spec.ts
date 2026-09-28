@@ -2,16 +2,26 @@ import { INestApplication } from '@nestjs/common';
 import { StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import { PERMISSIONS } from '@app/shared';
 import { LeadsService } from '../src/modules/leads/leads.service';
-import { loginAs, loginAsAdmin, mutating, startTestApp, stopTestApp } from './helpers';
+import {
+  loginAs,
+  loginAsAdmin,
+  mutating,
+  startTestApp,
+  stopTestApp,
+  type TestAgent,
+} from './helpers';
 
 describe('Campaigns, companies and leads', () => {
   let app: INestApplication;
   let postgres: StartedPostgreSqlContainer;
+  // Login is rate limited (5 per 5 min per IP), so the admin session is shared.
+  let admin: TestAgent;
 
   beforeAll(async () => {
     const ctx = await startTestApp();
     app = ctx.app;
     postgres = ctx.postgres;
+    admin = (await loginAsAdmin(app)).http;
   });
 
   afterAll(async () => {
@@ -19,7 +29,7 @@ describe('Campaigns, companies and leads', () => {
   });
 
   it('creates, lists, updates and soft-deletes campaigns', async () => {
-    const { http } = await loginAsAdmin(app);
+    const http = admin;
     const created = await mutating(http, 'post', '/api/v1/campaigns', {
       name: 'Padarias SP',
       location: 'São Paulo, SP',
@@ -57,8 +67,62 @@ describe('Campaigns, companies and leads', () => {
     expect((await http.get(`/api/v1/campaigns/${id}`)).status).toBe(404);
   });
 
+  it('persists city, state and filters and runs campaigns', async () => {
+    const http = admin;
+    const filters = {
+      withoutWebsite: true,
+      requirePhone: true,
+      requireWhatsapp: true,
+      requireGoogleBusiness: true,
+      minRating: 4.5,
+      minReviewCount: 20,
+    };
+    const created = await mutating(http, 'post', '/api/v1/campaigns', {
+      name: 'Academias Recife',
+      city: 'Recife',
+      state: 'PE',
+      searchTerms: ['academia'],
+      filters,
+    });
+    expect(created.status).toBe(201);
+    expect(created.body).toMatchObject({ city: 'Recife', state: 'PE', location: 'Recife, PE' });
+    expect(created.body.qualifiedLeadCount).toBe(0);
+    const id = created.body.id as string;
+
+    const fetched = await http.get(`/api/v1/campaigns/${id}`);
+    expect(fetched.body.filters).toEqual(filters);
+
+    const moved = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
+      city: 'Olinda',
+      filters: { requirePhone: true },
+    });
+    expect(moved.body).toMatchObject({ city: 'Olinda', state: 'PE', location: 'Olinda, PE' });
+    expect(moved.body.filters).toEqual({ requirePhone: true });
+
+    const conflicting = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
+      filters: { requireWebsite: true, withoutWebsite: true },
+    });
+    expect(conflicting.status).toBe(400);
+
+    const running = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
+      status: 'RUNNING',
+    });
+    expect(running.status).toBe(200);
+    expect(running.body.status).toBe('RUNNING');
+
+    const runAgain = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
+      status: 'RUNNING',
+    });
+    expect(runAgain.status).toBe(409);
+
+    const cancelled = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
+      status: 'CANCELLED',
+    });
+    expect(cancelled.body.status).toBe('CANCELLED');
+  });
+
   it('rejects invalid or arbitrary campaign payloads', async () => {
-    const { http } = await loginAsAdmin(app);
+    const http = admin;
     const base = { name: 'Valid name', location: 'Recife', searchTerms: ['academia'] };
 
     const extraField = await mutating(http, 'post', '/api/v1/campaigns', {
@@ -81,7 +145,7 @@ describe('Campaigns, companies and leads', () => {
   });
 
   it('links companies to campaigns through leads without duplicating companies', async () => {
-    const { http } = await loginAsAdmin(app);
+    const http = admin;
     const first = await mutating(http, 'post', '/api/v1/campaigns', {
       name: 'Campanha A',
       location: 'Curitiba',
@@ -139,13 +203,26 @@ describe('Campaigns, companies and leads', () => {
 
     const campaign = await http.get(`/api/v1/campaigns/${first.body.id}`);
     expect(campaign.body.leadCount).toBe(1);
+    expect(campaign.body.qualifiedLeadCount).toBe(0);
+
+    const metrics = await http.get('/api/v1/dashboard/metrics');
+    expect(metrics.status).toBe(200);
+    expect(metrics.body).toMatchObject({
+      companiesFound: 1,
+      qualifiedLeads: 0,
+      leadsWithoutWebsite: 2,
+      leadsSentToTrello: 0,
+    });
+    expect(metrics.body.totalCampaigns).toBeGreaterThanOrEqual(2);
+    expect(metrics.body.recentCampaigns.length).toBeLessThanOrEqual(5);
+    expect(metrics.body.recentCampaigns[0].id).toBe(second.body.id);
 
     await mutating(http, 'delete', `/api/v1/campaigns/${second.body.id}`);
     expect((await http.get(`/api/v1/leads/${leadB.id}`)).status).toBe(404);
   });
 
   it('requires domain permissions', async () => {
-    const { http } = await loginAsAdmin(app);
+    const http = admin;
     const role = await mutating(http, 'post', '/api/v1/roles', {
       name: 'campaign-reader',
       permissions: [PERMISSIONS.CAMPAIGNS_READ],
@@ -159,6 +236,7 @@ describe('Campaigns, companies and leads', () => {
     const reader = await loginAs(app, 'campaignreader', 'Campaign!Read12');
     expect((await reader.http.get('/api/v1/campaigns')).status).toBe(200);
     expect((await reader.http.get('/api/v1/leads')).status).toBe(403);
+    expect((await reader.http.get('/api/v1/dashboard/metrics')).status).toBe(403);
     const forbidden = await mutating(reader.http, 'post', '/api/v1/campaigns', {
       name: 'Nope',
       location: 'Nowhere',

@@ -6,6 +6,18 @@ const base = {
 };
 
 export const notify = {
+  toast(title: string, icon: 'success' | 'error' | 'info' | 'warning' = 'success') {
+    return Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon,
+      title,
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      ...base,
+    });
+  },
   success(title: string, text?: string) {
     return Swal.fire({
       icon: 'success',

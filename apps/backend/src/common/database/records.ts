@@ -65,11 +65,14 @@ export type CampaignRecord = {
   name: string;
   description: string;
   location: string;
+  city: string;
+  state: string;
   categories: string[];
   searchTerms: string[];
   filters: CampaignFilters;
   status: CampaignStatus;
   leadCount: number;
+  qualifiedLeadCount: number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

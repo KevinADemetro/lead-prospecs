@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import type { CampaignListQuery, CampaignStatus, PublicCampaign } from '@app/shared';
 import { CAMPAIGN_STATUSES, PERMISSIONS } from '@app/shared';
@@ -9,13 +9,14 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Table } from '@/components/ui/table';
 import { Pagination } from '@/components/ui/pagination';
-import { Loading } from '@/components/ui/loading';
+import { SkeletonRows } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Badge } from '@/components/ui/badge';
-import { notify } from '@/lib/swal';
+import { ErrorState } from '@/components/ui/error-state';
 import { isApiError } from '@/services/api/client';
 import { useAuth } from '@/stores/auth-context';
 import { CAMPAIGN_STATUS_LABELS } from '../campaign-labels';
+import { CampaignActions } from '../components/campaign-actions';
+import { CampaignStatusBadge } from '../components/campaign-status-badge';
 
 const initial: CampaignListQuery = { page: 1, limit: 10, order: 'desc', sort: 'createdAt' };
 
@@ -24,26 +25,35 @@ export function CampaignsPage() {
   const [query, setQuery] = useState<CampaignListQuery>(initial);
   const [filters, setFilters] = useState({ search: '', status: '' });
   const [rows, setRows] = useState<PublicCampaign[]>([]);
+  const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const canCreate = hasPermission(PERMISSIONS.CAMPAIGNS_CREATE);
+  const hasFilters = Boolean(query.search || query.status);
 
-  async function load(next = query) {
+  const load = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      const result = await campaignsApi.list(next);
+      const result = await campaignsApi.list(query);
+      if (result.data.length === 0 && query.page > 1) {
+        setQuery((current) => ({ ...current, page: current.page - 1 }));
+        return;
+      }
       setRows(result.data);
+      setTotal(result.meta.total);
       setTotalPages(result.meta.totalPages);
-    } catch (error) {
-      await notify.error('Erro', isApiError(error) ? error.message : 'Falha ao listar campanhas');
+    } catch (err) {
+      setError(isApiError(err) ? err.message : 'Falha ao listar campanhas');
     } finally {
       setLoading(false);
     }
-  }
+  }, [query]);
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query.page, query.search, query.status]);
+  }, [load]);
 
   function applyFilters(event: FormEvent) {
     event.preventDefault();
@@ -55,23 +65,16 @@ export function CampaignsPage() {
     });
   }
 
-  async function onDelete(campaign: PublicCampaign) {
-    const confirmed = await notify.confirm(`Excluir campanha ${campaign.name}?`);
-    if (!confirmed) return;
-    try {
-      await campaignsApi.remove(campaign.id);
-      await notify.success('Campanha excluída');
-      await load();
-    } catch (error) {
-      await notify.error('Erro', isApiError(error) ? error.message : 'Falha ao excluir');
-    }
+  function clearFilters() {
+    setFilters({ search: '', status: '' });
+    setQuery(initial);
   }
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">Campanhas</h1>
-        {hasPermission(PERMISSIONS.CAMPAIGNS_CREATE) ? (
+        {canCreate ? (
           <Link to="/campaigns/new">
             <Button>Nova campanha</Button>
           </Link>
@@ -103,35 +106,61 @@ export function CampaignsPage() {
       </Card>
       <Card>
         {loading ? (
-          <Loading />
+          <SkeletonRows />
+        ) : error ? (
+          <ErrorState message={error} onRetry={() => void load()} />
         ) : rows.length === 0 ? (
-          <EmptyState
-            title="Nenhuma campanha encontrada"
-            description="Ajuste os filtros ou crie uma nova campanha."
-          />
+          hasFilters ? (
+            <EmptyState
+              title="Nenhuma campanha encontrada"
+              description="Nenhuma campanha corresponde aos filtros aplicados."
+              action={
+                <Button size="sm" variant="secondary" className="mt-2" onClick={clearFilters}>
+                  Limpar filtros
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              title="Nenhuma campanha cadastrada"
+              description="Crie uma campanha para começar a prospectar empresas."
+              action={
+                canCreate ? (
+                  <Link to="/campaigns/new" className="mt-2">
+                    <Button size="sm">Nova campanha</Button>
+                  </Link>
+                ) : null
+              }
+            />
+          )
         ) : (
           <>
             <Table
               rows={rows}
               rowKey={(row) => row.id}
               columns={[
-                { key: 'name', header: 'Nome', render: (row) => row.name },
+                {
+                  key: 'name',
+                  header: 'Nome',
+                  render: (row) => (
+                    <Link to={`/campaigns/${row.id}`} className="font-medium hover:text-primary">
+                      {row.name}
+                    </Link>
+                  ),
+                },
                 {
                   key: 'location',
-                  header: 'Localização',
+                  header: 'Local',
                   hideOnMobile: true,
                   render: (row) => row.location,
                 },
                 {
                   key: 'status',
                   header: 'Status',
-                  render: (row) => (
-                    <Badge tone={CAMPAIGN_STATUS_LABELS[row.status].tone}>
-                      {CAMPAIGN_STATUS_LABELS[row.status].label}
-                    </Badge>
-                  ),
+                  render: (row) => <CampaignStatusBadge status={row.status} />,
                 },
-                { key: 'leads', header: 'Leads', render: (row) => row.leadCount },
+                { key: 'companies', header: 'Empresas', render: (row) => row.leadCount },
+                { key: 'leads', header: 'Leads', render: (row) => row.qualifiedLeadCount },
                 {
                   key: 'createdAt',
                   header: 'Criada em',
@@ -141,37 +170,17 @@ export function CampaignsPage() {
                 {
                   key: 'actions',
                   header: 'Ações',
-                  render: (row) => (
-                    <div className="flex justify-end gap-2">
-                      {hasPermission(PERMISSIONS.LEADS_READ) ? (
-                        <Link to={`/leads?campaignId=${row.id}`}>
-                          <Button size="sm" variant="secondary">
-                            Leads
-                          </Button>
-                        </Link>
-                      ) : null}
-                      {hasPermission(PERMISSIONS.CAMPAIGNS_UPDATE) && row.status === 'DRAFT' ? (
-                        <Link to={`/campaigns/${row.id}`}>
-                          <Button size="sm" variant="secondary">
-                            Editar
-                          </Button>
-                        </Link>
-                      ) : null}
-                      {hasPermission(PERMISSIONS.CAMPAIGNS_DELETE) && row.status !== 'RUNNING' ? (
-                        <Button size="sm" variant="danger" onClick={() => void onDelete(row)}>
-                          Excluir
-                        </Button>
-                      ) : null}
-                    </div>
-                  ),
+                  render: (row) => <CampaignActions campaign={row} onChanged={() => void load()} />,
                 },
               ]}
             />
-            <Pagination
-              page={query.page}
-              totalPages={totalPages}
-              onPageChange={(page) => setQuery({ ...query, page })}
-            />
+            {total > query.limit ? (
+              <Pagination
+                page={query.page}
+                totalPages={totalPages}
+                onPageChange={(page) => setQuery({ ...query, page })}
+              />
+            ) : null}
           </>
         )}
       </Card>

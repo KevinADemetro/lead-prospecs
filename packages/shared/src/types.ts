@@ -33,13 +33,26 @@ export type PublicCampaign = {
   name: string;
   description: string;
   location: string;
+  city: string;
+  state: string;
   categories: string[];
   searchTerms: string[];
   filters: CampaignFilters;
   status: CampaignStatus;
+  /** Each lead links one distinct company to the campaign. */
   leadCount: number;
+  qualifiedLeadCount: number;
   createdAt: string;
   updatedAt: string;
+};
+
+export type DashboardMetrics = {
+  totalCampaigns: number;
+  companiesFound: number;
+  qualifiedLeads: number;
+  leadsWithoutWebsite: number;
+  leadsSentToTrello: number;
+  recentCampaigns: PublicCampaign[];
 };
 
 export type PublicCampaignSummary = Pick<PublicCampaign, 'id' | 'name' | 'status'>;

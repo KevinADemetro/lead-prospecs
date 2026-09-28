@@ -14,6 +14,8 @@ export type CampaignWriteData = {
   name: string;
   description: string;
   location: string;
+  city: string;
+  state: string;
   categories: string[];
   searchTerms: string[];
   filters: CampaignFilters;
@@ -34,7 +36,11 @@ export class CampaignsRepository extends BaseRepository {
       where: { id, ...this.notDeleted() },
       include: campaignWithLeadCount,
     });
-    return campaign ? this.toRecord(campaign) : null;
+    if (!campaign) {
+      return null;
+    }
+    const [record] = await this.toRecords([campaign]);
+    return record ?? null;
   }
 
   async findByIdOrFail(id: string): Promise<CampaignRecord> {
@@ -50,7 +56,7 @@ export class CampaignsRepository extends BaseRepository {
       data: { ...data, filters: data.filters as Prisma.InputJsonObject },
       include: campaignWithLeadCount,
     });
-    return this.toRecord(campaign);
+    return this.toRecord(campaign, 0);
   }
 
   async updateById(id: string, data: Partial<CampaignWriteData>): Promise<CampaignRecord | null> {
@@ -100,7 +106,7 @@ export class CampaignsRepository extends BaseRepository {
       skip: (page - 1) * limit,
       take: limit,
     });
-    return campaigns.map((campaign) => this.toRecord(campaign));
+    return this.toRecords(campaigns);
   }
 
   private buildWhere(filter: CampaignListFilter): Prisma.CampaignWhereInput {
@@ -113,18 +119,42 @@ export class CampaignsRepository extends BaseRepository {
     };
   }
 
-  private toRecord(campaign: CampaignRow): CampaignRecord {
+  private async qualifiedCounts(campaignIds: string[]): Promise<Map<string, number>> {
+    if (campaignIds.length === 0) {
+      return new Map();
+    }
+    const groups = await this.prisma.lead.groupBy({
+      by: ['campaignId'],
+      where: {
+        campaignId: { in: campaignIds },
+        qualificationStatus: 'QUALIFIED',
+        ...this.notDeleted(),
+      },
+      _count: { _all: true },
+    });
+    return new Map(groups.map((group) => [group.campaignId, group._count._all]));
+  }
+
+  private async toRecords(campaigns: CampaignRow[]): Promise<CampaignRecord[]> {
+    const qualified = await this.qualifiedCounts(campaigns.map((campaign) => campaign.id));
+    return campaigns.map((campaign) => this.toRecord(campaign, qualified.get(campaign.id) ?? 0));
+  }
+
+  private toRecord(campaign: CampaignRow, qualifiedLeadCount: number): CampaignRecord {
     const filters = campaignFiltersSchema.safeParse(campaign.filters);
     return {
       id: campaign.id,
       name: campaign.name,
       description: campaign.description,
       location: campaign.location,
+      city: campaign.city,
+      state: campaign.state,
       categories: campaign.categories,
       searchTerms: campaign.searchTerms,
       filters: filters.success ? filters.data : {},
       status: campaign.status,
       leadCount: campaign._count.leads,
+      qualifiedLeadCount,
       createdAt: campaign.createdAt,
       updatedAt: campaign.updatedAt,
       deletedAt: campaign.deletedAt,

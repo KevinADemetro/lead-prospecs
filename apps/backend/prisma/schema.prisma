@@ -124,6 +124,8 @@ model Campaign {
   name        String
   description String         @default("")
   location    String
+  city        String         @default("")
+  state       String         @default("") @db.VarChar(2)
   categories  String[]
   searchTerms String[]       @map("search_terms")
   filters     Json           @default("{}")

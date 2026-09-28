@@ -1,5 +1,15 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { CampaignListQuery, CreateCampaignInput, UpdateCampaignInput } from '@app/shared';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  CampaignListQuery,
+  CreateCampaignInput,
+  formatCampaignLocation,
+  UpdateCampaignInput,
+} from '@app/shared';
 import { CampaignsRepository } from './campaigns.repository';
 import { AuthContext } from '../../common/types/auth-context';
 import { toPublicCampaign } from '../../common/mappers/public.mapper';
@@ -13,6 +23,7 @@ const CAMPAIGN_SORT: Record<string, string> = {
 };
 
 const CANCELLABLE_STATUSES: CampaignRecord['status'][] = ['DRAFT', 'RUNNING'];
+const RUNNABLE_STATUSES: CampaignRecord['status'][] = ['DRAFT', 'FAILED'];
 
 @Injectable()
 export class CampaignsService {
@@ -43,10 +54,14 @@ export class CampaignsService {
   }
 
   async create(input: CreateCampaignInput) {
+    const city = input.city ?? '';
+    const state = input.state ?? '';
     const campaign = await this.campaigns.create({
       name: input.name,
       description: input.description ?? '',
-      location: input.location,
+      location: city ? formatCampaignLocation(city, state) : (input.location ?? ''),
+      city,
+      state,
       categories: input.categories,
       searchTerms: input.searchTerms,
       filters: input.filters,
@@ -63,6 +78,17 @@ export class CampaignsService {
     }
     if (status === 'CANCELLED' && !CANCELLABLE_STATUSES.includes(campaign.status)) {
       throw new ConflictException('Campanha não pode ser cancelada no status atual');
+    }
+    if (status === 'RUNNING' && !RUNNABLE_STATUSES.includes(campaign.status)) {
+      throw new ConflictException('Campanha não pode ser executada no status atual');
+    }
+    if (config.city !== undefined || config.state !== undefined) {
+      const city = config.city ?? campaign.city;
+      const state = config.state ?? campaign.state;
+      if (!city) {
+        throw new BadRequestException('Informe a cidade');
+      }
+      config.location = formatCampaignLocation(city, state);
     }
     const updated = await this.campaigns.updateById(id, {
       ...config,
