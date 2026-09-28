@@ -4,10 +4,12 @@ import {
   PublicCompany,
   PublicCompanyDetail,
   PublicLead,
+  PublicLeadDetail,
 } from '@app/shared';
 import {
   CampaignRecord,
   CompanyRecord,
+  LeadDetailRecord,
   LeadRecord,
   RoleRecord,
   UserRecord,
@@ -100,6 +102,8 @@ export function toPublicCompany(company: CompanyRecord): PublicCompany {
     googleMapsUrl: company.googleMapsUrl,
     googleRating: company.googleRating,
     googleReviewCount: company.googleReviewCount,
+    instagramUrl: company.instagramUrl,
+    facebookUrl: company.facebookUrl,
     createdAt: company.createdAt.toISOString(),
     updatedAt: company.updatedAt.toISOString(),
   };
@@ -124,6 +128,13 @@ export function toPublicLead(lead: LeadRecord): PublicLead {
     campaign: lead.campaign,
     createdAt: lead.createdAt.toISOString(),
     updatedAt: lead.updatedAt.toISOString(),
+  };
+}
+
+export function toPublicLeadDetail(lead: LeadDetailRecord): PublicLeadDetail {
+  return {
+    ...toPublicLead(lead),
+    company: toPublicCompany(lead.company),
   };
 }
 

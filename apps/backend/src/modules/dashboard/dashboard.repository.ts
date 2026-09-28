@@ -41,7 +41,7 @@ export class DashboardRepository extends BaseRepository {
             ],
           },
         }),
-        this.prisma.lead.count({ where: { ...visibleLead, trelloStatus: 'SENT' } }),
+        this.prisma.lead.count({ where: { ...visibleLead, trelloStatus: 'CREATED' } }),
       ]);
     return { companiesFound, qualifiedLeads, leadsWithoutWebsite, leadsSentToTrello };
   }

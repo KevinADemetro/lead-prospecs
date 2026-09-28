@@ -14,6 +14,12 @@ export class LeadsController {
     return this.leads.list(query);
   }
 
+  @Get('filter-options')
+  @RequirePermissions(PERMISSIONS.LEADS_READ)
+  filterOptions() {
+    return this.leads.filterOptions();
+  }
+
   @Get(':id')
   @RequirePermissions(PERMISSIONS.LEADS_READ)
   getById(@Param('id', new ZodValidationPipe(entityIdSchema)) id: string) {

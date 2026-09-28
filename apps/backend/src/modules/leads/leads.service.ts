@@ -1,17 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { LeadListQuery } from '@app/shared';
+import { LeadFilterOptions, LeadListQuery } from '@app/shared';
 import { LeadsRepository } from './leads.repository';
 import { CampaignsRepository } from '../campaigns/campaigns.repository';
 import { CompaniesService } from '../companies/companies.service';
 import { CompanyInput } from '../companies/company-identity.util';
-import { toPublicLead } from '../../common/mappers/public.mapper';
+import { toPublicLead, toPublicLeadDetail } from '../../common/mappers/public.mapper';
 import { LeadListFilter } from '../../common/database/records';
-
-const LEAD_SORT: Record<string, string> = {
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  score: 'score',
-};
 
 @Injectable()
 export class LeadsService {
@@ -23,7 +17,7 @@ export class LeadsService {
 
   async list(query: LeadListQuery) {
     const filter = this.buildFilter(query);
-    const sortField = LEAD_SORT[query.sort ?? 'createdAt'] ?? 'createdAt';
+    const sortField = query.sort ?? 'createdAt';
     const order = query.order === 'asc' ? 'asc' : 'desc';
     const [items, total] = await Promise.all([
       this.leads.paginate(filter, query.page, query.limit, sortField, order),
@@ -41,8 +35,12 @@ export class LeadsService {
   }
 
   async getById(id: string) {
-    const lead = await this.leads.findByIdOrFail(id);
-    return toPublicLead(lead);
+    const lead = await this.leads.findDetailByIdOrFail(id);
+    return toPublicLeadDetail(lead);
+  }
+
+  filterOptions(): Promise<LeadFilterOptions> {
+    return this.leads.filterOptions();
   }
 
   /** Entry point for prospecting sources: deduplicates the company and links it once per campaign. */
@@ -54,22 +52,18 @@ export class LeadsService {
   }
 
   private buildFilter(query: LeadListQuery): LeadListFilter {
-    const filter: LeadListFilter = {};
-    if (query.search) {
-      filter.companyNameContains = query.search;
-    }
-    if (query.campaignId) {
-      filter.campaignId = query.campaignId;
-    }
-    if (query.companyId) {
-      filter.companyId = query.companyId;
-    }
-    if (query.qualificationStatus) {
-      filter.qualificationStatus = query.qualificationStatus;
-    }
-    if (query.trelloStatus) {
-      filter.trelloStatus = query.trelloStatus;
-    }
-    return filter;
+    return {
+      search: query.search || undefined,
+      campaignId: query.campaignId,
+      companyId: query.companyId,
+      qualificationStatus: query.qualificationStatus,
+      trelloStatus: query.trelloStatus,
+      websiteStatus: query.websiteStatus,
+      whatsappStatus: query.whatsappStatus,
+      category: query.category,
+      city: query.city,
+      scoreMin: query.scoreMin,
+      scoreMax: query.scoreMax,
+    };
   }
 }

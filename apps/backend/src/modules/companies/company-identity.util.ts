@@ -74,6 +74,8 @@ export function toCompanyData(input: CompanyInput): CompanyData {
     googleMapsUrl: input.googleMapsUrl ?? null,
     googleRating: input.googleRating ?? null,
     googleReviewCount: input.googleReviewCount ?? null,
+    instagramUrl: input.instagramUrl ?? null,
+    facebookUrl: input.facebookUrl ?? null,
   };
 }
 

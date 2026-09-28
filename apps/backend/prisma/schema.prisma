@@ -25,11 +25,19 @@ enum CampaignStatus {
   CANCELLED
 }
 
+// NOT_FOUND = verified absence; ERROR = the verification itself failed.
 enum WebsiteStatus {
-  UNKNOWN
+  FOUND
   NOT_FOUND
-  ONLINE
-  OFFLINE
+  UNAVAILABLE
+  ERROR
+  UNKNOWN
+}
+
+enum WhatsappStatus {
+  CONFIRMED
+  NOT_FOUND
+  UNKNOWN
 }
 
 enum PresenceStatus {
@@ -46,9 +54,8 @@ enum QualificationStatus {
 
 enum TrelloStatus {
   NOT_SENT
-  PENDING
-  SENT
-  FAILED
+  CREATED
+  ERROR
 }
 
 model Role {
@@ -160,6 +167,8 @@ model Company {
   googleMapsUrl     String?   @map("google_maps_url")
   googleRating      Float?    @map("google_rating")
   googleReviewCount Int?      @map("google_review_count")
+  instagramUrl      String?   @map("instagram_url")
+  facebookUrl       String?   @map("facebook_url")
   dedupeKey         String?   @unique @map("dedupe_key")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
@@ -178,7 +187,7 @@ model Lead {
   company             Company             @relation(fields: [companyId], references: [id], onDelete: Restrict)
   campaign            Campaign            @relation(fields: [campaignId], references: [id], onDelete: Restrict)
   websiteStatus       WebsiteStatus       @default(UNKNOWN) @map("website_status")
-  whatsappStatus      PresenceStatus      @default(UNKNOWN) @map("whatsapp_status")
+  whatsappStatus      WhatsappStatus      @default(UNKNOWN) @map("whatsapp_status")
   instagramStatus     PresenceStatus      @default(UNKNOWN) @map("instagram_status")
   facebookStatus      PresenceStatus      @default(UNKNOWN) @map("facebook_status")
   score               Int?

@@ -7,6 +7,7 @@ import {
   TrelloStatus,
   UserStatus,
   WebsiteStatus,
+  WhatsappStatus,
 } from '@app/shared';
 
 export type RoleRecord = {
@@ -100,6 +101,8 @@ export type CompanyData = {
   googleMapsUrl: string | null;
   googleRating: number | null;
   googleReviewCount: number | null;
+  instagramUrl: string | null;
+  facebookUrl: string | null;
 };
 
 export type CompanyRecord = CompanyData & {
@@ -115,7 +118,15 @@ export type CampaignSummaryRecord = Pick<CampaignRecord, 'id' | 'name' | 'status
 
 export type CompanySummaryRecord = Pick<
   CompanyRecord,
-  'id' | 'name' | 'category' | 'phone' | 'website' | 'city' | 'state'
+  | 'id'
+  | 'name'
+  | 'category'
+  | 'phone'
+  | 'website'
+  | 'city'
+  | 'state'
+  | 'googleRating'
+  | 'googleReviewCount'
 >;
 
 export type LeadRecord = {
@@ -123,7 +134,7 @@ export type LeadRecord = {
   companyId: string;
   campaignId: string;
   websiteStatus: WebsiteStatus;
-  whatsappStatus: PresenceStatus;
+  whatsappStatus: WhatsappStatus;
   instagramStatus: PresenceStatus;
   facebookStatus: PresenceStatus;
   score: number | null;
@@ -140,12 +151,28 @@ export type LeadRecord = {
   deletedBy: string | null;
 };
 
+export type LeadDetailRecord = Omit<LeadRecord, 'company'> & {
+  company: CompanyRecord;
+};
+
 export type LeadListFilter = {
   campaignId?: string;
   companyId?: string;
-  companyNameContains?: string;
+  /** Matches company name, legal name, CNPJ, category or city. */
+  search?: string;
   qualificationStatus?: QualificationStatus;
   trelloStatus?: TrelloStatus;
+  websiteStatus?: WebsiteStatus;
+  whatsappStatus?: WhatsappStatus;
+  category?: string;
+  city?: string;
+  scoreMin?: number;
+  scoreMax?: number;
+};
+
+export type LeadFilterOptionsRecord = {
+  categories: string[];
+  cities: string[];
 };
 
 export type SortDirection = 'asc' | 'desc';

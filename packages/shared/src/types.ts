@@ -6,6 +6,7 @@ import type {
   TrelloStatus,
   UserStatus,
   WebsiteStatus,
+  WhatsappStatus,
 } from './constants';
 import type { CampaignFilters } from './schemas/campaign';
 
@@ -74,13 +75,23 @@ export type PublicCompany = {
   googleMapsUrl: string | null;
   googleRating: number | null;
   googleReviewCount: number | null;
+  instagramUrl: string | null;
+  facebookUrl: string | null;
   createdAt: string;
   updatedAt: string;
 };
 
 export type PublicCompanySummary = Pick<
   PublicCompany,
-  'id' | 'name' | 'category' | 'phone' | 'website' | 'city' | 'state'
+  | 'id'
+  | 'name'
+  | 'category'
+  | 'phone'
+  | 'website'
+  | 'city'
+  | 'state'
+  | 'googleRating'
+  | 'googleReviewCount'
 >;
 
 export type PublicLead = {
@@ -88,7 +99,7 @@ export type PublicLead = {
   companyId: string;
   campaignId: string;
   websiteStatus: WebsiteStatus;
-  whatsappStatus: PresenceStatus;
+  whatsappStatus: WhatsappStatus;
   instagramStatus: PresenceStatus;
   facebookStatus: PresenceStatus;
   score: number | null;
@@ -101,6 +112,15 @@ export type PublicLead = {
   campaign: PublicCampaignSummary;
   createdAt: string;
   updatedAt: string;
+};
+
+export type PublicLeadDetail = Omit<PublicLead, 'company'> & {
+  company: PublicCompany;
+};
+
+export type LeadFilterOptions = {
+  categories: string[];
+  cities: string[];
 };
 
 export type PublicCompanyDetail = PublicCompany & {
