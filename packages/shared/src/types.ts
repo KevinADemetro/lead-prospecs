@@ -37,7 +37,6 @@ export type PublicCampaign = {
   city: string;
   state: string;
   categories: string[];
-  searchTerms: string[];
   filters: CampaignFilters;
   status: CampaignStatus;
   /** Each lead links one distinct company to the campaign. */

@@ -92,7 +92,6 @@ export function CampaignFormPage() {
       city: values.city,
       state: values.state,
       categories: splitTerms(values.categories),
-      searchTerms: splitTerms(values.searchTerms),
       filters: toCampaignFilters(values.filters, campaign?.filters),
     };
     try {
@@ -157,17 +156,10 @@ export function CampaignFormPage() {
           <Section title="Busca">
             <FormField
               label="Categorias"
-              hint="Opcional, separe por vírgula"
+              hint="Separe por vírgula"
               error={errors.categories?.message}
             >
               <Input {...form.register('categories')} placeholder="Ex.: padaria, confeitaria" />
-            </FormField>
-            <FormField
-              label="Termos de busca"
-              hint="Separe por vírgula"
-              error={errors.searchTerms?.message}
-            >
-              <Input {...form.register('searchTerms')} placeholder="Ex.: padaria artesanal" />
             </FormField>
           </Section>
 

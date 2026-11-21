@@ -17,7 +17,6 @@ export type CampaignWriteData = {
   city: string;
   state: string;
   categories: string[];
-  searchTerms: string[];
   filters: CampaignFilters;
   status: CampaignStatus;
 };
@@ -150,7 +149,6 @@ export class CampaignsRepository extends BaseRepository {
       city: campaign.city,
       state: campaign.state,
       categories: campaign.categories,
-      searchTerms: campaign.searchTerms,
       filters: filters.success ? filters.data : {},
       status: campaign.status,
       leadCount: campaign._count.leads,

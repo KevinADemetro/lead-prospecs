@@ -63,7 +63,6 @@ export class CampaignsService {
       city,
       state,
       categories: input.categories,
-      searchTerms: input.searchTerms,
       filters: input.filters,
       status: 'DRAFT',
     });

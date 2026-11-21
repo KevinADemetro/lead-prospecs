@@ -34,7 +34,6 @@ describe('Campaigns, companies and leads', () => {
       name: 'Padarias SP',
       location: 'São Paulo, SP',
       categories: ['padaria', 'padaria'],
-      searchTerms: ['padaria artesanal'],
       filters: { minRating: 4 },
     });
     expect(created.status).toBe(201);
@@ -81,7 +80,7 @@ describe('Campaigns, companies and leads', () => {
       name: 'Academias Recife',
       city: 'Recife',
       state: 'PE',
-      searchTerms: ['academia'],
+      categories: ['academia'],
       filters,
     });
     expect(created.status).toBe(201);
@@ -123,7 +122,7 @@ describe('Campaigns, companies and leads', () => {
 
   it('rejects invalid or arbitrary campaign payloads', async () => {
     const http = admin;
-    const base = { name: 'Valid name', location: 'Recife', searchTerms: ['academia'] };
+    const base = { name: 'Valid name', location: 'Recife', categories: ['academia'] };
 
     const extraField = await mutating(http, 'post', '/api/v1/campaigns', {
       ...base,
@@ -137,8 +136,11 @@ describe('Campaigns, companies and leads', () => {
     });
     expect(badFilter.status).toBe(400);
 
-    const noTerms = await mutating(http, 'post', '/api/v1/campaigns', { ...base, searchTerms: [] });
-    expect(noTerms.status).toBe(400);
+    const noCategories = await mutating(http, 'post', '/api/v1/campaigns', {
+      ...base,
+      categories: [],
+    });
+    expect(noCategories.status).toBe(400);
 
     const badStatus = await http.get('/api/v1/campaigns?status=UNKNOWN');
     expect(badStatus.status).toBe(400);
@@ -149,12 +151,12 @@ describe('Campaigns, companies and leads', () => {
     const first = await mutating(http, 'post', '/api/v1/campaigns', {
       name: 'Campanha A',
       location: 'Curitiba',
-      searchTerms: ['pet shop'],
+      categories: ['pet shop'],
     });
     const second = await mutating(http, 'post', '/api/v1/campaigns', {
       name: 'Campanha B',
       location: 'Curitiba',
-      searchTerms: ['banho e tosa'],
+      categories: ['banho e tosa'],
     });
     const leads = app.get(LeadsService);
 
@@ -240,7 +242,7 @@ describe('Campaigns, companies and leads', () => {
     const forbidden = await mutating(reader.http, 'post', '/api/v1/campaigns', {
       name: 'Nope',
       location: 'Nowhere',
-      searchTerms: ['x'],
+      categories: ['x'],
     });
     expect(forbidden.status).toBe(403);
   });

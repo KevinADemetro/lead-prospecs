@@ -21,7 +21,7 @@ describe('Leads listing and details', () => {
       name: 'Pets Curitiba',
       city: 'Curitiba',
       state: 'PR',
-      searchTerms: ['pet shop'],
+      categories: ['pet shop'],
     });
     const leads = app.get(LeadsService);
     const prisma = app.get(PrismaService);

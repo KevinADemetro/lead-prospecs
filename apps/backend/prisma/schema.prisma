@@ -134,7 +134,6 @@ model Campaign {
   city        String         @default("")
   state       String         @default("") @db.VarChar(2)
   categories  String[]
-  searchTerms String[]       @map("search_terms")
   filters     Json           @default("{}")
   status      CampaignStatus @default(DRAFT)
   createdAt   DateTime       @default(now()) @map("created_at")
