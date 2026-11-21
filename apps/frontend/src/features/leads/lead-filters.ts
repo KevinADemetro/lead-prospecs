@@ -3,6 +3,7 @@ import type { LeadListQuery } from '@app/shared';
 export type LeadFilterValues = {
   search: string;
   campaignId: string;
+  dorId: string;
   websiteStatus: string;
   whatsappStatus: string;
   category: string;
@@ -13,6 +14,7 @@ export type LeadFilterValues = {
 export const EMPTY_LEAD_FILTERS: LeadFilterValues = {
   search: '',
   campaignId: '',
+  dorId: '',
   websiteStatus: '',
   whatsappStatus: '',
   category: '',
@@ -27,6 +29,7 @@ export function toQueryFilters(values: LeadFilterValues): LeadQueryFilters {
   return {
     search: values.search.trim() || undefined,
     campaignId: values.campaignId || undefined,
+    dorId: values.dorId || undefined,
     websiteStatus: (values.websiteStatus || undefined) as LeadQueryFilters['websiteStatus'],
     whatsappStatus: (values.whatsappStatus || undefined) as LeadQueryFilters['whatsappStatus'],
     category: values.category || undefined,

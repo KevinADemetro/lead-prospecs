@@ -90,6 +90,18 @@ export function LeadFilters({ values, options, campaigns, onChange, onSubmit, on
           ))}
         </Select>
         <Select
+          value={values.dorId}
+          onChange={(event) => set('dorId')(event.target.value)}
+          aria-label="Dor"
+        >
+          <option value="">Todas as dores</option>
+          {options.dores.map((dor) => (
+            <option key={dor.id} value={dor.id}>
+              {dor.name}
+            </option>
+          ))}
+        </Select>
+        <Select
           value={values.qualificationStatus}
           onChange={(event) => set('qualificationStatus')(event.target.value)}
           aria-label="Status"

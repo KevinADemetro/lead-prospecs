@@ -1,5 +1,12 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
-import { entityIdSchema, leadListQuerySchema, LeadListQuery, PERMISSIONS } from '@app/shared';
+import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
+import {
+  entityIdSchema,
+  leadListQuerySchema,
+  LeadListQuery,
+  PERMISSIONS,
+  updateLeadSchema,
+  UpdateLeadInput,
+} from '@app/shared';
 import { LeadsService } from './leads.service';
 import { RequirePermissions } from '../../common/decorators/require-permissions.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
@@ -24,5 +31,14 @@ export class LeadsController {
   @RequirePermissions(PERMISSIONS.LEADS_READ)
   getById(@Param('id', new ZodValidationPipe(entityIdSchema)) id: string) {
     return this.leads.getById(id);
+  }
+
+  @Patch(':id')
+  @RequirePermissions(PERMISSIONS.LEADS_UPDATE)
+  update(
+    @Param('id', new ZodValidationPipe(entityIdSchema)) id: string,
+    @Body(new ZodValidationPipe(updateLeadSchema)) body: UpdateLeadInput,
+  ) {
+    return this.leads.update(id, body);
   }
 }

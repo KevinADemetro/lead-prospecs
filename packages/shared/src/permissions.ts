@@ -12,7 +12,12 @@ export const PERMISSIONS = {
   CAMPAIGNS_UPDATE: 'campaigns.update',
   CAMPAIGNS_DELETE: 'campaigns.delete',
   LEADS_READ: 'leads.read',
+  LEADS_UPDATE: 'leads.update',
   COMPANIES_READ: 'companies.read',
+  DORES_READ: 'dores.read',
+  DORES_CREATE: 'dores.create',
+  DORES_UPDATE: 'dores.update',
+  DORES_DELETE: 'dores.delete',
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -49,11 +54,20 @@ export const PERMISSION_GROUPS: { resource: string; actions: Permission[] }[] = 
   },
   {
     resource: 'leads',
-    actions: [PERMISSIONS.LEADS_READ],
+    actions: [PERMISSIONS.LEADS_READ, PERMISSIONS.LEADS_UPDATE],
   },
   {
     resource: 'companies',
     actions: [PERMISSIONS.COMPANIES_READ],
+  },
+  {
+    resource: 'dores',
+    actions: [
+      PERMISSIONS.DORES_READ,
+      PERMISSIONS.DORES_CREATE,
+      PERMISSIONS.DORES_UPDATE,
+      PERMISSIONS.DORES_DELETE,
+    ],
   },
 ];
 

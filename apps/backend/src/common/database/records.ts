@@ -60,6 +60,22 @@ export type RoleListFilter = {
   nameContains?: string;
 };
 
+export type DorRecord = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+  deletedBy: string | null;
+};
+
+export type DorListFilter = {
+  nameContains?: string;
+};
+
+export type DorSummaryRecord = Pick<DorRecord, 'id' | 'name'>;
+
 export type CampaignRecord = {
   id: string;
   name: string;
@@ -127,11 +143,13 @@ export type LeadRecord = {
   id: string;
   companyId: string;
   campaignId: string;
+  dorId: string | null;
   websiteStatus: WebsiteStatus;
   whatsappStatus: WhatsappStatus;
   instagramStatus: PresenceStatus;
   facebookStatus: PresenceStatus;
   qualificationStatus: QualificationStatus;
+  dor: DorSummaryRecord | null;
   company: CompanySummaryRecord;
   campaign: CampaignSummaryRecord;
   createdAt: Date;
@@ -147,6 +165,7 @@ export type LeadDetailRecord = Omit<LeadRecord, 'company'> & {
 export type LeadListFilter = {
   campaignId?: string;
   companyId?: string;
+  dorId?: string;
   /** Matches company name, legal name, CNPJ, category or city. */
   search?: string;
   qualificationStatus?: QualificationStatus;
@@ -159,6 +178,7 @@ export type LeadListFilter = {
 export type LeadFilterOptionsRecord = {
   categories: string[];
   cities: string[];
+  dores: DorSummaryRecord[];
 };
 
 export type SortDirection = 'asc' | 'desc';

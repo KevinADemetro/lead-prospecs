@@ -171,12 +171,29 @@ model Company {
   @@map("companies")
 }
 
+model Dor {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  description String    @default("")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  deletedBy   String?   @db.Uuid @map("deleted_by")
+  leads       Lead[]
+
+  @@unique([name])
+  @@index([deletedAt, createdAt])
+  @@map("dores")
+}
+
 model Lead {
   id                  String              @id @default(uuid()) @db.Uuid
   companyId           String              @map("company_id") @db.Uuid
   campaignId          String              @map("campaign_id") @db.Uuid
+  dorId               String?             @map("dor_id") @db.Uuid
   company             Company             @relation(fields: [companyId], references: [id], onDelete: Restrict)
   campaign            Campaign            @relation(fields: [campaignId], references: [id], onDelete: Restrict)
+  dor                 Dor?                @relation(fields: [dorId], references: [id], onDelete: Restrict)
   websiteStatus       WebsiteStatus       @default(UNKNOWN) @map("website_status")
   whatsappStatus      WhatsappStatus      @default(UNKNOWN) @map("whatsapp_status")
   instagramStatus     PresenceStatus      @default(UNKNOWN) @map("instagram_status")
@@ -189,6 +206,7 @@ model Lead {
 
   @@unique([campaignId, companyId])
   @@index([companyId])
+  @@index([dorId])
   @@index([campaignId, qualificationStatus])
   @@index([deletedAt, createdAt])
   @@map("leads")

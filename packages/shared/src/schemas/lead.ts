@@ -17,6 +17,7 @@ export const leadListQuerySchema = paginationQuerySchema.extend({
   sort: z.enum(LEAD_SORT_FIELDS).optional(),
   campaignId: entityIdSchema.optional(),
   companyId: entityIdSchema.optional(),
+  dorId: entityIdSchema.optional(),
   qualificationStatus: qualificationStatusSchema.optional(),
   websiteStatus: websiteStatusSchema.optional(),
   whatsappStatus: whatsappStatusSchema.optional(),
@@ -24,4 +25,14 @@ export const leadListQuerySchema = paginationQuerySchema.extend({
   city: z.string().trim().min(1).max(120).optional(),
 });
 
+export const updateLeadSchema = z
+  .object({
+    dorId: entityIdSchema.nullable().optional(),
+  })
+  .strict()
+  .refine((value) => Object.keys(value).length > 0, {
+    message: 'Informe ao menos um campo para atualizar',
+  });
+
 export type LeadListQuery = z.infer<typeof leadListQuerySchema>;
+export type UpdateLeadInput = z.infer<typeof updateLeadSchema>;
