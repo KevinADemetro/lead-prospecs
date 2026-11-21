@@ -5,7 +5,6 @@ import {
   CircleDashed,
   CircleSlash,
   Clock,
-  Send,
   WifiOff,
   XCircle,
   type LucideIcon,
@@ -13,7 +12,6 @@ import {
 import type {
   PresenceStatus,
   QualificationStatus,
-  TrelloStatus,
   WebsiteStatus,
   WhatsappStatus,
 } from '@app/shared';
@@ -119,35 +117,3 @@ export const PRESENCE_STATUS_LABELS: Record<PresenceStatus, StatusLabel> = {
     description: 'Perfil ainda não verificado',
   },
 };
-
-export const TRELLO_STATUS_LABELS: Record<TrelloStatus, StatusLabel> = {
-  NOT_SENT: {
-    label: 'Não enviado',
-    tone: 'muted',
-    icon: CircleDashed,
-    description: 'Lead ainda não enviado ao Trello',
-  },
-  CREATED: {
-    label: 'Card criado',
-    tone: 'success',
-    icon: Send,
-    description: 'Card criado no Trello',
-  },
-  ERROR: {
-    label: 'Erro no envio',
-    tone: 'danger',
-    icon: AlertTriangle,
-    description: 'Falha ao criar card no Trello',
-  },
-};
-
-export const SCORE_TONES: { min: number; tone: Tone; label: string }[] = [
-  { min: 70, tone: 'success', label: 'Alto' },
-  { min: 40, tone: 'warning', label: 'Médio' },
-  { min: 0, tone: 'danger', label: 'Baixo' },
-];
-
-export function scoreTone(score: number | null): { tone: Tone; label: string } {
-  if (score === null) return { tone: 'muted', label: 'Não calculado' };
-  return SCORE_TONES.find((entry) => score >= entry.min) ?? { tone: 'danger', label: 'Baixo' };
-}

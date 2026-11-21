@@ -9,18 +9,14 @@ import { ErrorState } from '@/components/ui/error-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { displayUrl, googleMapsLink, toExternalUrl, whatsappLink } from '@/lib/external-url';
 import { useAuth } from '@/stores/auth-context';
-import { scoreTone } from '../lead-labels';
 import { formatCnpj } from '../lead-format';
 import { ExternalActionLink, ExternalLink } from './external-link';
 import {
   PresenceStatusBadge,
   QualificationBadge,
-  ScoreBadge,
-  TrelloStatusBadge,
   WebsiteStatusBadge,
   WhatsappStatusBadge,
 } from './lead-badges';
-import { SendToTrelloButton } from './send-to-trello-button';
 
 type Props = {
   leadId: string | null;
@@ -74,8 +70,6 @@ function LeadDetails({ lead }: { lead: PublicLeadDetail }) {
   const facebook = toExternalUrl(company.facebookUrl);
   const maps = googleMapsLink(company);
   const whatsapp = lead.whatsappStatus === 'CONFIRMED' ? whatsappLink(company.phone) : null;
-  const trelloCard = toExternalUrl(lead.trelloCardUrl);
-  const score = scoreTone(lead.score);
 
   return (
     <div className="flex flex-col">
@@ -158,25 +152,8 @@ function LeadDetails({ lead }: { lead: PublicLeadDetail }) {
       </Section>
 
       <Section title="Qualificação">
-        <Field label="Score">
-          <span className="inline-flex items-center gap-2">
-            <ScoreBadge score={lead.score} />
-            <span className="text-xs text-muted">{score.label}</span>
-          </span>
-        </Field>
         <Field label="Status">
           <QualificationBadge status={lead.qualificationStatus} />
-        </Field>
-        <Field label="Motivos" wide>
-          {lead.scoreReasons.length === 0 ? (
-            <span className="text-muted">Nenhum motivo registrado</span>
-          ) : (
-            <ul className="list-disc space-y-1 pl-5">
-              {lead.scoreReasons.map((reason) => (
-                <li key={reason}>{reason}</li>
-              ))}
-            </ul>
-          )}
         </Field>
       </Section>
 
@@ -191,12 +168,6 @@ function LeadDetails({ lead }: { lead: PublicLeadDetail }) {
           )}
         </Field>
         <Field label="Data">{new Date(lead.createdAt).toLocaleString()}</Field>
-        <Field label="Trello">
-          <div className="flex flex-col items-start gap-1">
-            <TrelloStatusBadge status={lead.trelloStatus} />
-            {trelloCard ? <ExternalLink href={trelloCard}>Abrir card</ExternalLink> : null}
-          </div>
-        </Field>
       </Section>
     </div>
   );
@@ -218,7 +189,6 @@ function LeadActions({ lead }: { lead: PublicLeadDetail }) {
         label="Facebook"
         icon={Facebook}
       />
-      <SendToTrelloButton />
     </div>
   );
 }

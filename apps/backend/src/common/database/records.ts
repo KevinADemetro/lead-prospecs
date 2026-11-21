@@ -4,7 +4,6 @@ import {
   Permission,
   PresenceStatus,
   QualificationStatus,
-  TrelloStatus,
   UserStatus,
   WebsiteStatus,
   WhatsappStatus,
@@ -132,12 +131,7 @@ export type LeadRecord = {
   whatsappStatus: WhatsappStatus;
   instagramStatus: PresenceStatus;
   facebookStatus: PresenceStatus;
-  score: number | null;
-  scoreReasons: string[];
   qualificationStatus: QualificationStatus;
-  trelloStatus: TrelloStatus;
-  trelloCardId: string | null;
-  trelloCardUrl: string | null;
   company: CompanySummaryRecord;
   campaign: CampaignSummaryRecord;
   createdAt: Date;
@@ -156,13 +150,10 @@ export type LeadListFilter = {
   /** Matches company name, legal name, CNPJ, category or city. */
   search?: string;
   qualificationStatus?: QualificationStatus;
-  trelloStatus?: TrelloStatus;
   websiteStatus?: WebsiteStatus;
   whatsappStatus?: WhatsappStatus;
   category?: string;
   city?: string;
-  scoreMin?: number;
-  scoreMax?: number;
 };
 
 export type LeadFilterOptionsRecord = {

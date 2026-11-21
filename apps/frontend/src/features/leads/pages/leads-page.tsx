@@ -32,13 +32,10 @@ import {
 } from '../lead-filters';
 import {
   QualificationBadge,
-  ScoreBadge,
-  TrelloStatusBadge,
   WebsiteStatusBadge,
   WhatsappStatusBadge,
 } from '../components/lead-badges';
 import { LeadDetailsDrawer } from '../components/lead-details-drawer';
-import { SendToTrelloButton } from '../components/send-to-trello-button';
 import { SortHeader } from '../components/sort-header';
 import { formatCityState } from '../lead-format';
 
@@ -50,7 +47,6 @@ const DEFAULT_ORDER: Record<LeadSortField, 'asc' | 'desc'> = {
   companyName: 'asc',
   category: 'asc',
   city: 'asc',
-  score: 'desc',
 };
 
 const EMPTY_OPTIONS: LeadFilterOptions = { categories: [], cities: [] };
@@ -206,7 +202,6 @@ export function LeadsPage() {
             {selected.size} {selected.size === 1 ? 'lead selecionado' : 'leads selecionados'}
           </p>
           <div className="flex flex-wrap gap-2">
-            <SendToTrelloButton count={selected.size} />
             <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
               Limpar seleção
             </Button>
@@ -327,21 +322,9 @@ export function LeadsPage() {
                   render: (row) => <WhatsappStatusBadge status={row.whatsappStatus} />,
                 },
                 {
-                  key: 'score',
-                  mobileLabel: 'Score',
-                  header: <SortHeader field="score" label="Score" {...sortProps} />,
-                  render: (row) => <ScoreBadge score={row.score} />,
-                },
-                {
                   key: 'status',
                   header: 'Status',
                   render: (row) => <QualificationBadge status={row.qualificationStatus} />,
-                },
-                {
-                  key: 'trello',
-                  header: 'Trello',
-                  hideOnMobile: true,
-                  render: (row) => <TrelloStatusBadge status={row.trelloStatus} />,
                 },
               ]}
             />
