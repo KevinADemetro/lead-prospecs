@@ -35,7 +35,7 @@ describe('Campaigns, companies and leads', () => {
       location: 'São Paulo, SP',
       categories: ['padaria', 'padaria'],
       searchTerms: ['padaria artesanal'],
-      filters: { minRating: 4 },
+      filters: { requirePhone: true },
     });
     expect(created.status).toBe(201);
     expect(created.body.status).toBe('DRAFT');
@@ -74,8 +74,6 @@ describe('Campaigns, companies and leads', () => {
       requirePhone: true,
       requireWhatsapp: true,
       requireGoogleBusiness: true,
-      minRating: 4.5,
-      minReviewCount: 20,
     };
     const created = await mutating(http, 'post', '/api/v1/campaigns', {
       name: 'Academias Recife',

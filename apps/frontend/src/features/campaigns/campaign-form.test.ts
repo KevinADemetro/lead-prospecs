@@ -23,32 +23,18 @@ describe('campaign form schema', () => {
     expect(fields).toEqual(expect.arrayContaining(['name', 'city', 'state', 'searchTerms']));
     expect(campaignFormSchema.safeParse(valid).success).toBe(true);
   });
-
-  it('validates rating and review count ranges', () => {
-    const withFilters = (filters: Partial<CampaignFormValues['filters']>) =>
-      campaignFormSchema.safeParse({ ...valid, filters: { ...valid.filters, ...filters } }).success;
-    expect(withFilters({ minRating: '4,5' })).toBe(true);
-    expect(withFilters({ minRating: '6' })).toBe(false);
-    expect(withFilters({ minRating: 'abc' })).toBe(false);
-    expect(withFilters({ minReviewCount: '20' })).toBe(true);
-    expect(withFilters({ minReviewCount: '2.5' })).toBe(false);
-  });
 });
 
 describe('toCampaignFilters', () => {
-  it('keeps only active filters and converts numbers', () => {
+  it('keeps only active filters', () => {
     const filters = toCampaignFilters({
       ...emptyCampaignFormValues.filters,
       withoutWebsite: true,
       requireWhatsapp: true,
-      minRating: '4,5',
-      minReviewCount: '10',
     });
     expect(filters).toEqual({
       withoutWebsite: true,
       requireWhatsapp: true,
-      minRating: 4.5,
-      minReviewCount: 10,
     });
     const payload = { name: 'Padarias', city: 'Recife', state: 'PE', searchTerms: ['x'], filters };
     expect(createCampaignSchema.safeParse(payload).success).toBe(true);
@@ -57,7 +43,7 @@ describe('toCampaignFilters', () => {
   it('preserves filters outside the form and clears removed ones', () => {
     const filters = toCampaignFilters(
       { ...emptyCampaignFormValues.filters, withoutWebsite: true },
-      { maxResults: 50, requireWebsite: true, minRating: 3 },
+      { maxResults: 50, requireWebsite: true },
     );
     expect(filters).toEqual({ maxResults: 50, withoutWebsite: true });
   });

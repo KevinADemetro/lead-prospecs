@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Globe, Instagram, MapPin, MessageCircle, Star } from 'lucide-react';
+import { Facebook, Globe, Instagram, MapPin, MessageCircle } from 'lucide-react';
 import { PERMISSIONS, type PublicLeadDetail } from '@app/shared';
 import { leadsApi } from '@/services/api/leads';
 import { isApiError } from '@/services/api/client';
@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { displayUrl, googleMapsLink, toExternalUrl, whatsappLink } from '@/lib/external-url';
 import { useAuth } from '@/stores/auth-context';
 import { scoreTone } from '../lead-labels';
-import { formatCnpj, formatCount, formatRating } from '../lead-format';
+import { formatCnpj } from '../lead-format';
 import { ExternalActionLink, ExternalLink } from './external-link';
 import {
   PresenceStatusBadge,
@@ -154,22 +154,6 @@ function LeadDetails({ lead }: { lead: PublicLeadDetail }) {
           <ExternalLink href={maps} fallback={<Value>{null}</Value>}>
             Ver no Google Maps
           </ExternalLink>
-        </Field>
-      </Section>
-
-      <Section title="Google">
-        <Field label="Rating">
-          {company.googleRating === null ? (
-            <Value>{null}</Value>
-          ) : (
-            <span className="inline-flex items-center gap-1">
-              <Star className="h-4 w-4 fill-warning text-warning" aria-hidden />
-              {formatRating(company.googleRating)}
-            </span>
-          )}
-        </Field>
-        <Field label="Avaliações">
-          <Value>{formatCount(company.googleReviewCount)}</Value>
         </Field>
       </Section>
 

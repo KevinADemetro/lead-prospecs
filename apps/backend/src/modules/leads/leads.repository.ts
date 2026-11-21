@@ -21,8 +21,6 @@ const leadWithRelations = {
       website: true,
       city: true,
       state: true,
-      googleRating: true,
-      googleReviewCount: true,
     },
   },
   campaign: { select: { id: true, name: true, status: true } },
@@ -151,8 +149,6 @@ export class LeadsRepository extends BaseRepository {
       companyName: { company: { name: order } },
       category: { company: { category: nullable } },
       city: { company: { city: nullable } },
-      googleRating: { company: { googleRating: nullable } },
-      googleReviewCount: { company: { googleReviewCount: nullable } },
     };
     const tieBreakers: Prisma.LeadOrderByWithRelationInput[] =
       sortField === 'createdAt' ? [{ id: 'asc' }] : [{ createdAt: 'desc' }, { id: 'asc' }];
@@ -226,8 +222,6 @@ export class LeadsRepository extends BaseRepository {
         country: company.country,
         googlePlaceId: company.googlePlaceId,
         googleMapsUrl: company.googleMapsUrl,
-        googleRating: company.googleRating,
-        googleReviewCount: company.googleReviewCount,
         instagramUrl: company.instagramUrl,
         facebookUrl: company.facebookUrl,
         dedupeKey: company.dedupeKey,

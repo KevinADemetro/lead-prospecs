@@ -100,8 +100,6 @@ export function toPublicCompany(company: CompanyRecord): PublicCompany {
     country: company.country,
     googlePlaceId: company.googlePlaceId,
     googleMapsUrl: company.googleMapsUrl,
-    googleRating: company.googleRating,
-    googleReviewCount: company.googleReviewCount,
     instagramUrl: company.instagramUrl,
     facebookUrl: company.facebookUrl,
     createdAt: company.createdAt.toISOString(),

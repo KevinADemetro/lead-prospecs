@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ExternalLink as ExternalLinkIcon, Star } from 'lucide-react';
+import { ExternalLink as ExternalLinkIcon } from 'lucide-react';
 import type {
   LeadFilterOptions,
   LeadListQuery,
@@ -40,7 +40,7 @@ import {
 import { LeadDetailsDrawer } from '../components/lead-details-drawer';
 import { SendToTrelloButton } from '../components/send-to-trello-button';
 import { SortHeader } from '../components/sort-header';
-import { formatCityState, formatCount, formatRating } from '../lead-format';
+import { formatCityState } from '../lead-format';
 
 const PAGE_SIZES = [10, 25, 50, 100] as const;
 
@@ -50,8 +50,6 @@ const DEFAULT_ORDER: Record<LeadSortField, 'asc' | 'desc'> = {
   companyName: 'asc',
   category: 'asc',
   city: 'asc',
-  googleRating: 'desc',
-  googleReviewCount: 'desc',
   score: 'desc',
 };
 
@@ -327,33 +325,6 @@ export function LeadsPage() {
                   header: 'WhatsApp',
                   hideOnMobile: true,
                   render: (row) => <WhatsappStatusBadge status={row.whatsappStatus} />,
-                },
-                {
-                  key: 'rating',
-                  mobileLabel: 'Google Rating',
-                  hideOnMobile: true,
-                  header: <SortHeader field="googleRating" label="Google Rating" {...sortProps} />,
-                  render: (row) =>
-                    row.company.googleRating === null ? (
-                      <span className="text-muted">—</span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1">
-                        <Star className="h-3.5 w-3.5 fill-warning text-warning" aria-hidden />
-                        {formatRating(row.company.googleRating)}
-                      </span>
-                    ),
-                },
-                {
-                  key: 'reviews',
-                  mobileLabel: 'Avaliações',
-                  hideOnMobile: true,
-                  header: (
-                    <SortHeader field="googleReviewCount" label="Avaliações" {...sortProps} />
-                  ),
-                  render: (row) =>
-                    formatCount(row.company.googleReviewCount) ?? (
-                      <span className="text-muted">—</span>
-                    ),
                 },
                 {
                   key: 'score',

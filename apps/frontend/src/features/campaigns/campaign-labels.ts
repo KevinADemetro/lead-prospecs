@@ -37,10 +37,6 @@ export function describeCampaignFilters(filters: CampaignFilters): string[] {
     ({ label }) => label,
   );
   if (filters.requireWebsite) labels.push('Com website');
-  if (filters.minRating !== undefined) labels.push(`Rating mínimo: ${filters.minRating}`);
-  if (filters.minReviewCount !== undefined) {
-    labels.push(`Avaliações mínimas: ${filters.minReviewCount}`);
-  }
   if (filters.maxResults !== undefined) labels.push(`Máximo de resultados: ${filters.maxResults}`);
   return labels;
 }

@@ -14,10 +14,6 @@ export function splitTerms(value: string): string[] {
     .filter(Boolean);
 }
 
-function parseDecimal(value: string): number {
-  return Number(value.trim().replace(',', '.'));
-}
-
 export function isBrazilianState(value: string): value is BrazilianState {
   return (BRAZILIAN_STATES as readonly string[]).includes(value);
 }
@@ -39,18 +35,6 @@ export const campaignFormSchema = z.object({
     requirePhone: z.boolean(),
     requireWhatsapp: z.boolean(),
     requireGoogleBusiness: z.boolean(),
-    minRating: z.string().refine((value) => {
-      if (value.trim() === '') return true;
-      const rating = parseDecimal(value);
-      return Number.isFinite(rating) && rating >= 0 && rating <= 5;
-    }, 'Informe um valor entre 0 e 5'),
-    minReviewCount: z
-      .string()
-      .refine(
-        (value) =>
-          value.trim() === '' || (/^\d+$/.test(value.trim()) && Number(value) <= 1_000_000),
-        'Informe um número inteiro entre 0 e 1.000.000',
-      ),
   }),
 });
 
@@ -68,8 +52,6 @@ export const emptyCampaignFormValues: CampaignFormValues = {
     requirePhone: false,
     requireWhatsapp: false,
     requireGoogleBusiness: false,
-    minRating: '',
-    minReviewCount: '',
   },
 };
 
@@ -87,8 +69,6 @@ export function toCampaignFormValues(campaign: PublicCampaign): CampaignFormValu
       requirePhone: filters.requirePhone ?? false,
       requireWhatsapp: filters.requireWhatsapp ?? false,
       requireGoogleBusiness: filters.requireGoogleBusiness ?? false,
-      minRating: filters.minRating?.toString() ?? '',
-      minReviewCount: filters.minReviewCount?.toString() ?? '',
     },
   };
 }
@@ -99,13 +79,12 @@ export function toCampaignFilters(
   current: CampaignFilters = {},
 ): CampaignFilters {
   const next: CampaignFilters = {
-    ...current,
+    maxResults: current.maxResults,
+    requireWebsite: current.requireWebsite,
     withoutWebsite: values.withoutWebsite || undefined,
     requirePhone: values.requirePhone || undefined,
     requireWhatsapp: values.requireWhatsapp || undefined,
     requireGoogleBusiness: values.requireGoogleBusiness || undefined,
-    minRating: values.minRating.trim() ? parseDecimal(values.minRating) : undefined,
-    minReviewCount: values.minReviewCount.trim() ? Number(values.minReviewCount) : undefined,
   };
   if (next.withoutWebsite) next.requireWebsite = undefined;
   return Object.fromEntries(

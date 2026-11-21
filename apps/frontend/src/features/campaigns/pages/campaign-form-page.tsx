@@ -180,30 +180,6 @@ export function CampaignFormPage() {
                 </label>
               ))}
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                label="Rating mínimo"
-                hint="De 0 a 5"
-                error={errors.filters?.minRating?.message}
-              >
-                <Input
-                  {...form.register('filters.minRating')}
-                  inputMode="decimal"
-                  placeholder="Ex.: 4.5"
-                />
-              </FormField>
-              <FormField
-                label="Avaliações mínimas"
-                hint="Quantidade de avaliações no Google"
-                error={errors.filters?.minReviewCount?.message}
-              >
-                <Input
-                  {...form.register('filters.minReviewCount')}
-                  inputMode="numeric"
-                  placeholder="Ex.: 20"
-                />
-              </FormField>
-            </div>
           </Section>
         </fieldset>
 

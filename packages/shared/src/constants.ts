@@ -28,8 +28,6 @@ export const LEAD_SORT_FIELDS = [
   'companyName',
   'category',
   'city',
-  'googleRating',
-  'googleReviewCount',
   'score',
 ] as const;
 export type LeadSortField = (typeof LEAD_SORT_FIELDS)[number];
