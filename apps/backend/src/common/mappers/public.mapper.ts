@@ -3,12 +3,14 @@ import {
   PublicCampaign,
   PublicCompany,
   PublicCompanyDetail,
+  PublicDor,
   PublicLead,
   PublicLeadDetail,
 } from '@app/shared';
 import {
   CampaignRecord,
   CompanyRecord,
+  DorRecord,
   LeadDetailRecord,
   LeadRecord,
   RoleRecord,
@@ -109,11 +111,22 @@ export function toPublicCompany(company: CompanyRecord): PublicCompany {
   };
 }
 
+export function toPublicDor(dor: DorRecord): PublicDor {
+  return {
+    id: dor.id,
+    name: dor.name,
+    description: dor.description,
+    createdAt: dor.createdAt.toISOString(),
+    updatedAt: dor.updatedAt.toISOString(),
+  };
+}
+
 export function toPublicLead(lead: LeadRecord): PublicLead {
   return {
     id: lead.id,
     companyId: lead.companyId,
     campaignId: lead.campaignId,
+    dorId: lead.dorId,
     websiteStatus: lead.websiteStatus,
     whatsappStatus: lead.whatsappStatus,
     instagramStatus: lead.instagramStatus,
@@ -124,6 +137,7 @@ export function toPublicLead(lead: LeadRecord): PublicLead {
     trelloStatus: lead.trelloStatus,
     trelloCardId: lead.trelloCardId,
     trelloCardUrl: lead.trelloCardUrl,
+    dor: lead.dor,
     company: lead.company,
     campaign: lead.campaign,
     createdAt: lead.createdAt.toISOString(),

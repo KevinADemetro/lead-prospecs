@@ -8,7 +8,7 @@ import { leadsApi } from '@/services/api/leads';
 import { LeadsPage } from './leads-page';
 
 vi.mock('@/services/api/leads', () => ({
-  leadsApi: { list: vi.fn(), get: vi.fn(), filterOptions: vi.fn() },
+  leadsApi: { list: vi.fn(), get: vi.fn(), filterOptions: vi.fn(), update: vi.fn() },
 }));
 
 function lead(id: string, name: string, overrides: Partial<PublicLead> = {}): PublicLead {
@@ -16,6 +16,7 @@ function lead(id: string, name: string, overrides: Partial<PublicLead> = {}): Pu
     id,
     companyId: `c-${id}`,
     campaignId: 'camp-1',
+    dorId: null,
     websiteStatus: 'NOT_FOUND',
     whatsappStatus: 'UNKNOWN',
     instagramStatus: 'UNKNOWN',
@@ -26,6 +27,7 @@ function lead(id: string, name: string, overrides: Partial<PublicLead> = {}): Pu
     trelloStatus: 'NOT_SENT',
     trelloCardId: null,
     trelloCardUrl: null,
+    dor: null,
     company: {
       id: `c-${id}`,
       name,
@@ -94,7 +96,11 @@ function renderPage() {
 
 describe('LeadsPage', () => {
   beforeEach(() => {
-    vi.mocked(leadsApi.filterOptions).mockResolvedValue({ categories: ['Padaria'], cities: [] });
+    vi.mocked(leadsApi.filterOptions).mockResolvedValue({
+      categories: ['Padaria'],
+      cities: [],
+      dores: [{ id: 'dor-1', name: 'Baixa conversão' }],
+    });
     vi.mocked(leadsApi.list).mockResolvedValue({
       data: [lead('1', 'Padaria Alpha'), lead('2', 'Padaria Beta')],
       meta: { page: 1, limit: 10, total: 2, totalPages: 1 },

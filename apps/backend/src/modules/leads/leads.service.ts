@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { LeadFilterOptions, LeadListQuery } from '@app/shared';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { LeadFilterOptions, LeadListQuery, UpdateLeadInput } from '@app/shared';
 import { LeadsRepository } from './leads.repository';
+import { DoresRepository } from '../dores/dores.repository';
 import { CampaignsRepository } from '../campaigns/campaigns.repository';
 import { CompaniesService } from '../companies/companies.service';
 import { CompanyInput } from '../companies/company-identity.util';
@@ -11,6 +12,7 @@ import { LeadListFilter } from '../../common/database/records';
 export class LeadsService {
   constructor(
     private readonly leads: LeadsRepository,
+    private readonly dores: DoresRepository,
     private readonly campaigns: CampaignsRepository,
     private readonly companies: CompaniesService,
   ) {}
@@ -39,6 +41,18 @@ export class LeadsService {
     return toPublicLeadDetail(lead);
   }
 
+  async update(id: string, input: UpdateLeadInput) {
+    await this.leads.findByIdOrFail(id);
+    if (input.dorId !== undefined && input.dorId !== null) {
+      await this.dores.findByIdOrFail(input.dorId);
+    }
+    const updated = await this.leads.updateDorId(id, input.dorId ?? null);
+    if (!updated) {
+      throw new NotFoundException('Recurso não encontrado');
+    }
+    return toPublicLeadDetail(updated);
+  }
+
   filterOptions(): Promise<LeadFilterOptions> {
     return this.leads.filterOptions();
   }
@@ -56,6 +70,7 @@ export class LeadsService {
       search: query.search || undefined,
       campaignId: query.campaignId,
       companyId: query.companyId,
+      dorId: query.dorId,
       qualificationStatus: query.qualificationStatus,
       trelloStatus: query.trelloStatus,
       websiteStatus: query.websiteStatus,

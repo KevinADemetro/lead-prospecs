@@ -94,10 +94,21 @@ export type PublicCompanySummary = Pick<
   | 'googleReviewCount'
 >;
 
+export type PublicDor = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PublicDorSummary = Pick<PublicDor, 'id' | 'name'>;
+
 export type PublicLead = {
   id: string;
   companyId: string;
   campaignId: string;
+  dorId: string | null;
   websiteStatus: WebsiteStatus;
   whatsappStatus: WhatsappStatus;
   instagramStatus: PresenceStatus;
@@ -108,6 +119,7 @@ export type PublicLead = {
   trelloStatus: TrelloStatus;
   trelloCardId: string | null;
   trelloCardUrl: string | null;
+  dor: PublicDorSummary | null;
   company: PublicCompanySummary;
   campaign: PublicCampaignSummary;
   createdAt: string;
@@ -121,6 +133,7 @@ export type PublicLeadDetail = Omit<PublicLead, 'company'> & {
 export type LeadFilterOptions = {
   categories: string[];
   cities: string[];
+  dores: PublicDorSummary[];
 };
 
 export type PublicCompanyDetail = PublicCompany & {

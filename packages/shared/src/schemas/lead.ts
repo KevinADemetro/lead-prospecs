@@ -24,6 +24,7 @@ export const leadListQuerySchema = paginationQuerySchema
     sort: z.enum(LEAD_SORT_FIELDS).optional(),
     campaignId: entityIdSchema.optional(),
     companyId: entityIdSchema.optional(),
+    dorId: entityIdSchema.optional(),
     qualificationStatus: qualificationStatusSchema.optional(),
     trelloStatus: trelloStatusSchema.optional(),
     websiteStatus: websiteStatusSchema.optional(),
@@ -41,4 +42,14 @@ export const leadListQuerySchema = paginationQuerySchema
     { message: 'Score mínimo não pode ser maior que o máximo', path: ['scoreMin'] },
   );
 
+export const updateLeadSchema = z
+  .object({
+    dorId: entityIdSchema.nullable().optional(),
+  })
+  .strict()
+  .refine((value) => Object.keys(value).length > 0, {
+    message: 'Informe ao menos um campo para atualizar',
+  });
+
 export type LeadListQuery = z.infer<typeof leadListQuerySchema>;
+export type UpdateLeadInput = z.infer<typeof updateLeadSchema>;

@@ -55,7 +55,7 @@ const DEFAULT_ORDER: Record<LeadSortField, 'asc' | 'desc'> = {
   score: 'desc',
 };
 
-const EMPTY_OPTIONS: LeadFilterOptions = { categories: [], cities: [] };
+const EMPTY_OPTIONS: LeadFilterOptions = { categories: [], cities: [], dores: [] };
 
 export function LeadsPage() {
   const { hasPermission } = useAuth();
@@ -300,6 +300,13 @@ export function LeadsPage() {
                     ),
                 },
                 {
+                  key: 'dor',
+                  mobileLabel: 'Dor',
+                  hideOnMobile: true,
+                  header: 'Dor',
+                  render: (row) => row.dor?.name ?? <span className="text-muted">—</span>,
+                },
+                {
                   key: 'website',
                   header: 'Website',
                   render: (row) => {
@@ -410,7 +417,24 @@ export function LeadsPage() {
         )}
       </Card>
 
-      <LeadDetailsDrawer leadId={detailId} onClose={closeDetails} />
+      <LeadDetailsDrawer
+        leadId={detailId}
+        onClose={closeDetails}
+        onUpdated={(updated) => {
+          setRows((current) =>
+            current.map((row) =>
+              row.id === updated.id
+                ? {
+                    ...row,
+                    dorId: updated.dorId,
+                    dor: updated.dor,
+                    updatedAt: updated.updatedAt,
+                  }
+                : row,
+            ),
+          );
+        }}
+      />
     </div>
   );
 }

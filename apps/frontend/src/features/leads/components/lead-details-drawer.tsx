@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Globe, Instagram, MapPin, MessageCircle, Star } from 'lucide-react';
-import { PERMISSIONS, type PublicLeadDetail } from '@app/shared';
+import { PERMISSIONS, type LeadFilterOptions, type PublicLeadDetail } from '@app/shared';
 import { leadsApi } from '@/services/api/leads';
 import { isApiError } from '@/services/api/client';
 import { Drawer } from '@/components/ui/drawer';
 import { ErrorState } from '@/components/ui/error-state';
+import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { displayUrl, googleMapsLink, toExternalUrl, whatsappLink } from '@/lib/external-url';
 import { useAuth } from '@/stores/auth-context';
@@ -25,6 +26,7 @@ import { SendToTrelloButton } from './send-to-trello-button';
 type Props = {
   leadId: string | null;
   onClose: () => void;
+  onUpdated?: (lead: PublicLeadDetail) => void;
 };
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -66,7 +68,21 @@ function DetailsSkeleton() {
   );
 }
 
-function LeadDetails({ lead }: { lead: PublicLeadDetail }) {
+function LeadDetails({
+  lead,
+  dores,
+  canUpdate,
+  savingDor,
+  dorError,
+  onDorChange,
+}: {
+  lead: PublicLeadDetail;
+  dores: LeadFilterOptions['dores'];
+  canUpdate: boolean;
+  savingDor: boolean;
+  dorError: string | null;
+  onDorChange: (dorId: string | null) => void;
+}) {
   const { hasPermission } = useAuth();
   const { company } = lead;
   const website = toExternalUrl(company.website);
@@ -89,6 +105,28 @@ function LeadDetails({ lead }: { lead: PublicLeadDetail }) {
         </Field>
         <Field label="Categoria">
           <Value>{company.category}</Value>
+        </Field>
+        <Field label="Dor">
+          {canUpdate ? (
+            <div className="flex flex-col gap-1">
+              <Select
+                aria-label="Dor do lead"
+                value={lead.dorId ?? ''}
+                disabled={savingDor}
+                onChange={(event) => onDorChange(event.target.value || null)}
+              >
+                <option value="">Sem dor</option>
+                {dores.map((dor) => (
+                  <option key={dor.id} value={dor.id}>
+                    {dor.name}
+                  </option>
+                ))}
+              </Select>
+              {dorError ? <span className="text-xs text-danger">{dorError}</span> : null}
+            </div>
+          ) : (
+            <Value>{lead.dor?.name}</Value>
+          )}
         </Field>
       </Section>
 
@@ -239,17 +277,25 @@ function LeadActions({ lead }: { lead: PublicLeadDetail }) {
   );
 }
 
-export function LeadDetailsDrawer({ leadId, onClose }: Props) {
+export function LeadDetailsDrawer({ leadId, onClose, onUpdated }: Props) {
+  const { hasPermission } = useAuth();
+  const canUpdate = hasPermission(PERMISSIONS.LEADS_UPDATE);
   const [lead, setLead] = useState<PublicLeadDetail | null>(null);
+  const [dores, setDores] = useState<LeadFilterOptions['dores']>([]);
   const [loading, setLoading] = useState(false);
+  const [savingDor, setSavingDor] = useState(false);
+  const [dorError, setDorError] = useState<string | null>(null);
   const [error, setError] = useState<{ status?: number; message: string } | null>(null);
 
   const load = useCallback(async (id: string) => {
     setLoading(true);
     setError(null);
+    setDorError(null);
     setLead(null);
     try {
-      setLead(await leadsApi.get(id));
+      const [detail, options] = await Promise.all([leadsApi.get(id), leadsApi.filterOptions()]);
+      setLead(detail);
+      setDores(options.dores);
     } catch (err) {
       setError(
         isApiError(err)
@@ -264,6 +310,21 @@ export function LeadDetailsDrawer({ leadId, onClose }: Props) {
   useEffect(() => {
     if (leadId) void load(leadId);
   }, [leadId, load]);
+
+  async function handleDorChange(dorId: string | null) {
+    if (!lead) return;
+    setSavingDor(true);
+    setDorError(null);
+    try {
+      const updated = await leadsApi.update(lead.id, { dorId });
+      setLead(updated);
+      onUpdated?.(updated);
+    } catch (err) {
+      setDorError(isApiError(err) ? err.message : 'Falha ao atualizar dor');
+    } finally {
+      setSavingDor(false);
+    }
+  }
 
   return (
     <Drawer
@@ -284,7 +345,14 @@ export function LeadDetailsDrawer({ leadId, onClose }: Props) {
           />
         )
       ) : lead ? (
-        <LeadDetails lead={lead} />
+        <LeadDetails
+          lead={lead}
+          dores={dores}
+          canUpdate={canUpdate}
+          savingDor={savingDor}
+          dorError={dorError}
+          onDorChange={(dorId) => void handleDorChange(dorId)}
+        />
       ) : null}
     </Drawer>
   );
