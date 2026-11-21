@@ -69,7 +69,6 @@ export type CampaignRecord = {
   city: string;
   state: string;
   categories: string[];
-  searchTerms: string[];
   filters: CampaignFilters;
   status: CampaignStatus;
   leadCount: number;

@@ -74,7 +74,6 @@ export function toPublicCampaign(campaign: CampaignRecord): PublicCampaign {
     city: campaign.city,
     state: campaign.state,
     categories: campaign.categories,
-    searchTerms: campaign.searchTerms,
     filters: campaign.filters,
     status: campaign.status,
     leadCount: campaign.leadCount,

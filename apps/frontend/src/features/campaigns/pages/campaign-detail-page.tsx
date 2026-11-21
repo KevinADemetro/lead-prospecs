@@ -150,9 +150,6 @@ export function CampaignDetailPage() {
           <Field label="Categorias">
             <TagList items={campaign.categories} empty="Nenhuma categoria" />
           </Field>
-          <Field label="Termos de busca">
-            <TagList items={campaign.searchTerms} empty="Nenhum termo" />
-          </Field>
           <Field label="Filtros">
             <TagList items={filters} empty="Nenhum filtro aplicado" />
           </Field>

@@ -29,11 +29,8 @@ export const campaignFormSchema = z.object({
   state: z.string().refine((value): boolean => isBrazilianState(value), 'Selecione o estado'),
   categories: z
     .string()
+    .refine((value) => splitTerms(value).length > 0, 'Informe ao menos uma categoria')
     .refine((value) => splitTerms(value).length <= 20, 'Informe no máximo 20 categorias'),
-  searchTerms: z
-    .string()
-    .refine((value) => splitTerms(value).length > 0, 'Informe ao menos um termo de busca')
-    .refine((value) => splitTerms(value).length <= 20, 'Informe no máximo 20 termos'),
   filters: z.object({
     withoutWebsite: z.boolean(),
     requirePhone: z.boolean(),
@@ -62,7 +59,6 @@ export const emptyCampaignFormValues: CampaignFormValues = {
   city: '',
   state: '',
   categories: '',
-  searchTerms: '',
   filters: {
     withoutWebsite: false,
     requirePhone: false,
@@ -81,7 +77,6 @@ export function toCampaignFormValues(campaign: PublicCampaign): CampaignFormValu
     city: campaign.city,
     state: campaign.state,
     categories: campaign.categories.join(', '),
-    searchTerms: campaign.searchTerms.join(', '),
     filters: {
       withoutWebsite: filters.withoutWebsite ?? false,
       requirePhone: filters.requirePhone ?? false,

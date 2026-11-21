@@ -34,9 +34,8 @@ export const campaignFieldSchemas = {
   location: z.string().trim().min(2, 'Informe a localização').max(120),
   city: z.string().trim().min(2, 'Informe a cidade').max(120),
   state: z.enum(BRAZILIAN_STATES, { errorMap: () => ({ message: 'Selecione o estado' }) }),
-  categories: termListSchema,
-  searchTerms: termListSchema.refine((values) => values.length > 0, {
-    message: 'Informe ao menos um termo de busca',
+  categories: termListSchema.refine((values) => values.length > 0, {
+    message: 'Informe ao menos uma categoria',
   }),
   filters: campaignFiltersSchema,
 };
@@ -53,7 +52,6 @@ export const createCampaignSchema = z
     location: campaignFieldSchemas.location.optional(),
     city: campaignFieldSchemas.city.optional(),
     state: campaignFieldSchemas.state.optional(),
-    categories: campaignFieldSchemas.categories.default([]),
     filters: campaignFieldSchemas.filters.default({}),
   })
   .strict()
@@ -72,7 +70,6 @@ export const updateCampaignSchema = z
     city: campaignFieldSchemas.city.optional(),
     state: campaignFieldSchemas.state.optional(),
     categories: campaignFieldSchemas.categories.optional(),
-    searchTerms: campaignFieldSchemas.searchTerms.optional(),
     filters: campaignFieldSchemas.filters.optional(),
     status: z.enum(CAMPAIGN_STATUS_TRANSITIONS).optional(),
   })

@@ -12,15 +12,15 @@ const valid: CampaignFormValues = {
   name: 'Padarias SP',
   city: 'São Paulo',
   state: 'SP',
-  searchTerms: 'padaria, confeitaria',
+  categories: 'padaria, confeitaria',
 };
 
 describe('campaign form schema', () => {
-  it('requires city, state and at least one search term', () => {
+  it('requires city, state and at least one category', () => {
     const result = campaignFormSchema.safeParse(emptyCampaignFormValues);
     expect(result.success).toBe(false);
     const fields = result.error?.issues.map((issue) => issue.path.join('.'));
-    expect(fields).toEqual(expect.arrayContaining(['name', 'city', 'state', 'searchTerms']));
+    expect(fields).toEqual(expect.arrayContaining(['name', 'city', 'state', 'categories']));
     expect(campaignFormSchema.safeParse(valid).success).toBe(true);
   });
 
@@ -50,7 +50,7 @@ describe('toCampaignFilters', () => {
       minRating: 4.5,
       minReviewCount: 10,
     });
-    const payload = { name: 'Padarias', city: 'Recife', state: 'PE', searchTerms: ['x'], filters };
+    const payload = { name: 'Padarias', city: 'Recife', state: 'PE', categories: ['x'], filters };
     expect(createCampaignSchema.safeParse(payload).success).toBe(true);
   });
 
@@ -65,7 +65,7 @@ describe('toCampaignFilters', () => {
 
 describe('campaign contract', () => {
   it('rejects conflicting website filters and accepts run/cancel transitions', () => {
-    const base = { name: 'Padarias', city: 'Recife', state: 'PE', searchTerms: ['padaria'] };
+    const base = { name: 'Padarias', city: 'Recife', state: 'PE', categories: ['padaria'] };
     expect(
       createCampaignSchema.safeParse({
         ...base,
