@@ -101,8 +101,6 @@ export class CompaniesRepository extends BaseRepository {
       country: company.country,
       googlePlaceId: company.googlePlaceId,
       googleMapsUrl: company.googleMapsUrl,
-      googleRating: company.googleRating,
-      googleReviewCount: company.googleReviewCount,
       instagramUrl: company.instagramUrl,
       facebookUrl: company.facebookUrl,
       dedupeKey: company.dedupeKey,

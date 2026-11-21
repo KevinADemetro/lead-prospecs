@@ -164,8 +164,6 @@ model Company {
   country           String?
   googlePlaceId     String?   @unique @map("google_place_id")
   googleMapsUrl     String?   @map("google_maps_url")
-  googleRating      Float?    @map("google_rating")
-  googleReviewCount Int?      @map("google_review_count")
   instagramUrl      String?   @map("instagram_url")
   facebookUrl       String?   @map("facebook_url")
   dedupeKey         String?   @unique @map("dedupe_key")

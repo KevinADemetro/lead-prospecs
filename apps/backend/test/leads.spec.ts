@@ -34,8 +34,6 @@ describe('Leads listing and details', () => {
       city: 'Curitiba',
       state: 'PR',
       website: 'https://alpha.example',
-      googleRating: 4.8,
-      googleReviewCount: 120,
       instagramUrl: 'https://instagram.com/alphapet',
     });
     const beta = await leads.addCompanyToCampaign(campaign.body.id, {
@@ -43,8 +41,6 @@ describe('Leads listing and details', () => {
       category: 'Banho e tosa',
       city: 'Pinhais',
       googlePlaceId: 'place-beta',
-      googleRating: 3.9,
-      googleReviewCount: 15,
     });
     const gamma = await leads.addCompanyToCampaign(campaign.body.id, {
       name: 'Gamma Vet',
@@ -60,7 +56,7 @@ describe('Leads listing and details', () => {
       where: { id: alpha.id },
       data: {
         score: 85,
-        scoreReasons: ['Possui website', 'Boa avaliação no Google'],
+        scoreReasons: ['Possui website', 'Telefone confirmado'],
         websiteStatus: 'FOUND',
         whatsappStatus: 'CONFIRMED',
         qualificationStatus: 'QUALIFIED',
@@ -111,8 +107,8 @@ describe('Leads listing and details', () => {
     expect(await listNames('scoreMin=30&scoreMax=50')).toEqual(['Beta Banho e Tosa']);
   });
 
-  it('sorts by company fields with nulls last and paginates', async () => {
-    expect(await listNames('sort=googleRating&order=desc')).toEqual([
+  it('sorts by company fields and paginates', async () => {
+    expect(await listNames('sort=companyName&order=asc')).toEqual([
       'Alpha Pet',
       'Beta Banho e Tosa',
       'Gamma Vet',
@@ -125,7 +121,7 @@ describe('Leads listing and details', () => {
     const page = await admin.get('/api/v1/leads?sort=companyName&order=asc&limit=2&page=2');
     expect(page.body.meta).toMatchObject({ total: 3, totalPages: 2, page: 2 });
     expect(page.body.data[0].company.name).toBe('Gamma Vet');
-    expect(page.body.data[0].company.googleRating).toBeNull();
+    expect(page.body.data[0].company.website).toBeNull();
   });
 
   it('rejects invalid query parameters', async () => {
@@ -146,7 +142,7 @@ describe('Leads listing and details', () => {
       facebookUrl: null,
     });
     expect(res.body.company.dedupeKey).toBeUndefined();
-    expect(res.body.scoreReasons).toEqual(['Possui website', 'Boa avaliação no Google']);
+    expect(res.body.scoreReasons).toEqual(['Possui website', 'Telefone confirmado']);
     expect(res.body.campaign.name).toBe('Pets Curitiba');
   });
 

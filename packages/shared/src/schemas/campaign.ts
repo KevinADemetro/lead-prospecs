@@ -13,8 +13,6 @@ const termListSchema = z
 
 export const campaignFiltersSchema = z
   .object({
-    minRating: z.number().min(0).max(5).optional(),
-    minReviewCount: z.number().int().min(0).max(1_000_000).optional(),
     requirePhone: z.boolean().optional(),
     requireWebsite: z.boolean().optional(),
     withoutWebsite: z.boolean().optional(),

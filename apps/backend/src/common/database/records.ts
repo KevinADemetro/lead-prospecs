@@ -98,8 +98,6 @@ export type CompanyData = {
   country: string | null;
   googlePlaceId: string | null;
   googleMapsUrl: string | null;
-  googleRating: number | null;
-  googleReviewCount: number | null;
   instagramUrl: string | null;
   facebookUrl: string | null;
 };
@@ -124,8 +122,6 @@ export type CompanySummaryRecord = Pick<
   | 'website'
   | 'city'
   | 'state'
-  | 'googleRating'
-  | 'googleReviewCount'
 >;
 
 export type LeadRecord = {

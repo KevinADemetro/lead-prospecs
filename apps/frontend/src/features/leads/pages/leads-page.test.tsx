@@ -34,8 +34,6 @@ function lead(id: string, name: string, overrides: Partial<PublicLead> = {}): Pu
       website: null,
       city: 'Curitiba',
       state: 'PR',
-      googleRating: 4.5,
-      googleReviewCount: 30,
     },
     campaign: { id: 'camp-1', name: 'Padarias', status: 'COMPLETED' },
     createdAt: '2026-09-01T12:00:00.000Z',
@@ -47,7 +45,7 @@ function lead(id: string, name: string, overrides: Partial<PublicLead> = {}): Pu
 const detail: PublicLeadDetail = {
   ...lead('1', 'Padaria Alpha', {
     websiteStatus: 'FOUND',
-    scoreReasons: ['Possui website', 'Boa avaliação'],
+    scoreReasons: ['Possui website', 'Telefone confirmado'],
   }),
   company: {
     id: 'c-1',
@@ -64,8 +62,6 @@ const detail: PublicLeadDetail = {
     country: 'BR',
     googlePlaceId: 'place-1',
     googleMapsUrl: null,
-    googleRating: 4.5,
-    googleReviewCount: 30,
     instagramUrl: 'javascript:alert(1)',
     facebookUrl: 'https://facebook.com/alpha',
     createdAt: '',
@@ -145,7 +141,7 @@ describe('LeadsPage', () => {
     const dialog = await screen.findByRole('dialog');
     expect(await within(dialog).findByText('Alpha Pães Ltda')).toBeInTheDocument();
     expect(within(dialog).getByText('11.222.333/0001-81')).toBeInTheDocument();
-    expect(within(dialog).getByText('Boa avaliação')).toBeInTheDocument();
+    expect(within(dialog).getByText('Telefone confirmado')).toBeInTheDocument();
 
     const website = within(dialog).getByRole('link', { name: 'Website' });
     expect(website).toHaveAttribute('href', 'https://alpha.com.br/');
