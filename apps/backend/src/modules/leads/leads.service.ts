@@ -57,13 +57,10 @@ export class LeadsService {
       campaignId: query.campaignId,
       companyId: query.companyId,
       qualificationStatus: query.qualificationStatus,
-      trelloStatus: query.trelloStatus,
       websiteStatus: query.websiteStatus,
       whatsappStatus: query.whatsappStatus,
       category: query.category,
       city: query.city,
-      scoreMin: query.scoreMin,
-      scoreMax: query.scoreMax,
     };
   }
 }

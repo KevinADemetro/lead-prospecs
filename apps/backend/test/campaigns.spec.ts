@@ -211,8 +211,8 @@ describe('Campaigns, companies and leads', () => {
       companiesFound: 1,
       qualifiedLeads: 0,
       leadsWithoutWebsite: 2,
-      leadsSentToTrello: 0,
     });
+    expect(metrics.body.leadsSentToTrello).toBeUndefined();
     expect(metrics.body.totalCampaigns).toBeGreaterThanOrEqual(2);
     expect(metrics.body.recentCampaigns.length).toBeLessThanOrEqual(5);
     expect(metrics.body.recentCampaigns[0].id).toBe(second.body.id);

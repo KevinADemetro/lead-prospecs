@@ -3,7 +3,6 @@ import type {
   CampaignStatus,
   PresenceStatus,
   QualificationStatus,
-  TrelloStatus,
   UserStatus,
   WebsiteStatus,
   WhatsappStatus,
@@ -52,7 +51,6 @@ export type DashboardMetrics = {
   companiesFound: number;
   qualifiedLeads: number;
   leadsWithoutWebsite: number;
-  leadsSentToTrello: number;
   recentCampaigns: PublicCampaign[];
 };
 
@@ -102,12 +100,7 @@ export type PublicLead = {
   whatsappStatus: WhatsappStatus;
   instagramStatus: PresenceStatus;
   facebookStatus: PresenceStatus;
-  score: number | null;
-  scoreReasons: string[];
   qualificationStatus: QualificationStatus;
-  trelloStatus: TrelloStatus;
-  trelloCardId: string | null;
-  trelloCardUrl: string | null;
   company: PublicCompanySummary;
   campaign: PublicCampaignSummary;
   createdAt: string;
@@ -124,7 +117,7 @@ export type LeadFilterOptions = {
 };
 
 export type PublicCompanyDetail = PublicCompany & {
-  leads: Pick<PublicLead, 'id' | 'campaign' | 'qualificationStatus' | 'score' | 'createdAt'>[];
+  leads: Pick<PublicLead, 'id' | 'campaign' | 'qualificationStatus' | 'createdAt'>[];
 };
 
 export type AuthUser = PublicUser & {

@@ -20,12 +20,7 @@ function lead(id: string, name: string, overrides: Partial<PublicLead> = {}): Pu
     whatsappStatus: 'UNKNOWN',
     instagramStatus: 'UNKNOWN',
     facebookStatus: 'UNKNOWN',
-    score: 72,
-    scoreReasons: [],
     qualificationStatus: 'PENDING',
-    trelloStatus: 'NOT_SENT',
-    trelloCardId: null,
-    trelloCardUrl: null,
     company: {
       id: `c-${id}`,
       name,
@@ -47,7 +42,6 @@ function lead(id: string, name: string, overrides: Partial<PublicLead> = {}): Pu
 const detail: PublicLeadDetail = {
   ...lead('1', 'Padaria Alpha', {
     websiteStatus: 'FOUND',
-    scoreReasons: ['Possui website', 'Boa avaliação'],
   }),
   company: {
     id: 'c-1',
@@ -102,14 +96,13 @@ describe('LeadsPage', () => {
     vi.mocked(leadsApi.get).mockResolvedValue(detail);
   });
 
-  it('selects rows and shows the Trello placeholder for the selection', async () => {
+  it('selects rows and updates the selection bar', async () => {
     const user = userEvent.setup();
     renderPage();
     await screen.findAllByText('Padaria Beta');
 
     await user.click(screen.getAllByLabelText('Selecionar todos da página')[0]!);
     expect(screen.getByText('2 leads selecionados')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Enviar para Trello \(2\)/ })).toBeDisabled();
 
     await user.click(screen.getAllByLabelText('Selecionar Padaria Alpha')[0]!);
     expect(screen.getByText('1 lead selecionado')).toBeInTheDocument();
@@ -120,10 +113,10 @@ describe('LeadsPage', () => {
     renderPage();
     await screen.findAllByText('Padaria Beta');
 
-    await user.click(screen.getByRole('button', { name: 'Ordenar por Score' }));
+    await user.click(screen.getByRole('button', { name: 'Ordenar por Google Rating' }));
     await waitFor(() =>
       expect(leadsApi.list).toHaveBeenLastCalledWith(
-        expect.objectContaining({ sort: 'score', order: 'desc', page: 1 }),
+        expect.objectContaining({ sort: 'googleRating', order: 'desc', page: 1 }),
       ),
     );
 
@@ -145,7 +138,6 @@ describe('LeadsPage', () => {
     const dialog = await screen.findByRole('dialog');
     expect(await within(dialog).findByText('Alpha Pães Ltda')).toBeInTheDocument();
     expect(within(dialog).getByText('11.222.333/0001-81')).toBeInTheDocument();
-    expect(within(dialog).getByText('Boa avaliação')).toBeInTheDocument();
 
     const website = within(dialog).getByRole('link', { name: 'Website' });
     expect(website).toHaveAttribute('href', 'https://alpha.com.br/');

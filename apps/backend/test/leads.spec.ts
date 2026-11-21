@@ -59,17 +59,14 @@ describe('Leads listing and details', () => {
     await prisma.lead.update({
       where: { id: alpha.id },
       data: {
-        score: 85,
-        scoreReasons: ['Possui website', 'Boa avaliação no Google'],
         websiteStatus: 'FOUND',
         whatsappStatus: 'CONFIRMED',
         qualificationStatus: 'QUALIFIED',
-        trelloStatus: 'CREATED',
       },
     });
     await prisma.lead.update({
       where: { id: beta.id },
-      data: { score: 40, websiteStatus: 'NOT_FOUND', trelloStatus: 'ERROR' },
+      data: { websiteStatus: 'NOT_FOUND' },
     });
     await prisma.lead.update({
       where: { id: gamma.id },
@@ -93,11 +90,10 @@ describe('Leads listing and details', () => {
     expect(await listNames('search=11.222.333')).toEqual(['Alpha Pet']);
   });
 
-  it('filters by statuses, category, city and score range', async () => {
+  it('filters by statuses, category and city', async () => {
     expect(await listNames('websiteStatus=NOT_FOUND')).toEqual(['Beta Banho e Tosa']);
     expect(await listNames('websiteStatus=ERROR')).toEqual(['Gamma Vet']);
     expect(await listNames('whatsappStatus=CONFIRMED')).toEqual(['Alpha Pet']);
-    expect(await listNames('trelloStatus=ERROR')).toEqual(['Beta Banho e Tosa']);
     expect(await listNames('qualificationStatus=QUALIFIED')).toEqual(['Alpha Pet']);
     expect(await listNames('category=pet%20shop&sort=companyName&order=asc')).toEqual([
       'Alpha Pet',
@@ -107,19 +103,12 @@ describe('Leads listing and details', () => {
       'Alpha Pet',
       'Gamma Vet',
     ]);
-    expect(await listNames('scoreMin=50')).toEqual(['Alpha Pet']);
-    expect(await listNames('scoreMin=30&scoreMax=50')).toEqual(['Beta Banho e Tosa']);
   });
 
   it('sorts by company fields with nulls last and paginates', async () => {
     expect(await listNames('sort=googleRating&order=desc')).toEqual([
       'Alpha Pet',
       'Beta Banho e Tosa',
-      'Gamma Vet',
-    ]);
-    expect(await listNames('sort=score&order=asc')).toEqual([
-      'Beta Banho e Tosa',
-      'Alpha Pet',
       'Gamma Vet',
     ]);
     const page = await admin.get('/api/v1/leads?sort=companyName&order=asc&limit=2&page=2');
@@ -131,9 +120,7 @@ describe('Leads listing and details', () => {
   it('rejects invalid query parameters', async () => {
     expect((await admin.get('/api/v1/leads?sort=deletedAt')).status).toBe(400);
     expect((await admin.get('/api/v1/leads?websiteStatus=ONLINE')).status).toBe(400);
-    expect((await admin.get('/api/v1/leads?trelloStatus=SENT')).status).toBe(400);
-    expect((await admin.get('/api/v1/leads?scoreMin=80&scoreMax=10')).status).toBe(400);
-    expect((await admin.get('/api/v1/leads?scoreMin=101')).status).toBe(400);
+    expect((await admin.get('/api/v1/leads?sort=score')).status).toBe(400);
   });
 
   it('returns lead details with the full company', async () => {
@@ -146,7 +133,8 @@ describe('Leads listing and details', () => {
       facebookUrl: null,
     });
     expect(res.body.company.dedupeKey).toBeUndefined();
-    expect(res.body.scoreReasons).toEqual(['Possui website', 'Boa avaliação no Google']);
+    expect(res.body.score).toBeUndefined();
+    expect(res.body.trelloStatus).toBeUndefined();
     expect(res.body.campaign.name).toBe('Pets Curitiba');
   });
 

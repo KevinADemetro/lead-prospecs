@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BadgeCheck, Building2, Globe, Megaphone, Send, type LucideIcon } from 'lucide-react';
+import { BadgeCheck, Building2, Globe, Megaphone, type LucideIcon } from 'lucide-react';
 import { PERMISSIONS, type DashboardMetrics } from '@app/shared';
 import { dashboardApi } from '@/services/api/dashboard';
 import { isApiError } from '@/services/api/client';
@@ -20,7 +20,6 @@ const METRICS: { key: MetricKey; label: string; icon: LucideIcon }[] = [
   { key: 'companiesFound', label: 'Empresas encontradas', icon: Building2 },
   { key: 'qualifiedLeads', label: 'Leads qualificados', icon: BadgeCheck },
   { key: 'leadsWithoutWebsite', label: 'Leads sem website', icon: Globe },
-  { key: 'leadsSentToTrello', label: 'Leads enviados ao Trello', icon: Send },
 ];
 
 function MetricCard({
@@ -95,7 +94,7 @@ export function DashboardPage() {
         </Card>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {METRICS.map(({ key, label, icon }) => (
               <MetricCard
                 key={key}

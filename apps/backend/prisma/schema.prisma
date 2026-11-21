@@ -52,12 +52,6 @@ enum QualificationStatus {
   DISQUALIFIED
 }
 
-enum TrelloStatus {
-  NOT_SENT
-  CREATED
-  ERROR
-}
-
 model Role {
   id          String    @id @default(uuid()) @db.Uuid
   name        String
@@ -190,12 +184,7 @@ model Lead {
   whatsappStatus      WhatsappStatus      @default(UNKNOWN) @map("whatsapp_status")
   instagramStatus     PresenceStatus      @default(UNKNOWN) @map("instagram_status")
   facebookStatus      PresenceStatus      @default(UNKNOWN) @map("facebook_status")
-  score               Int?
-  scoreReasons        String[]            @map("score_reasons")
   qualificationStatus QualificationStatus @default(PENDING) @map("qualification_status")
-  trelloStatus        TrelloStatus        @default(NOT_SENT) @map("trello_status")
-  trelloCardId        String?             @map("trello_card_id")
-  trelloCardUrl       String?             @map("trello_card_url")
   createdAt           DateTime            @default(now()) @map("created_at")
   updatedAt           DateTime            @updatedAt @map("updated_at")
   deletedAt           DateTime?           @map("deleted_at")

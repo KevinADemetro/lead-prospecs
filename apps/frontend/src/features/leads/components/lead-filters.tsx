@@ -2,9 +2,6 @@ import type { FormEvent } from 'react';
 import { Search } from 'lucide-react';
 import {
   QUALIFICATION_STATUSES,
-  SCORE_MAX,
-  SCORE_MIN,
-  TRELLO_STATUSES,
   WEBSITE_STATUSES,
   WHATSAPP_STATUSES,
   type LeadFilterOptions,
@@ -16,7 +13,6 @@ import { Select } from '@/components/ui/select';
 import type { LeadFilterValues } from '../lead-filters';
 import {
   QUALIFICATION_STATUS_LABELS,
-  TRELLO_STATUS_LABELS,
   WEBSITE_STATUS_LABELS,
   WHATSAPP_STATUS_LABELS,
 } from '../lead-labels';
@@ -129,42 +125,6 @@ export function LeadFilters({ values, options, campaigns, onChange, onSubmit, on
             </option>
           ))}
         </Select>
-        <Select
-          value={values.trelloStatus}
-          onChange={(event) => set('trelloStatus')(event.target.value)}
-          aria-label="Trello"
-        >
-          <option value="">Trello: todos</option>
-          {TRELLO_STATUSES.map((status) => (
-            <option key={status} value={status}>
-              Trello: {TRELLO_STATUS_LABELS[status].label}
-            </option>
-          ))}
-        </Select>
-        <div className="grid grid-cols-2 gap-2">
-          <Input
-            type="number"
-            inputMode="numeric"
-            min={SCORE_MIN}
-            max={SCORE_MAX}
-            step={1}
-            placeholder="Score mín."
-            aria-label="Score mínimo"
-            value={values.scoreMin}
-            onChange={(event) => set('scoreMin')(event.target.value)}
-          />
-          <Input
-            type="number"
-            inputMode="numeric"
-            min={SCORE_MIN}
-            max={SCORE_MAX}
-            step={1}
-            placeholder="Score máx."
-            aria-label="Score máximo"
-            value={values.scoreMax}
-            onChange={(event) => set('scoreMax')(event.target.value)}
-          />
-        </div>
       </div>
       <div className="flex flex-wrap justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onClear}>

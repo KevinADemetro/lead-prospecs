@@ -20,9 +20,6 @@ export type PresenceStatus = (typeof PRESENCE_STATUSES)[number];
 export const QUALIFICATION_STATUSES = ['PENDING', 'QUALIFIED', 'DISQUALIFIED'] as const;
 export type QualificationStatus = (typeof QUALIFICATION_STATUSES)[number];
 
-export const TRELLO_STATUSES = ['NOT_SENT', 'CREATED', 'ERROR'] as const;
-export type TrelloStatus = (typeof TRELLO_STATUSES)[number];
-
 export const LEAD_SORT_FIELDS = [
   'createdAt',
   'companyName',
@@ -30,12 +27,8 @@ export const LEAD_SORT_FIELDS = [
   'city',
   'googleRating',
   'googleReviewCount',
-  'score',
 ] as const;
 export type LeadSortField = (typeof LEAD_SORT_FIELDS)[number];
-
-export const SCORE_MIN = 0;
-export const SCORE_MAX = 100;
 
 export const BRAZILIAN_STATES = [
   'AC',

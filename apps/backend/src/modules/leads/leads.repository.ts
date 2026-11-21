@@ -147,7 +147,6 @@ export class LeadsRepository extends BaseRepository {
     const nullable = { sort: order, nulls: 'last' } as const;
     const primary: Record<LeadSortField, Prisma.LeadOrderByWithRelationInput> = {
       createdAt: { createdAt: order },
-      score: { score: nullable },
       companyName: { company: { name: order } },
       category: { company: { category: nullable } },
       city: { company: { city: nullable } },
@@ -162,13 +161,6 @@ export class LeadsRepository extends BaseRepository {
   private buildWhere(filter: LeadListFilter): Prisma.LeadWhereInput {
     const insensitive = (value: string) => ({ equals: value, mode: 'insensitive' as const });
     const contains = (value: string) => ({ contains: value, mode: 'insensitive' as const });
-    const score: Prisma.IntNullableFilter = {};
-    if (filter.scoreMin !== undefined) {
-      score.gte = filter.scoreMin;
-    }
-    if (filter.scoreMax !== undefined) {
-      score.lte = filter.scoreMax;
-    }
     const searchDigits = filter.search?.replace(/\D/g, '') ?? '';
 
     return {
@@ -193,10 +185,8 @@ export class LeadsRepository extends BaseRepository {
       ...(filter.campaignId ? { campaignId: filter.campaignId } : {}),
       ...(filter.companyId ? { companyId: filter.companyId } : {}),
       ...(filter.qualificationStatus ? { qualificationStatus: filter.qualificationStatus } : {}),
-      ...(filter.trelloStatus ? { trelloStatus: filter.trelloStatus } : {}),
       ...(filter.websiteStatus ? { websiteStatus: filter.websiteStatus } : {}),
       ...(filter.whatsappStatus ? { whatsappStatus: filter.whatsappStatus } : {}),
-      ...(Object.keys(score).length > 0 ? { score } : {}),
     };
   }
 
@@ -248,12 +238,7 @@ export class LeadsRepository extends BaseRepository {
       whatsappStatus: lead.whatsappStatus,
       instagramStatus: lead.instagramStatus,
       facebookStatus: lead.facebookStatus,
-      score: lead.score,
-      scoreReasons: lead.scoreReasons,
       qualificationStatus: lead.qualificationStatus,
-      trelloStatus: lead.trelloStatus,
-      trelloCardId: lead.trelloCardId,
-      trelloCardUrl: lead.trelloCardUrl,
       campaign: lead.campaign,
       createdAt: lead.createdAt,
       updatedAt: lead.updatedAt,
