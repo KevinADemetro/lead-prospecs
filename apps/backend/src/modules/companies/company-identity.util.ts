@@ -63,10 +63,12 @@ export function toCompanyData(input: CompanyInput): CompanyData {
     legalName: input.legalName ?? null,
     cnpj: identity.cnpj,
     category: input.category ?? null,
+    niche: input.niche ?? null,
     phone: input.phone ?? null,
     email: input.email ?? null,
     website: input.website ?? null,
     address: input.address ?? null,
+    neighborhood: input.neighborhood ?? null,
     city: input.city ?? null,
     state: input.state ?? null,
     country: input.country ?? null,
@@ -74,6 +76,7 @@ export function toCompanyData(input: CompanyInput): CompanyData {
     googleMapsUrl: input.googleMapsUrl ?? null,
     instagramUrl: input.instagramUrl ?? null,
     facebookUrl: input.facebookUrl ?? null,
+    openingHours: input.openingHours ?? null,
   };
 }
 

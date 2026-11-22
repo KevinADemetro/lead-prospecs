@@ -100,6 +100,9 @@ function LeadDetails({
         <Field label="Categoria">
           <Value>{company.category}</Value>
         </Field>
+        <Field label="Nicho">
+          <Value>{company.niche}</Value>
+        </Field>
         <Field label="Dor">
           {canUpdate ? (
             <div className="flex flex-col gap-1">
@@ -127,6 +130,9 @@ function LeadDetails({
       <Section title="Localização">
         <Field label="Endereço" wide>
           <Value>{company.address}</Value>
+        </Field>
+        <Field label="Bairro">
+          <Value>{company.neighborhood}</Value>
         </Field>
         <Field label="Cidade">
           <Value>{company.city}</Value>
@@ -186,6 +192,20 @@ function LeadDetails({
           <ExternalLink href={maps} fallback={<Value>{null}</Value>}>
             Ver no Google Maps
           </ExternalLink>
+        </Field>
+      </Section>
+
+      <Section title="Horário">
+        <Field label="Funcionamento" wide>
+          {company.openingHours?.weekdayDescriptions?.length ? (
+            <ul className="list-none space-y-1">
+              {company.openingHours.weekdayDescriptions.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          ) : (
+            <Value>{null}</Value>
+          )}
         </Field>
       </Section>
 

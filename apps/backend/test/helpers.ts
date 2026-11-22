@@ -10,6 +10,7 @@ import { ALL_PERMISSIONS, SYSTEM_ADMIN_ROLE_NAME } from '@app/shared';
 import { AppModule } from '../src/app.module';
 import { EnvService } from '../src/config/env.service';
 import { PasswordService } from '../src/common/security/password.service';
+import { PlacesClient } from '../src/modules/places/places.client';
 import { RolesRepository } from '../src/modules/roles/roles.repository';
 import { UsersRepository } from '../src/modules/users/users.repository';
 
@@ -37,7 +38,13 @@ export async function startTestApp(): Promise<TestApp> {
 
   const moduleRef = await Test.createTestingModule({
     imports: [AppModule],
-  }).compile();
+  })
+    .overrideProvider(PlacesClient)
+    .useValue({
+      searchAll: async () => [],
+      searchText: async () => ({ places: [] }),
+    })
+    .compile();
 
   const app = moduleRef.createNestApplication();
   app.setGlobalPrefix('api/v1');

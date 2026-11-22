@@ -7,7 +7,6 @@ import { campaignsApi } from '@/services/api/campaigns';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { ErrorState } from '@/components/ui/error-state';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
@@ -15,13 +14,12 @@ import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { notify } from '@/lib/swal';
 import { isApiError } from '@/services/api/client';
-import { CAMPAIGN_BOOLEAN_FILTERS, CAMPAIGN_RULES } from '../campaign-labels';
+import { CAMPAIGN_RULES } from '../campaign-labels';
 import {
   campaignFormSchema,
   emptyCampaignFormValues,
   isBrazilianState,
   splitTerms,
-  toCampaignFilters,
   toCampaignFormValues,
   type CampaignFormValues,
 } from '../campaign-form';
@@ -92,7 +90,6 @@ export function CampaignFormPage() {
       city: values.city,
       state: values.state,
       categories: splitTerms(values.categories),
-      filters: toCampaignFilters(values.filters, campaign?.filters),
     };
     try {
       const saved =
@@ -161,17 +158,6 @@ export function CampaignFormPage() {
             >
               <Input {...form.register('categories')} placeholder="Ex.: padaria, confeitaria" />
             </FormField>
-          </Section>
-
-          <Section title="Filtros">
-            <div className="grid gap-3 sm:grid-cols-2">
-              {CAMPAIGN_BOOLEAN_FILTERS.map(({ key, label }) => (
-                <label key={key} className="flex min-h-11 items-center gap-3 text-sm">
-                  <Checkbox {...form.register(`filters.${key}`)} />
-                  {label}
-                </label>
-              ))}
-            </div>
           </Section>
         </fieldset>
 

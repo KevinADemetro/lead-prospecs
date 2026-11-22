@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type { CompanyOpeningHours } from '@app/shared';
 import { Prisma } from '../../generated/prisma/client';
 import { BaseRepository } from '../../common/database/base.repository';
 import { CompanyData, CompanyRecord } from '../../common/database/records';
@@ -62,7 +63,9 @@ export class CompaniesRepository extends BaseRepository {
     data: CompanyData & { dedupeKey: string | null },
   ): Promise<CompanyRecord | null> {
     try {
-      const company = await this.prisma.company.create({ data });
+      const company = await this.prisma.company.create({
+        data: this.toPrismaData(data),
+      });
       return this.toRecord(company);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
@@ -80,9 +83,20 @@ export class CompaniesRepository extends BaseRepository {
     this.assertId(id);
     const company = await this.prisma.company.update({
       where: { id },
-      data: { ...data, deletedAt: null, deletedBy: null },
+      data: { ...this.toPrismaData(data), deletedAt: null, deletedBy: null },
     });
     return this.toRecord(company);
+  }
+
+  private toPrismaData(
+    data: CompanyData & { dedupeKey: string | null },
+  ): Prisma.CompanyUncheckedCreateInput {
+    const { openingHours, ...rest } = data;
+    return {
+      ...rest,
+      openingHours:
+        openingHours === null ? Prisma.JsonNull : (openingHours as Prisma.InputJsonValue),
+    };
   }
 
   private toRecord(company: CompanyRow): CompanyRecord {
@@ -92,10 +106,12 @@ export class CompaniesRepository extends BaseRepository {
       legalName: company.legalName,
       cnpj: company.cnpj,
       category: company.category,
+      niche: company.niche,
       phone: company.phone,
       email: company.email,
       website: company.website,
       address: company.address,
+      neighborhood: company.neighborhood,
       city: company.city,
       state: company.state,
       country: company.country,
@@ -103,6 +119,7 @@ export class CompaniesRepository extends BaseRepository {
       googleMapsUrl: company.googleMapsUrl,
       instagramUrl: company.instagramUrl,
       facebookUrl: company.facebookUrl,
+      openingHours: parseOpeningHours(company.openingHours),
       dedupeKey: company.dedupeKey,
       createdAt: company.createdAt,
       updatedAt: company.updatedAt,
@@ -110,4 +127,20 @@ export class CompaniesRepository extends BaseRepository {
       deletedBy: company.deletedBy,
     };
   }
+}
+
+function parseOpeningHours(value: Prisma.JsonValue | null): CompanyOpeningHours | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+  const record = value as Record<string, unknown>;
+  return {
+    openNow: typeof record.openNow === 'boolean' ? record.openNow : null,
+    weekdayDescriptions: Array.isArray(record.weekdayDescriptions)
+      ? record.weekdayDescriptions.filter((item): item is string => typeof item === 'string')
+      : null,
+    periods: Array.isArray(record.periods)
+      ? (record.periods as CompanyOpeningHours['periods'])
+      : null,
+  };
 }

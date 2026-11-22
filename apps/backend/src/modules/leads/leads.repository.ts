@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LeadSortField } from '@app/shared';
+import { CompanyOpeningHours, LeadSortField } from '@app/shared';
 import { Prisma } from '../../generated/prisma/client';
 import { BaseRepository } from '../../common/database/base.repository';
 import {
@@ -227,10 +227,12 @@ export class LeadsRepository extends BaseRepository {
         legalName: company.legalName,
         cnpj: company.cnpj,
         category: company.category,
+        niche: company.niche,
         phone: company.phone,
         email: company.email,
         website: company.website,
         address: company.address,
+        neighborhood: company.neighborhood,
         city: company.city,
         state: company.state,
         country: company.country,
@@ -238,6 +240,7 @@ export class LeadsRepository extends BaseRepository {
         googleMapsUrl: company.googleMapsUrl,
         instagramUrl: company.instagramUrl,
         facebookUrl: company.facebookUrl,
+        openingHours: parseOpeningHours(company.openingHours),
         dedupeKey: company.dedupeKey,
         createdAt: company.createdAt,
         updatedAt: company.updatedAt,
@@ -266,4 +269,20 @@ export class LeadsRepository extends BaseRepository {
       deletedBy: lead.deletedBy,
     };
   }
+}
+
+function parseOpeningHours(value: Prisma.JsonValue | null): CompanyOpeningHours | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+  const record = value as Record<string, unknown>;
+  return {
+    openNow: typeof record.openNow === 'boolean' ? record.openNow : null,
+    weekdayDescriptions: Array.isArray(record.weekdayDescriptions)
+      ? record.weekdayDescriptions.filter((item): item is string => typeof item === 'string')
+      : null,
+    periods: Array.isArray(record.periods)
+      ? (record.periods as CompanyOpeningHours['periods'])
+      : null,
+  };
 }

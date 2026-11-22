@@ -12,3 +12,4 @@ process.env.INITIAL_ADMIN_PASSWORD = 'ChangeMe!Admin12';
 process.env.APP_NAME = 'Test';
 process.env.ARGON2_MEMORY_COST = '4096';
 process.env.ARGON2_TIME_COST = '2';
+process.env.GOOGLE_PLACES_API_KEY = 'test-google-places-api-key';

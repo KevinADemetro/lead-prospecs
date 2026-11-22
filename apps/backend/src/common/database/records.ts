@@ -1,6 +1,6 @@
 import {
-  CampaignFilters,
   CampaignStatus,
+  CompanyOpeningHours,
   Permission,
   PresenceStatus,
   QualificationStatus,
@@ -84,7 +84,6 @@ export type CampaignRecord = {
   city: string;
   state: string;
   categories: string[];
-  filters: CampaignFilters;
   status: CampaignStatus;
   leadCount: number;
   qualifiedLeadCount: number;
@@ -104,10 +103,12 @@ export type CompanyData = {
   legalName: string | null;
   cnpj: string | null;
   category: string | null;
+  niche: string | null;
   phone: string | null;
   email: string | null;
   website: string | null;
   address: string | null;
+  neighborhood: string | null;
   city: string | null;
   state: string | null;
   country: string | null;
@@ -115,6 +116,7 @@ export type CompanyData = {
   googleMapsUrl: string | null;
   instagramUrl: string | null;
   facebookUrl: string | null;
+  openingHours: CompanyOpeningHours | null;
 };
 
 export type CompanyRecord = CompanyData & {

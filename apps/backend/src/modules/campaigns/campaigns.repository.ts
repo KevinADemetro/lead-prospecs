@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CampaignFilters, CampaignStatus, campaignFiltersSchema } from '@app/shared';
+import { CampaignStatus } from '@app/shared';
 import { Prisma } from '../../generated/prisma/client';
 import { BaseRepository } from '../../common/database/base.repository';
 import { CampaignListFilter, CampaignRecord, SortDirection } from '../../common/database/records';
@@ -17,7 +17,6 @@ export type CampaignWriteData = {
   city: string;
   state: string;
   categories: string[];
-  filters: CampaignFilters;
   status: CampaignStatus;
 };
 
@@ -52,7 +51,7 @@ export class CampaignsRepository extends BaseRepository {
 
   async create(data: CampaignWriteData): Promise<CampaignRecord> {
     const campaign = await this.prisma.campaign.create({
-      data: { ...data, filters: data.filters as Prisma.InputJsonObject },
+      data,
       include: campaignWithLeadCount,
     });
     return this.toRecord(campaign, 0);
@@ -62,13 +61,9 @@ export class CampaignsRepository extends BaseRepository {
     if (!this.isUsableId(id)) {
       return null;
     }
-    const { filters, ...scalar } = data;
     const result = await this.prisma.campaign.updateMany({
       where: { id, ...this.notDeleted() },
-      data: {
-        ...scalar,
-        ...(filters !== undefined ? { filters: filters as Prisma.InputJsonObject } : {}),
-      },
+      data,
     });
     if (result.count === 0) {
       return null;
@@ -140,7 +135,6 @@ export class CampaignsRepository extends BaseRepository {
   }
 
   private toRecord(campaign: CampaignRow, qualifiedLeadCount: number): CampaignRecord {
-    const filters = campaignFiltersSchema.safeParse(campaign.filters);
     return {
       id: campaign.id,
       name: campaign.name,
@@ -149,7 +143,6 @@ export class CampaignsRepository extends BaseRepository {
       city: campaign.city,
       state: campaign.state,
       categories: campaign.categories,
-      filters: filters.success ? filters.data : {},
       status: campaign.status,
       leadCount: campaign._count.leads,
       qualifiedLeadCount,

@@ -34,7 +34,6 @@ describe('Campaigns, companies and leads', () => {
       name: 'Padarias SP',
       location: 'São Paulo, SP',
       categories: ['padaria', 'padaria'],
-      filters: { requirePhone: true },
     });
     expect(created.status).toBe(201);
     expect(created.body.status).toBe('DRAFT');
@@ -66,53 +65,48 @@ describe('Campaigns, companies and leads', () => {
     expect((await http.get(`/api/v1/campaigns/${id}`)).status).toBe(404);
   });
 
-  it('persists city, state and filters and runs campaigns', async () => {
+  it('persists city and state and runs campaigns', async () => {
     const http = admin;
-    const filters = {
-      withoutWebsite: true,
-      requirePhone: true,
-      requireWhatsapp: true,
-      requireGoogleBusiness: true,
-    };
     const created = await mutating(http, 'post', '/api/v1/campaigns', {
       name: 'Academias Recife',
       city: 'Recife',
       state: 'PE',
       categories: ['academia'],
-      filters,
     });
     expect(created.status).toBe(201);
     expect(created.body).toMatchObject({ city: 'Recife', state: 'PE', location: 'Recife, PE' });
     expect(created.body.qualifiedLeadCount).toBe(0);
+    expect(created.body.filters).toBeUndefined();
     const id = created.body.id as string;
-
-    const fetched = await http.get(`/api/v1/campaigns/${id}`);
-    expect(fetched.body.filters).toEqual(filters);
 
     const moved = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
       city: 'Olinda',
-      filters: { requirePhone: true },
     });
     expect(moved.body).toMatchObject({ city: 'Olinda', state: 'PE', location: 'Olinda, PE' });
-    expect(moved.body.filters).toEqual({ requirePhone: true });
 
-    const conflicting = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
-      filters: { requireWebsite: true, withoutWebsite: true },
+    const rejectedFilters = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
+      filters: { requirePhone: true },
     });
-    expect(conflicting.status).toBe(400);
+    expect(rejectedFilters.status).toBe(400);
 
     const running = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
       status: 'RUNNING',
     });
     expect(running.status).toBe(200);
-    expect(running.body.status).toBe('RUNNING');
+    expect(running.body.status).toBe('COMPLETED');
 
     const runAgain = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
       status: 'RUNNING',
     });
     expect(runAgain.status).toBe(409);
 
-    const cancelled = await mutating(http, 'patch', `/api/v1/campaigns/${id}`, {
+    const draft = await mutating(http, 'post', '/api/v1/campaigns', {
+      name: 'Cancelável',
+      city: 'Recife',
+      state: 'PE',
+      categories: ['academia'],
+    });
+    const cancelled = await mutating(http, 'patch', `/api/v1/campaigns/${draft.body.id}`, {
       status: 'CANCELLED',
     });
     expect(cancelled.body.status).toBe('CANCELLED');
@@ -127,12 +121,6 @@ describe('Campaigns, companies and leads', () => {
       status: 'RUNNING',
     });
     expect(extraField.status).toBe(400);
-
-    const badFilter = await mutating(http, 'post', '/api/v1/campaigns', {
-      ...base,
-      filters: { anything: true },
-    });
-    expect(badFilter.status).toBe(400);
 
     const noCategories = await mutating(http, 'post', '/api/v1/campaigns', {
       ...base,

@@ -38,6 +38,7 @@ Edite `.env` com secrets **fortes**:
 
 - `JWT_ACCESS_SECRET` (≥ 32 chars aleatórios)
 - `INITIAL_ADMIN_PASSWORD`
+- `GOOGLE_PLACES_API_KEY` (Places API New — Text Search Enterprise)
 - `CORS_ORIGINS=https://dominio.com`
 - `COOKIE_SECURE=true`
 - `COOKIE_SAMESITE=strict`

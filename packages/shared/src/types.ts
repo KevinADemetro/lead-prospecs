@@ -7,8 +7,6 @@ import type {
   WebsiteStatus,
   WhatsappStatus,
 } from './constants';
-import type { CampaignFilters } from './schemas/campaign';
-
 export type PublicRole = {
   id: string;
   name: string;
@@ -36,7 +34,6 @@ export type PublicCampaign = {
   city: string;
   state: string;
   categories: string[];
-  filters: CampaignFilters;
   status: CampaignStatus;
   /** Each lead links one distinct company to the campaign. */
   leadCount: number;
@@ -55,16 +52,28 @@ export type DashboardMetrics = {
 
 export type PublicCampaignSummary = Pick<PublicCampaign, 'id' | 'name' | 'status'>;
 
+/** Subset of Places `regularOpeningHours` persisted on the company. */
+export type CompanyOpeningHours = {
+  openNow?: boolean | null;
+  weekdayDescriptions?: string[] | null;
+  periods?: Array<{
+    open?: { day?: number; hour?: number; minute?: number } | null;
+    close?: { day?: number; hour?: number; minute?: number } | null;
+  }> | null;
+};
+
 export type PublicCompany = {
   id: string;
   name: string;
   legalName: string | null;
   cnpj: string | null;
   category: string | null;
+  niche: string | null;
   phone: string | null;
   email: string | null;
   website: string | null;
   address: string | null;
+  neighborhood: string | null;
   city: string | null;
   state: string | null;
   country: string | null;
@@ -72,6 +81,7 @@ export type PublicCompany = {
   googleMapsUrl: string | null;
   instagramUrl: string | null;
   facebookUrl: string | null;
+  openingHours: CompanyOpeningHours | null;
   createdAt: string;
   updatedAt: string;
 };

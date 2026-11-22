@@ -27,9 +27,12 @@ const ACTIONS: Record<
   }
 > = {
   run: {
-    confirm: (name) => [`Executar campanha ${name}?`, 'A campanha passará para "Em execução".'],
+    confirm: (name) => [
+      `Executar campanha ${name}?`,
+      'Será feita a busca de empresas no Google Places para as categorias e localização informadas.',
+    ],
     execute: campaignsApi.run,
-    success: 'Campanha enviada para execução',
+    success: 'Campanha executada',
     failure: 'Falha ao executar campanha',
   },
   cancel: {

@@ -11,21 +11,6 @@ const termListSchema = z
   .max(20, 'Informe no máximo 20 itens')
   .transform((values) => [...new Set(values)]);
 
-export const campaignFiltersSchema = z
-  .object({
-    requirePhone: z.boolean().optional(),
-    requireWebsite: z.boolean().optional(),
-    withoutWebsite: z.boolean().optional(),
-    requireWhatsapp: z.boolean().optional(),
-    requireGoogleBusiness: z.boolean().optional(),
-    maxResults: z.number().int().min(1).max(500).optional(),
-  })
-  .strict()
-  .refine((filters) => !(filters.requireWebsite && filters.withoutWebsite), {
-    message: 'Filtros "com website" e "sem website" são excludentes',
-    path: ['withoutWebsite'],
-  });
-
 export const campaignFieldSchemas = {
   name: z.string().trim().min(3, 'Nome deve ter pelo menos 3 caracteres').max(NAME_MAX_LENGTH),
   description: z.string().trim().max(500, 'Descrição deve ter no máximo 500 caracteres'),
@@ -35,7 +20,6 @@ export const campaignFieldSchemas = {
   categories: termListSchema.refine((values) => values.length > 0, {
     message: 'Informe ao menos uma categoria',
   }),
-  filters: campaignFiltersSchema,
 };
 
 /** Campaigns created with city/state get `location` derived as "City, UF". */
@@ -50,7 +34,6 @@ export const createCampaignSchema = z
     location: campaignFieldSchemas.location.optional(),
     city: campaignFieldSchemas.city.optional(),
     state: campaignFieldSchemas.state.optional(),
-    filters: campaignFieldSchemas.filters.default({}),
   })
   .strict()
   .refine((value) => Boolean(value.city || value.location), {
@@ -68,7 +51,6 @@ export const updateCampaignSchema = z
     city: campaignFieldSchemas.city.optional(),
     state: campaignFieldSchemas.state.optional(),
     categories: campaignFieldSchemas.categories.optional(),
-    filters: campaignFieldSchemas.filters.optional(),
     status: z.enum(CAMPAIGN_STATUS_TRANSITIONS).optional(),
   })
   .strict()
@@ -80,7 +62,6 @@ export const campaignListQuerySchema = paginationQuerySchema.extend({
   status: campaignStatusSchema.optional(),
 });
 
-export type CampaignFilters = z.infer<typeof campaignFiltersSchema>;
 export type CreateCampaignInput = z.infer<typeof createCampaignSchema>;
 export type UpdateCampaignInput = z.infer<typeof updateCampaignSchema>;
 export type CampaignListQuery = z.infer<typeof campaignListQuerySchema>;

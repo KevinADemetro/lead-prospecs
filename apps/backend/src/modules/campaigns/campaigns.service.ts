@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -11,6 +12,7 @@ import {
   UpdateCampaignInput,
 } from '@app/shared';
 import { CampaignsRepository } from './campaigns.repository';
+import { CampaignRunnerService } from './campaign-runner.service';
 import { AuthContext } from '../../common/types/auth-context';
 import { toPublicCampaign } from '../../common/mappers/public.mapper';
 import { CampaignListFilter, CampaignRecord } from '../../common/database/records';
@@ -27,7 +29,12 @@ const RUNNABLE_STATUSES: CampaignRecord['status'][] = ['DRAFT', 'FAILED'];
 
 @Injectable()
 export class CampaignsService {
-  constructor(private readonly campaigns: CampaignsRepository) {}
+  private readonly logger = new Logger(CampaignsService.name);
+
+  constructor(
+    private readonly campaigns: CampaignsRepository,
+    private readonly runner: CampaignRunnerService,
+  ) {}
 
   async list(query: CampaignListQuery) {
     const filter = this.buildFilter(query);
@@ -63,7 +70,6 @@ export class CampaignsService {
       city,
       state,
       categories: input.categories,
-      filters: input.filters,
       status: 'DRAFT',
     });
     return toPublicCampaign(campaign);
@@ -89,6 +95,11 @@ export class CampaignsService {
       }
       config.location = formatCampaignLocation(city, state);
     }
+
+    if (status === 'RUNNING') {
+      return this.execute(campaign, config);
+    }
+
     const updated = await this.campaigns.updateById(id, {
       ...config,
       ...(status ? { status } : {}),
@@ -105,6 +116,44 @@ export class CampaignsService {
       throw new ConflictException('Cancele a campanha antes de excluí-la');
     }
     await this.campaigns.softDelete(id, actor.id);
+  }
+
+  private async execute(
+    campaign: CampaignRecord,
+    config: Omit<UpdateCampaignInput, 'status'>,
+  ) {
+    const location = config.location ?? campaign.location;
+    const city = config.city ?? campaign.city;
+    if (!city && !location) {
+      throw new BadRequestException('Informe a cidade antes de executar a campanha');
+    }
+
+    const running = await this.campaigns.updateById(campaign.id, {
+      ...config,
+      status: 'RUNNING',
+    });
+    if (!running) {
+      throw new NotFoundException('Recurso não encontrado');
+    }
+
+    try {
+      const result = await this.runner.run(running);
+      this.logger.log(
+        `Campaign ${campaign.id} completed with ${result.imported} place import(s)`,
+      );
+      const completed = await this.campaigns.updateById(campaign.id, { status: 'COMPLETED' });
+      if (!completed) {
+        throw new NotFoundException('Recurso não encontrado');
+      }
+      return toPublicCampaign(completed);
+    } catch (error) {
+      this.logger.error(
+        `Campaign ${campaign.id} failed during Places prospecting`,
+        error instanceof Error ? error.stack : error,
+      );
+      await this.campaigns.updateById(campaign.id, { status: 'FAILED' });
+      throw error;
+    }
   }
 
   private buildFilter(query: CampaignListQuery): CampaignListFilter {

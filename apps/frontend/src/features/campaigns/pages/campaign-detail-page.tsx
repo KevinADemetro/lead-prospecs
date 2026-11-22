@@ -9,7 +9,6 @@ import { Card } from '@/components/ui/card';
 import { ErrorState } from '@/components/ui/error-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/stores/auth-context';
-import { describeCampaignFilters } from '../campaign-labels';
 import { CampaignActions } from '../components/campaign-actions';
 import { CampaignStatusBadge } from '../components/campaign-status-badge';
 
@@ -97,8 +96,6 @@ export function CampaignDetailPage() {
     );
   }
 
-  const filters = describeCampaignFilters(campaign.filters);
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -149,9 +146,6 @@ export function CampaignDetailPage() {
           <Field label="Local">{campaign.location}</Field>
           <Field label="Categorias">
             <TagList items={campaign.categories} empty="Nenhuma categoria" />
-          </Field>
-          <Field label="Filtros">
-            <TagList items={filters} empty="Nenhum filtro aplicado" />
           </Field>
           <Field label="Criada em">{new Date(campaign.createdAt).toLocaleString()}</Field>
         </dl>
