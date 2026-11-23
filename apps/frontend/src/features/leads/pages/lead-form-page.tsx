@@ -41,6 +41,8 @@ export function LeadFormPage() {
   const { hasPermission } = useAuth();
   const canUpdate = hasPermission(PERMISSIONS.LEADS_UPDATE);
   const canReadCampaigns = hasPermission(PERMISSIONS.CAMPAIGNS_READ);
+  const canCreateOutreach = hasPermission(PERMISSIONS.OUTREACH_CREATE);
+  const canReadOutreach = hasPermission(PERMISSIONS.OUTREACH_READ);
 
   const [lead, setLead] = useState<PublicLeadDetail | null>(null);
   const [painPoints, setPainPoints] = useState(EMPTY_PAIN_POINTS);
@@ -112,6 +114,9 @@ export function LeadFormPage() {
   }
 
   const disabled = !canUpdate || saving;
+  const canStartOutreach =
+    !lead.outreachId &&
+    (lead.qualificationStatus === 'QUALIFIED' || lead.qualificationStatus === 'AUTO_QUALIFIED');
 
   return (
     <div className="flex flex-col gap-4">
@@ -132,6 +137,15 @@ export function LeadFormPage() {
             )}
           </p>
         </div>
+        {lead.outreachId && canReadOutreach ? (
+          <Link to={`/outreach/${lead.outreachId}`}>
+            <Button variant="secondary">Ver abordagem</Button>
+          </Link>
+        ) : canStartOutreach && canCreateOutreach ? (
+          <Link to={`/outreach/new?leadId=${lead.id}`}>
+            <Button>Iniciar abordagem</Button>
+          </Link>
+        ) : null}
       </div>
 
       <Card title={canUpdate ? 'Editar lead' : 'Detalhes do lead'}>

@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BadgeCheck, Building2, Globe, Megaphone, type LucideIcon } from 'lucide-react';
+import {
+  BadgeCheck,
+  Building2,
+  Globe,
+  Megaphone,
+  MessageCircle,
+  type LucideIcon,
+} from 'lucide-react';
 import { PERMISSIONS, type DashboardMetrics } from '@app/shared';
 import { dashboardApi } from '@/services/api/dashboard';
 import { isApiError } from '@/services/api/client';
@@ -15,24 +22,37 @@ import { CampaignStatusBadge } from '@/features/campaigns/components/campaign-st
 
 type MetricKey = Exclude<keyof DashboardMetrics, 'recentCampaigns'>;
 
-const METRICS: { key: MetricKey; label: string; icon: LucideIcon }[] = [
+const METRICS: {
+  key: MetricKey;
+  label: string;
+  icon: LucideIcon;
+  to?: string;
+}[] = [
   { key: 'totalCampaigns', label: 'Total de campanhas', icon: Megaphone },
   { key: 'companiesFound', label: 'Empresas encontradas', icon: Building2 },
   { key: 'qualifiedLeads', label: 'Leads qualificados', icon: BadgeCheck },
   { key: 'leadsWithoutWebsite', label: 'Leads sem website', icon: Globe },
+  {
+    key: 'followUpsToday',
+    label: 'Follow-ups do dia',
+    icon: MessageCircle,
+    to: '/outreach?followUpToday=true',
+  },
 ];
 
 function MetricCard({
   label,
   icon: Icon,
   value,
+  to,
 }: {
   label: string;
   icon: LucideIcon;
   value?: number;
+  to?: string;
 }) {
-  return (
-    <Card>
+  const content = (
+    <>
       <div className="flex items-start justify-between gap-3">
         <p className="text-sm text-muted">{label}</p>
         <span className="rounded-lg bg-primary/10 p-2 text-primary">
@@ -44,8 +64,20 @@ function MetricCard({
       ) : (
         <p className="mt-2 text-3xl font-semibold">{value.toLocaleString()}</p>
       )}
-    </Card>
+    </>
   );
+
+  if (to) {
+    return (
+      <Card>
+        <Link to={to} className="block hover:opacity-90">
+          {content}
+        </Link>
+      </Card>
+    );
+  }
+
+  return <Card>{content}</Card>;
 }
 
 export function DashboardPage() {
@@ -94,12 +126,17 @@ export function DashboardPage() {
         </Card>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {METRICS.map(({ key, label, icon }) => (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+            {METRICS.map(({ key, label, icon, to }) => (
               <MetricCard
                 key={key}
                 label={label}
                 icon={icon}
+                to={
+                  key === 'followUpsToday' && hasPermission(PERMISSIONS.OUTREACH_READ)
+                    ? to
+                    : undefined
+                }
                 value={loading ? undefined : metrics?.[key]}
               />
             ))}

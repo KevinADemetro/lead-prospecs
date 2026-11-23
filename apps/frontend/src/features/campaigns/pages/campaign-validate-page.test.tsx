@@ -44,6 +44,7 @@ function leadSummary(id: string, name: string): PublicLead {
     companyId: `c-${id}`,
     campaignId: 'camp-1',
     painPointId: null,
+    outreachId: null,
     websiteStatus: 'NOT_FOUND',
     qualificationStatus: 'PENDING',
     priority: false,

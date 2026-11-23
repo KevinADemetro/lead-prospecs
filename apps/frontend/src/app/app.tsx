@@ -20,6 +20,8 @@ import { LeadsPage } from '@/features/leads/pages/leads-page';
 import { LeadFormPage } from '@/features/leads/pages/lead-form-page';
 import { PainPointsPage } from '@/features/pain-points/pages/pain-points-page';
 import { PainPointFormPage } from '@/features/pain-points/pages/pain-point-form-page';
+import { OutreachPage } from '@/features/outreach/pages/outreach-page';
+import { OutreachFormPage } from '@/features/outreach/pages/outreach-form-page';
 import { ForbiddenPage, NotFoundPage, ServerErrorPage } from '@/features/errors/pages/error-pages';
 
 const router = createBrowserRouter([
@@ -96,6 +98,18 @@ const router = createBrowserRouter([
           {
             element: <PermissionGuard permission={PERMISSIONS.PAIN_POINTS_UPDATE} />,
             children: [{ path: '/pain-points/:id', element: <PainPointFormPage /> }],
+          },
+          {
+            element: <PermissionGuard permission={PERMISSIONS.OUTREACH_READ} />,
+            children: [{ path: '/outreach', element: <OutreachPage /> }],
+          },
+          {
+            element: <PermissionGuard permission={PERMISSIONS.OUTREACH_CREATE} />,
+            children: [{ path: '/outreach/new', element: <OutreachFormPage /> }],
+          },
+          {
+            element: <PermissionGuard permission={PERMISSIONS.OUTREACH_READ} />,
+            children: [{ path: '/outreach/:id', element: <OutreachFormPage /> }],
           },
         ],
       },

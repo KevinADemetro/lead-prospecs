@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ExternalLink as ExternalLinkIcon, Pencil } from 'lucide-react';
+import { ExternalLink as ExternalLinkIcon, MessageCircle, Pencil } from 'lucide-react';
 import type {
   LeadFilterOptions,
   LeadListQuery,
@@ -75,6 +75,16 @@ export function LeadsPage() {
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const canReadCampaigns = hasPermission(PERMISSIONS.CAMPAIGNS_READ);
   const canUpdate = hasPermission(PERMISSIONS.LEADS_UPDATE);
+  const canCreateOutreach = hasPermission(PERMISSIONS.OUTREACH_CREATE);
+  const canReadOutreach = hasPermission(PERMISSIONS.OUTREACH_READ);
+
+  function canStartOutreach(lead: PublicLead) {
+    return (
+      !lead.outreachId &&
+      (lead.qualificationStatus === 'QUALIFIED' ||
+        lead.qualificationStatus === 'AUTO_QUALIFIED')
+    );
+  }
 
   const { page, limit, sort, order, ...activeFilters } = query;
   const filtered = hasActiveFilters(activeFilters);
@@ -330,16 +340,37 @@ export function LeadsPage() {
                 {
                   key: 'actions',
                   header: 'Ações',
-                  className: 'w-24',
+                  className: 'w-40',
                   render: (row) => (
-                    <Link
-                      to={`/leads/${row.id}`}
-                      className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                      aria-label={`${canUpdate ? 'Editar' : 'Ver'} ${row.company.name}`}
-                    >
-                      <Pencil className="h-3.5 w-3.5" aria-hidden />
-                      {canUpdate ? 'Editar' : 'Ver'}
-                    </Link>
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                      {row.outreachId && canReadOutreach ? (
+                        <Link
+                          to={`/outreach/${row.outreachId}`}
+                          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                          aria-label={`Ver abordagem de ${row.company.name}`}
+                        >
+                          <MessageCircle className="h-3.5 w-3.5" aria-hidden />
+                          Abordagem
+                        </Link>
+                      ) : canStartOutreach(row) && canCreateOutreach ? (
+                        <Link
+                          to={`/outreach/new?leadId=${row.id}`}
+                          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                          aria-label={`Iniciar abordagem de ${row.company.name}`}
+                        >
+                          <MessageCircle className="h-3.5 w-3.5" aria-hidden />
+                          Abordar
+                        </Link>
+                      ) : null}
+                      <Link
+                        to={`/leads/${row.id}`}
+                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                        aria-label={`${canUpdate ? 'Editar' : 'Ver'} ${row.company.name}`}
+                      >
+                        <Pencil className="h-3.5 w-3.5" aria-hidden />
+                        {canUpdate ? 'Editar' : 'Ver'}
+                      </Link>
+                    </div>
                   ),
                 },
               ]}

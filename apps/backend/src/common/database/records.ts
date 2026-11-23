@@ -1,6 +1,8 @@
 import {
   CampaignStatus,
   CompanyOpeningHours,
+  OutreachMessageStep,
+  OutreachStatus,
   Permission,
   QualificationStatus,
   UserStatus,
@@ -145,6 +147,7 @@ export type LeadRecord = {
   companyId: string;
   campaignId: string;
   painPointId: string | null;
+  outreachId: string | null;
   websiteStatus: WebsiteStatus;
   qualificationStatus: QualificationStatus;
   priority: boolean;
@@ -156,6 +159,47 @@ export type LeadRecord = {
   updatedAt: Date;
   deletedAt: Date | null;
   deletedBy: string | null;
+};
+
+export type OutreachMessageRecord = {
+  id: string;
+  sentAt: Date;
+  message: string;
+  step: OutreachMessageStep;
+  createdAt: Date;
+};
+
+export type OutreachLeadSummaryRecord = {
+  id: string;
+  qualificationStatus: QualificationStatus;
+  company: {
+    id: string;
+    name: string;
+    phone: string | null;
+    whatsappUrl: string | null;
+  };
+  campaign: CampaignSummaryRecord;
+};
+
+export type OutreachRecord = {
+  id: string;
+  leadId: string;
+  status: OutreachStatus;
+  startedAt: Date;
+  nextFollowUpAt: Date | null;
+  messages: OutreachMessageRecord[];
+  lead: OutreachLeadSummaryRecord;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+  deletedBy: string | null;
+};
+
+export type OutreachListFilter = {
+  leadId?: string;
+  search?: string;
+  status?: OutreachStatus[];
+  followUpToday?: boolean;
 };
 
 export type LeadDetailRecord = Omit<LeadRecord, 'company'> & {

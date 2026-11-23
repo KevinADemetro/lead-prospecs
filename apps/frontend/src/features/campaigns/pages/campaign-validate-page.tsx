@@ -108,7 +108,7 @@ export function CampaignValidatePage() {
               return { leadId: current };
             }
             const firstPending = findFirstPendingIndex(leads);
-            if (firstPending < 0) return {};
+            if (firstPending < 0) return new URLSearchParams();
             return { leadId: leads[firstPending]!.id };
           },
           { replace: true },

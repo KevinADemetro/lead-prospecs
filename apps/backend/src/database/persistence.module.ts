@@ -7,6 +7,7 @@ import { CampaignsRepository } from '../modules/campaigns/campaigns.repository';
 import { CompaniesRepository } from '../modules/companies/companies.repository';
 import { LeadsRepository } from '../modules/leads/leads.repository';
 import { PainPointsRepository } from '../modules/pain-points/pain-points.repository';
+import { OutreachRepository } from '../modules/outreach/outreach.repository';
 import { DashboardRepository } from '../modules/dashboard/dashboard.repository';
 
 const repositories = [
@@ -17,6 +18,7 @@ const repositories = [
   CompaniesRepository,
   LeadsRepository,
   PainPointsRepository,
+  OutreachRepository,
   DashboardRepository,
 ];
 

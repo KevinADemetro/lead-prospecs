@@ -6,6 +6,8 @@ import {
   PublicPainPoint,
   PublicLead,
   PublicLeadDetail,
+  PublicOutreach,
+  resolveWhatsappLink,
 } from '@app/shared';
 import {
   CampaignRecord,
@@ -13,6 +15,7 @@ import {
   PainPointRecord,
   LeadDetailRecord,
   LeadRecord,
+  OutreachRecord,
   RoleRecord,
   UserRecord,
 } from '../database/records';
@@ -127,6 +130,7 @@ export function toPublicLead(lead: LeadRecord): PublicLead {
     companyId: lead.companyId,
     campaignId: lead.campaignId,
     painPointId: lead.painPointId,
+    outreachId: lead.outreachId,
     websiteStatus: lead.websiteStatus,
     qualificationStatus: lead.qualificationStatus,
     priority: lead.priority,
@@ -136,6 +140,38 @@ export function toPublicLead(lead: LeadRecord): PublicLead {
     campaign: lead.campaign,
     createdAt: lead.createdAt.toISOString(),
     updatedAt: lead.updatedAt.toISOString(),
+  };
+}
+
+export function toPublicOutreach(outreach: OutreachRecord): PublicOutreach {
+  const { company } = outreach.lead;
+  return {
+    id: outreach.id,
+    leadId: outreach.leadId,
+    status: outreach.status,
+    startedAt: outreach.startedAt.toISOString(),
+    nextFollowUpAt: outreach.nextFollowUpAt?.toISOString() ?? null,
+    messages: outreach.messages.map((message) => ({
+      id: message.id,
+      sentAt: message.sentAt.toISOString(),
+      message: message.message,
+      step: message.step,
+      createdAt: message.createdAt.toISOString(),
+    })),
+    lead: {
+      id: outreach.lead.id,
+      qualificationStatus: outreach.lead.qualificationStatus,
+      company: {
+        id: company.id,
+        name: company.name,
+        phone: company.phone,
+        whatsappUrl: company.whatsappUrl,
+      },
+      campaign: outreach.lead.campaign,
+    },
+    whatsappLink: resolveWhatsappLink(company.whatsappUrl, company.phone),
+    createdAt: outreach.createdAt.toISOString(),
+    updatedAt: outreach.updatedAt.toISOString(),
   };
 }
 

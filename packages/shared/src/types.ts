@@ -1,6 +1,8 @@
 import type { Permission } from './permissions';
 import type {
   CampaignStatus,
+  OutreachMessageStep,
+  OutreachStatus,
   QualificationStatus,
   UserStatus,
   WebsiteStatus,
@@ -45,6 +47,8 @@ export type DashboardMetrics = {
   companiesFound: number;
   qualifiedLeads: number;
   leadsWithoutWebsite: number;
+  /** WAITING_REPLY outreach with nextFollowUpAt on today's UTC day. */
+  followUpsToday: number;
   recentCampaigns: PublicCampaign[];
 };
 
@@ -111,6 +115,8 @@ export type PublicLead = {
   companyId: string;
   campaignId: string;
   painPointId: string | null;
+  /** Active outreach for this lead, if any (1:1). */
+  outreachId: string | null;
   websiteStatus: WebsiteStatus;
   qualificationStatus: QualificationStatus;
   priority: boolean;
@@ -120,6 +126,39 @@ export type PublicLead = {
   campaign: PublicCampaignSummary;
   createdAt: string;
   updatedAt: string;
+};
+
+export type PublicOutreachMessage = {
+  id: string;
+  sentAt: string;
+  message: string;
+  step: OutreachMessageStep;
+  createdAt: string;
+};
+
+export type PublicOutreachLeadSummary = {
+  id: string;
+  qualificationStatus: QualificationStatus;
+  company: Pick<PublicCompany, 'id' | 'name' | 'phone' | 'whatsappUrl'>;
+  campaign: PublicCampaignSummary;
+};
+
+export type PublicOutreach = {
+  id: string;
+  leadId: string;
+  status: OutreachStatus;
+  startedAt: string;
+  nextFollowUpAt: string | null;
+  messages: PublicOutreachMessage[];
+  lead: PublicOutreachLeadSummary;
+  /** Resolved WhatsApp link (whatsappUrl or wa.me from phone). */
+  whatsappLink: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MarkNoReplyResult = {
+  updatedCount: number;
 };
 
 export type PublicLeadDetail = Omit<PublicLead, 'company'> & {

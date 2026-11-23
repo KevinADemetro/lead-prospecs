@@ -9,3 +9,5 @@ export * from './schemas/role';
 export * from './schemas/campaign';
 export * from './schemas/pain-point';
 export * from './schemas/lead';
+export * from './schemas/outreach';
+export * from './whatsapp';

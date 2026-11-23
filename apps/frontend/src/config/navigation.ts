@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Megaphone,
+  MessageCircle,
   MessageCircleWarning,
   Shield,
   Target,
@@ -46,6 +47,13 @@ export const navigation: NavItem[] = [
     icon: MessageCircleWarning,
     to: '/pain-points',
     permission: PERMISSIONS.PAIN_POINTS_READ,
+  },
+  {
+    id: 'outreach',
+    label: 'Abordagens',
+    icon: MessageCircle,
+    to: '/outreach',
+    permission: PERMISSIONS.OUTREACH_READ,
   },
   {
     id: 'users',

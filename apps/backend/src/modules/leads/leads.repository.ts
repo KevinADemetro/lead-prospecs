@@ -25,6 +25,7 @@ const leadWithRelations = {
   },
   campaign: { select: { id: true, name: true, status: true } },
   painPoint: { select: { id: true, name: true } },
+  outreach: { select: { id: true, deletedAt: true } },
 } as const;
 type LeadRow = Prisma.LeadGetPayload<{ include: typeof leadWithRelations }>;
 
@@ -32,6 +33,7 @@ const leadWithDetail = {
   company: true,
   campaign: { select: { id: true, name: true, status: true } },
   painPoint: { select: { id: true, name: true } },
+  outreach: { select: { id: true, deletedAt: true } },
 } as const;
 type LeadDetailRow = Prisma.LeadGetPayload<{ include: typeof leadWithDetail }>;
 
@@ -268,6 +270,7 @@ export class LeadsRepository extends BaseRepository {
       companyId: lead.companyId,
       campaignId: lead.campaignId,
       painPointId: lead.painPointId,
+      outreachId: lead.outreach && !lead.outreach.deletedAt ? lead.outreach.id : null,
       websiteStatus: lead.websiteStatus,
       qualificationStatus: lead.qualificationStatus,
       priority: lead.priority,

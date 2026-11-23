@@ -41,6 +41,21 @@ enum QualificationStatus {
   AUTO_QUALIFIED
 }
 
+// Values mirrored in packages/shared/src/constants.ts.
+enum OutreachStatus {
+  WAITING_REPLY
+  IN_CONVERSATION
+  PROPOSAL_DECLINED
+  NO_REPLY
+}
+
+enum OutreachMessageStep {
+  INITIAL
+  FOLLOW_UP_D3
+  FOLLOW_UP_D7
+  FOLLOW_UP_D14
+}
+
 model Role {
   id          String    @id @default(uuid()) @db.Uuid
   name        String
@@ -186,6 +201,7 @@ model Lead {
   company             Company             @relation(fields: [companyId], references: [id], onDelete: Restrict)
   campaign            Campaign            @relation(fields: [campaignId], references: [id], onDelete: Restrict)
   painPoint           PainPoint?          @relation(fields: [painPointId], references: [id], onDelete: Restrict)
+  outreach            Outreach?
   websiteStatus       WebsiteStatus       @default(UNKNOWN) @map("website_status")
   qualificationStatus QualificationStatus @default(PENDING) @map("qualification_status")
   priority            Boolean             @default(false)
@@ -202,4 +218,37 @@ model Lead {
   @@index([priority])
   @@index([deletedAt, createdAt])
   @@map("leads")
+}
+
+// At most one outreach per lead (unique leadId, including soft-deleted rows).
+model Outreach {
+  id             String            @id @default(uuid()) @db.Uuid
+  leadId         String            @unique @map("lead_id") @db.Uuid
+  lead           Lead              @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  status         OutreachStatus    @default(WAITING_REPLY)
+  startedAt      DateTime          @map("started_at")
+  nextFollowUpAt DateTime?         @map("next_follow_up_at")
+  messages       OutreachMessage[]
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+  deletedAt      DateTime?         @map("deleted_at")
+  deletedBy      String?           @db.Uuid @map("deleted_by")
+
+  @@index([status, nextFollowUpAt])
+  @@index([deletedAt, createdAt])
+  @@map("outreach")
+}
+
+model OutreachMessage {
+  id         String              @id @default(uuid()) @db.Uuid
+  outreachId String              @map("outreach_id") @db.Uuid
+  outreach   Outreach            @relation(fields: [outreachId], references: [id], onDelete: Cascade)
+  sentAt     DateTime            @map("sent_at")
+  message    String              @db.Text
+  step       OutreachMessageStep
+  createdAt  DateTime            @default(now()) @map("created_at")
+
+  @@unique([outreachId, step])
+  @@index([outreachId, sentAt])
+  @@map("outreach_messages")
 }

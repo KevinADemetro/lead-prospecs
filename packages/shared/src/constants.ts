@@ -31,6 +31,44 @@ export const LEAD_SORT_FIELDS = [
 ] as const;
 export type LeadSortField = (typeof LEAD_SORT_FIELDS)[number];
 
+/** Outreach approach lifecycle — mirrored in Prisma enum OutreachStatus. */
+export const OUTREACH_STATUSES = [
+  'WAITING_REPLY',
+  'IN_CONVERSATION',
+  'PROPOSAL_DECLINED',
+  'NO_REPLY',
+] as const;
+export type OutreachStatus = (typeof OUTREACH_STATUSES)[number];
+
+/** Message steps in the D0 / D+3 / D+7 / D+14 sequence. */
+export const OUTREACH_MESSAGE_STEPS = [
+  'INITIAL',
+  'FOLLOW_UP_D3',
+  'FOLLOW_UP_D7',
+  'FOLLOW_UP_D14',
+] as const;
+export type OutreachMessageStep = (typeof OUTREACH_MESSAGE_STEPS)[number];
+
+export const OUTREACH_SORT_FIELDS = [
+  'createdAt',
+  'startedAt',
+  'nextFollowUpAt',
+  'companyName',
+] as const;
+export type OutreachSortField = (typeof OUTREACH_SORT_FIELDS)[number];
+
+/** Days after D0 for each automatic follow-up. */
+export const OUTREACH_FOLLOW_UP_DAYS = {
+  FOLLOW_UP_D3: 3,
+  FOLLOW_UP_D7: 7,
+  FOLLOW_UP_D14: 14,
+} as const;
+
+/** Days after D+14 with no reply before bulk-marking NO_REPLY (D0 + 21). */
+export const OUTREACH_NO_REPLY_GRACE_DAYS = 7;
+
+export const OUTREACH_MESSAGE_MAX_LENGTH = 5000;
+
 export const BRAZILIAN_STATES = [
   'AC',
   'AL',

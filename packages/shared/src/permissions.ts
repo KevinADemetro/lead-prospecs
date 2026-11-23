@@ -18,6 +18,10 @@ export const PERMISSIONS = {
   PAIN_POINTS_CREATE: 'pain-points.create',
   PAIN_POINTS_UPDATE: 'pain-points.update',
   PAIN_POINTS_DELETE: 'pain-points.delete',
+  OUTREACH_READ: 'outreach.read',
+  OUTREACH_CREATE: 'outreach.create',
+  OUTREACH_UPDATE: 'outreach.update',
+  OUTREACH_DELETE: 'outreach.delete',
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -67,6 +71,15 @@ export const PERMISSION_GROUPS: { resource: string; actions: Permission[] }[] = 
       PERMISSIONS.PAIN_POINTS_CREATE,
       PERMISSIONS.PAIN_POINTS_UPDATE,
       PERMISSIONS.PAIN_POINTS_DELETE,
+    ],
+  },
+  {
+    resource: 'outreach',
+    actions: [
+      PERMISSIONS.OUTREACH_READ,
+      PERMISSIONS.OUTREACH_CREATE,
+      PERMISSIONS.OUTREACH_UPDATE,
+      PERMISSIONS.OUTREACH_DELETE,
     ],
   },
 ];
