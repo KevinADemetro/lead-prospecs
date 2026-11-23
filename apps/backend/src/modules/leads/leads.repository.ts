@@ -217,7 +217,6 @@ export class LeadsRepository extends BaseRepository {
         ? { qualificationStatus: { in: filter.qualificationStatus } }
         : {}),
       ...(filter.websiteStatus ? { websiteStatus: filter.websiteStatus } : {}),
-      ...(filter.whatsappStatus ? { whatsappStatus: filter.whatsappStatus } : {}),
       ...(filter.priority !== undefined ? { priority: filter.priority } : {}),
     };
   }
@@ -270,9 +269,6 @@ export class LeadsRepository extends BaseRepository {
       campaignId: lead.campaignId,
       dorId: lead.dorId,
       websiteStatus: lead.websiteStatus,
-      whatsappStatus: lead.whatsappStatus,
-      instagramStatus: lead.instagramStatus,
-      facebookStatus: lead.facebookStatus,
       qualificationStatus: lead.qualificationStatus,
       priority: lead.priority,
       notes: lead.notes,

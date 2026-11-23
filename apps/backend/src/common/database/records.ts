@@ -2,11 +2,9 @@ import {
   CampaignStatus,
   CompanyOpeningHours,
   Permission,
-  PresenceStatus,
   QualificationStatus,
   UserStatus,
   WebsiteStatus,
-  WhatsappStatus,
 } from '@app/shared';
 
 export type RoleRecord = {
@@ -148,9 +146,6 @@ export type LeadRecord = {
   campaignId: string;
   dorId: string | null;
   websiteStatus: WebsiteStatus;
-  whatsappStatus: WhatsappStatus;
-  instagramStatus: PresenceStatus;
-  facebookStatus: PresenceStatus;
   qualificationStatus: QualificationStatus;
   priority: boolean;
   notes: string | null;
@@ -176,7 +171,6 @@ export type LeadListFilter = {
   /** When set, matches leads whose status is any of the given values. */
   qualificationStatus?: QualificationStatus[];
   websiteStatus?: WebsiteStatus;
-  whatsappStatus?: WhatsappStatus;
   priority?: boolean;
   category?: string;
   city?: string;

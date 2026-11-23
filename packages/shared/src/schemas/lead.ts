@@ -7,7 +7,6 @@ import {
   NAME_MAX_LENGTH,
   QUALIFICATION_STATUSES,
   WEBSITE_STATUSES,
-  WHATSAPP_STATUSES,
 } from '../constants';
 import { entityIdSchema } from './common';
 import { paginationQuerySchema } from './pagination';
@@ -15,7 +14,6 @@ import { paginationQuerySchema } from './pagination';
 export const qualificationStatusSchema = z.enum(QUALIFICATION_STATUSES);
 export const manualQualificationStatusSchema = z.enum(MANUAL_QUALIFICATION_STATUSES);
 export const websiteStatusSchema = z.enum(WEBSITE_STATUSES);
-export const whatsappStatusSchema = z.enum(WHATSAPP_STATUSES);
 
 /** Query-string booleans arrive as "true"/"false"; reject other values. */
 const booleanQuerySchema = z
@@ -58,7 +56,6 @@ export const leadListQuerySchema = paginationQuerySchema.extend({
   dorId: entityIdSchema.optional(),
   qualificationStatus: queryEnumArraySchema(QUALIFICATION_STATUSES),
   websiteStatus: websiteStatusSchema.optional(),
-  whatsappStatus: whatsappStatusSchema.optional(),
   priority: booleanQuerySchema,
   category: z.string().trim().min(1).max(NAME_MAX_LENGTH).optional(),
   city: z.string().trim().min(1).max(120).optional(),

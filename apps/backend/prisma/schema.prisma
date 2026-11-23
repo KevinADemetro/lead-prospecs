@@ -34,18 +34,6 @@ enum WebsiteStatus {
   UNKNOWN
 }
 
-enum WhatsappStatus {
-  CONFIRMED
-  NOT_FOUND
-  UNKNOWN
-}
-
-enum PresenceStatus {
-  UNKNOWN
-  NOT_FOUND
-  FOUND
-}
-
 enum QualificationStatus {
   PENDING
   QUALIFIED
@@ -199,9 +187,6 @@ model Lead {
   campaign            Campaign            @relation(fields: [campaignId], references: [id], onDelete: Restrict)
   dor                 Dor?                @relation(fields: [dorId], references: [id], onDelete: Restrict)
   websiteStatus       WebsiteStatus       @default(UNKNOWN) @map("website_status")
-  whatsappStatus      WhatsappStatus      @default(UNKNOWN) @map("whatsapp_status")
-  instagramStatus     PresenceStatus      @default(UNKNOWN) @map("instagram_status")
-  facebookStatus      PresenceStatus      @default(UNKNOWN) @map("facebook_status")
   qualificationStatus QualificationStatus @default(PENDING) @map("qualification_status")
   priority            Boolean             @default(false)
   notes               String?             @db.Text

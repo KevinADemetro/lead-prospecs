@@ -10,12 +10,7 @@ import {
   XCircle,
   type LucideIcon,
 } from 'lucide-react';
-import type {
-  PresenceStatus,
-  QualificationStatus,
-  WebsiteStatus,
-  WhatsappStatus,
-} from '@app/shared';
+import type { QualificationStatus, WebsiteStatus } from '@app/shared';
 import type { Badge } from '@/components/ui/badge';
 
 type Tone = NonNullable<ComponentProps<typeof Badge>['tone']>;
@@ -80,47 +75,5 @@ export const WEBSITE_STATUS_LABELS: Record<WebsiteStatus, StatusLabel> = {
     tone: 'muted',
     icon: CircleDashed,
     description: 'Website ainda não verificado',
-  },
-};
-
-export const WHATSAPP_STATUS_LABELS: Record<WhatsappStatus, StatusLabel> = {
-  CONFIRMED: {
-    label: 'Confirmado',
-    tone: 'success',
-    icon: CheckCircle2,
-    description: 'WhatsApp confirmado',
-  },
-  NOT_FOUND: {
-    label: 'Não encontrado',
-    tone: 'info',
-    icon: CircleSlash,
-    description: 'Verificado: sem WhatsApp',
-  },
-  UNKNOWN: {
-    label: 'Não verificado',
-    tone: 'muted',
-    icon: CircleDashed,
-    description: 'WhatsApp ainda não verificado',
-  },
-};
-
-export const PRESENCE_STATUS_LABELS: Record<PresenceStatus, StatusLabel> = {
-  FOUND: {
-    label: 'Encontrado',
-    tone: 'success',
-    icon: CheckCircle2,
-    description: 'Perfil encontrado',
-  },
-  NOT_FOUND: {
-    label: 'Não encontrado',
-    tone: 'info',
-    icon: CircleSlash,
-    description: 'Verificado: sem perfil',
-  },
-  UNKNOWN: {
-    label: 'Não verificado',
-    tone: 'muted',
-    icon: CircleDashed,
-    description: 'Perfil ainda não verificado',
   },
 };

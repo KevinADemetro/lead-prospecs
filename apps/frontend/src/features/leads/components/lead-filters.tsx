@@ -3,7 +3,6 @@ import { Search } from 'lucide-react';
 import {
   QUALIFICATION_STATUSES,
   WEBSITE_STATUSES,
-  WHATSAPP_STATUSES,
   type LeadFilterOptions,
   type PublicCampaign,
   type QualificationStatus,
@@ -16,7 +15,6 @@ import { toggleQualificationStatus, type LeadFilterValues } from '../lead-filter
 import {
   QUALIFICATION_STATUS_LABELS,
   WEBSITE_STATUS_LABELS,
-  WHATSAPP_STATUS_LABELS,
 } from '../lead-labels';
 
 type Props = {
@@ -123,18 +121,6 @@ export function LeadFilters({ values, options, campaigns, onChange, onSubmit, on
           {WEBSITE_STATUSES.map((status) => (
             <option key={status} value={status}>
               Website: {WEBSITE_STATUS_LABELS[status].label}
-            </option>
-          ))}
-        </Select>
-        <Select
-          value={values.whatsappStatus}
-          onChange={(event) => set('whatsappStatus')(event.target.value)}
-          aria-label="WhatsApp"
-        >
-          <option value="">WhatsApp: todos</option>
-          {WHATSAPP_STATUSES.map((status) => (
-            <option key={status} value={status}>
-              WhatsApp: {WHATSAPP_STATUS_LABELS[status].label}
             </option>
           ))}
         </Select>

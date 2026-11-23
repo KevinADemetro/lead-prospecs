@@ -34,7 +34,6 @@ import {
   PriorityBadge,
   QualificationBadge,
   WebsiteStatusBadge,
-  WhatsappStatusBadge,
 } from '../components/lead-badges';
 import { SortHeader } from '../components/sort-header';
 import { formatCityState } from '../lead-format';
@@ -322,12 +321,6 @@ export function LeadsPage() {
                       </span>
                     );
                   },
-                },
-                {
-                  key: 'whatsapp',
-                  header: 'WhatsApp',
-                  hideOnMobile: true,
-                  render: (row) => <WhatsappStatusBadge status={row.whatsappStatus} />,
                 },
                 {
                   key: 'status',

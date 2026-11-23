@@ -115,7 +115,6 @@ export class LeadsService {
       dorId: query.dorId,
       qualificationStatus: query.qualificationStatus,
       websiteStatus: query.websiteStatus,
-      whatsappStatus: query.whatsappStatus,
       priority: query.priority,
       category: query.category,
       city: query.city,

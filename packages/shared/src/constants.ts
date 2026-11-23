@@ -11,12 +11,6 @@ export type CampaignStatus = (typeof CAMPAIGN_STATUSES)[number];
 export const WEBSITE_STATUSES = ['FOUND', 'NOT_FOUND', 'UNAVAILABLE', 'ERROR', 'UNKNOWN'] as const;
 export type WebsiteStatus = (typeof WEBSITE_STATUSES)[number];
 
-export const WHATSAPP_STATUSES = ['CONFIRMED', 'NOT_FOUND', 'UNKNOWN'] as const;
-export type WhatsappStatus = (typeof WHATSAPP_STATUSES)[number];
-
-export const PRESENCE_STATUSES = ['UNKNOWN', 'NOT_FOUND', 'FOUND'] as const;
-export type PresenceStatus = (typeof PRESENCE_STATUSES)[number];
-
 export const QUALIFICATION_STATUSES = [
   'PENDING',
   'QUALIFIED',

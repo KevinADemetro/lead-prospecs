@@ -19,7 +19,6 @@ describe('lead filters', () => {
       ...EMPTY_LEAD_FILTERS,
       search: '  padaria ',
       websiteStatus: 'NOT_FOUND',
-      whatsappStatus: 'CONFIRMED',
       category: 'Padaria',
       city: 'Curitiba',
       qualificationStatus: ['QUALIFIED', 'PENDING'],

@@ -56,7 +56,6 @@ describe('Leads listing and details', () => {
       where: { id: alpha.id },
       data: {
         websiteStatus: 'FOUND',
-        whatsappStatus: 'CONFIRMED',
         qualificationStatus: 'QUALIFIED',
       },
     });
@@ -95,7 +94,6 @@ describe('Leads listing and details', () => {
   it('filters by statuses, category, city and dor', async () => {
     expect(await listNames('websiteStatus=NOT_FOUND')).toEqual(['Beta Banho e Tosa']);
     expect(await listNames('websiteStatus=ERROR')).toEqual(['Gamma Vet']);
-    expect(await listNames('whatsappStatus=CONFIRMED')).toEqual(['Alpha Pet']);
     expect(await listNames('qualificationStatus=QUALIFIED')).toEqual(['Alpha Pet']);
     expect(
       await listNames(
@@ -167,6 +165,9 @@ describe('Leads listing and details', () => {
     });
     expect(res.body.company.dedupeKey).toBeUndefined();
     expect(res.body.score).toBeUndefined();
+    expect(res.body.whatsappStatus).toBeUndefined();
+    expect(res.body.instagramStatus).toBeUndefined();
+    expect(res.body.facebookStatus).toBeUndefined();
     expect(res.body.trelloStatus).toBeUndefined();
     expect(res.body.campaign.name).toBe('Pets Curitiba');
     expect(res.body.dor).toEqual({ id: ids.dor, name: 'Baixa conversão' });

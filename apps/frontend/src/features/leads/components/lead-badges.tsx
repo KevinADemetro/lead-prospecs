@@ -1,16 +1,9 @@
 import { Star } from 'lucide-react';
-import type {
-  PresenceStatus,
-  QualificationStatus,
-  WebsiteStatus,
-  WhatsappStatus,
-} from '@app/shared';
+import type { QualificationStatus, WebsiteStatus } from '@app/shared';
 import { Badge } from '@/components/ui/badge';
 import {
-  PRESENCE_STATUS_LABELS,
   QUALIFICATION_STATUS_LABELS,
   WEBSITE_STATUS_LABELS,
-  WHATSAPP_STATUS_LABELS,
   type StatusLabel,
 } from '../lead-labels';
 
@@ -36,12 +29,4 @@ export function PriorityBadge() {
 
 export function WebsiteStatusBadge({ status }: { status: WebsiteStatus }) {
   return <StatusBadge status={WEBSITE_STATUS_LABELS[status]} />;
-}
-
-export function WhatsappStatusBadge({ status }: { status: WhatsappStatus }) {
-  return <StatusBadge status={WHATSAPP_STATUS_LABELS[status]} />;
-}
-
-export function PresenceStatusBadge({ status }: { status: PresenceStatus }) {
-  return <StatusBadge status={PRESENCE_STATUS_LABELS[status]} />;
 }

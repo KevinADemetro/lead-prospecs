@@ -5,7 +5,6 @@ export type LeadFilterValues = {
   campaignId: string;
   dorId: string;
   websiteStatus: string;
-  whatsappStatus: string;
   category: string;
   city: string;
   qualificationStatus: QualificationStatus[];
@@ -17,7 +16,6 @@ export const EMPTY_LEAD_FILTERS: LeadFilterValues = {
   campaignId: '',
   dorId: '',
   websiteStatus: '',
-  whatsappStatus: '',
   category: '',
   city: '',
   qualificationStatus: [],
@@ -33,7 +31,6 @@ export function toQueryFilters(values: LeadFilterValues): LeadQueryFilters {
     campaignId: values.campaignId || undefined,
     dorId: values.dorId || undefined,
     websiteStatus: (values.websiteStatus || undefined) as LeadQueryFilters['websiteStatus'],
-    whatsappStatus: (values.whatsappStatus || undefined) as LeadQueryFilters['whatsappStatus'],
     category: values.category || undefined,
     city: values.city || undefined,
     qualificationStatus:

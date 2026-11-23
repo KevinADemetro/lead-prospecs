@@ -1,11 +1,9 @@
 import type { Permission } from './permissions';
 import type {
   CampaignStatus,
-  PresenceStatus,
   QualificationStatus,
   UserStatus,
   WebsiteStatus,
-  WhatsappStatus,
 } from './constants';
 export type PublicRole = {
   id: string;
@@ -114,9 +112,6 @@ export type PublicLead = {
   campaignId: string;
   dorId: string | null;
   websiteStatus: WebsiteStatus;
-  whatsappStatus: WhatsappStatus;
-  instagramStatus: PresenceStatus;
-  facebookStatus: PresenceStatus;
   qualificationStatus: QualificationStatus;
   priority: boolean;
   notes: string | null;
