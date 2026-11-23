@@ -37,6 +37,17 @@ export class DoresRepository extends BaseRepository {
     return dor ? this.toRecord(dor) : null;
   }
 
+  /** Active dores keyed by exact name (for campaign auto-qualification). */
+  async findActiveByNames(names: string[]): Promise<Map<string, DorRecord>> {
+    if (names.length === 0) {
+      return new Map();
+    }
+    const dores = await this.prisma.dor.findMany({
+      where: { name: { in: names }, ...this.notDeleted() },
+    });
+    return new Map(dores.map((dor) => [dor.name, this.toRecord(dor)]));
+  }
+
   async countLeadsUsing(dorId: string): Promise<number> {
     return this.prisma.lead.count({
       where: { dorId, ...this.notDeleted() },

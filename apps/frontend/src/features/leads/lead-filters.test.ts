@@ -17,8 +17,14 @@ describe('lead filters', () => {
       whatsappStatus: 'CONFIRMED',
       category: 'Padaria',
       city: 'Curitiba',
+      priority: 'true',
     });
-    expect(filters).toMatchObject({ search: 'padaria', category: 'Padaria', city: 'Curitiba' });
+    expect(filters).toMatchObject({
+      search: 'padaria',
+      category: 'Padaria',
+      city: 'Curitiba',
+      priority: true,
+    });
     expect(hasActiveFilters(filters)).toBe(true);
     expect(leadListQuerySchema.safeParse({ page: 1, limit: 10, ...filters }).success).toBe(true);
   });

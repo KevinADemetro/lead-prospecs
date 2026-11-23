@@ -42,26 +42,68 @@ export class LeadsService {
   }
 
   async update(id: string, input: UpdateLeadInput) {
-    await this.leads.findByIdOrFail(id);
+    const current = await this.leads.findByIdOrFail(id);
     if (input.dorId !== undefined && input.dorId !== null) {
       await this.dores.findByIdOrFail(input.dorId);
     }
-    const updated = await this.leads.updateDorId(id, input.dorId ?? null);
-    if (!updated) {
-      throw new NotFoundException('Recurso não encontrado');
+    if (input.company) {
+      await this.companies.updateFromLead(current.companyId, input.company);
     }
-    return toPublicLeadDetail(updated);
+    const hasLeadFields =
+      input.dorId !== undefined ||
+      input.websiteStatus !== undefined ||
+      input.qualificationStatus !== undefined ||
+      input.priority !== undefined ||
+      input.notes !== undefined;
+    if (hasLeadFields) {
+      const updated = await this.leads.updateFields(id, {
+        ...(input.dorId !== undefined ? { dorId: input.dorId } : {}),
+        ...(input.websiteStatus !== undefined ? { websiteStatus: input.websiteStatus } : {}),
+        ...(input.qualificationStatus !== undefined
+          ? { qualificationStatus: input.qualificationStatus }
+          : {}),
+        ...(input.priority !== undefined ? { priority: input.priority } : {}),
+        ...(input.notes !== undefined ? { notes: input.notes } : {}),
+      });
+      if (!updated) {
+        throw new NotFoundException('Recurso não encontrado');
+      }
+      return toPublicLeadDetail(updated);
+    }
+    return toPublicLeadDetail(await this.leads.findDetailByIdOrFail(id));
   }
 
   filterOptions(): Promise<LeadFilterOptions> {
     return this.leads.filterOptions();
   }
 
-  /** Entry point for prospecting sources: deduplicates the company and links it once per campaign. */
-  async addCompanyToCampaign(campaignId: string, company: CompanyInput) {
+  /**
+   * Entry point for prospecting sources: deduplicates the company and links it once per campaign.
+   * Optional `autoQualify` applies only while the lead is still PENDING (create or re-import).
+   */
+  async addCompanyToCampaign(
+    campaignId: string,
+    company: CompanyInput,
+    autoQualify?: {
+      dorId: string;
+      websiteStatus?: 'NOT_FOUND';
+    },
+  ) {
     const campaign = await this.campaigns.findByIdOrFail(campaignId);
     const saved = await this.companies.upsertByIdentity(company);
-    const lead = await this.leads.upsertForCampaign(campaign.id, saved.id);
+    let lead = await this.leads.upsertForCampaign(campaign.id, saved.id);
+    if (autoQualify && lead.qualificationStatus === 'PENDING') {
+      const updated = await this.leads.updateFields(lead.id, {
+        dorId: autoQualify.dorId,
+        qualificationStatus: 'AUTO_QUALIFIED',
+        ...(autoQualify.websiteStatus
+          ? { websiteStatus: autoQualify.websiteStatus }
+          : {}),
+      });
+      if (updated) {
+        lead = updated;
+      }
+    }
     return toPublicLead(lead);
   }
 
@@ -74,6 +116,7 @@ export class LeadsService {
       qualificationStatus: query.qualificationStatus,
       websiteStatus: query.websiteStatus,
       whatsappStatus: query.whatsappStatus,
+      priority: query.priority,
       category: query.category,
       city: query.city,
     };

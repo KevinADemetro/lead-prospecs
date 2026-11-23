@@ -48,3 +48,11 @@ export function whatsappLink(phone?: string | null): string | null {
   }
   return digits.length >= 12 && digits.length <= 15 ? `https://wa.me/${digits}` : null;
 }
+
+/** Prefers a stored WhatsApp URL (wa.me, api.whatsapp.com, etc.); falls back to a phone. */
+export function resolveWhatsappHref(
+  whatsappUrl?: string | null,
+  phoneFallback?: string | null,
+): string | null {
+  return toExternalUrl(whatsappUrl) ?? whatsappLink(whatsappUrl) ?? whatsappLink(phoneFallback);
+}

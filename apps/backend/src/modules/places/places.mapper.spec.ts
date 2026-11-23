@@ -64,6 +64,17 @@ describe('places.mapper', () => {
     expect(company?.openingHours?.weekdayDescriptions?.[0]).toContain('segunda-feira');
   });
 
+  it('falls back to places/ resource name when id is missing', () => {
+    const company = placeToCompanyInput(
+      {
+        name: 'places/ChIJFallback',
+        displayName: { text: 'Pet Feliz' },
+      },
+      'pet shop',
+    );
+    expect(company?.googlePlaceId).toBe('ChIJFallback');
+  });
+
   it('returns null when display name or place id is missing', () => {
     expect(placeToCompanyInput({ displayName: { text: 'X' } }, 'pet')).toBeNull();
     expect(placeToCompanyInput({ id: 'ChIJ' }, 'pet')).toBeNull();

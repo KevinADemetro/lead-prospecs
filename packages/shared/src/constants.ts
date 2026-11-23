@@ -17,8 +17,17 @@ export type WhatsappStatus = (typeof WHATSAPP_STATUSES)[number];
 export const PRESENCE_STATUSES = ['UNKNOWN', 'NOT_FOUND', 'FOUND'] as const;
 export type PresenceStatus = (typeof PRESENCE_STATUSES)[number];
 
-export const QUALIFICATION_STATUSES = ['PENDING', 'QUALIFIED', 'DISQUALIFIED'] as const;
+export const QUALIFICATION_STATUSES = [
+  'PENDING',
+  'QUALIFIED',
+  'DISQUALIFIED',
+  'AUTO_QUALIFIED',
+] as const;
 export type QualificationStatus = (typeof QUALIFICATION_STATUSES)[number];
+
+/** Statuses selectable in the lead edit UI / update API. AUTO_QUALIFIED is system-only. */
+export const MANUAL_QUALIFICATION_STATUSES = ['PENDING', 'QUALIFIED', 'DISQUALIFIED'] as const;
+export type ManualQualificationStatus = (typeof MANUAL_QUALIFICATION_STATUSES)[number];
 
 export const LEAD_SORT_FIELDS = [
   'createdAt',
@@ -67,6 +76,7 @@ export const LOGIN_MAX_LENGTH = 64;
 export const PASSWORD_MIN_LENGTH = 12;
 export const PASSWORD_MAX_LENGTH = 128;
 export const NAME_MAX_LENGTH = 80;
+export const LEAD_NOTES_MAX_LENGTH = 2000;
 export const PAGE_DEFAULT = 1;
 export const PAGE_SIZE_DEFAULT = 10;
 export const PAGE_SIZE_MAX = 100;

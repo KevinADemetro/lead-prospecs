@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react';
 import {
   AlertTriangle,
+  BadgeCheck,
   CheckCircle2,
   CircleDashed,
   CircleSlash,
@@ -39,6 +40,12 @@ export const QUALIFICATION_STATUS_LABELS: Record<QualificationStatus, StatusLabe
     tone: 'danger',
     icon: XCircle,
     description: 'Lead descartado na qualificação',
+  },
+  AUTO_QUALIFIED: {
+    label: 'Auto-qualificado',
+    tone: 'info',
+    icon: BadgeCheck,
+    description: 'Lead qualificado automaticamente (campanha ou aprovação em massa)',
   },
 };
 

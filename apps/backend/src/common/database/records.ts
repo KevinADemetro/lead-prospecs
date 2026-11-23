@@ -114,6 +114,7 @@ export type CompanyData = {
   country: string | null;
   googlePlaceId: string | null;
   googleMapsUrl: string | null;
+  whatsappUrl: string | null;
   instagramUrl: string | null;
   facebookUrl: string | null;
   openingHours: CompanyOpeningHours | null;
@@ -151,6 +152,8 @@ export type LeadRecord = {
   instagramStatus: PresenceStatus;
   facebookStatus: PresenceStatus;
   qualificationStatus: QualificationStatus;
+  priority: boolean;
+  notes: string | null;
   dor: DorSummaryRecord | null;
   company: CompanySummaryRecord;
   campaign: CampaignSummaryRecord;
@@ -173,6 +176,7 @@ export type LeadListFilter = {
   qualificationStatus?: QualificationStatus;
   websiteStatus?: WebsiteStatus;
   whatsappStatus?: WhatsappStatus;
+  priority?: boolean;
   category?: string;
   city?: string;
 };

@@ -121,7 +121,7 @@ export class CampaignsRepository extends BaseRepository {
       by: ['campaignId'],
       where: {
         campaignId: { in: campaignIds },
-        qualificationStatus: 'QUALIFIED',
+        qualificationStatus: { in: ['QUALIFIED', 'AUTO_QUALIFIED'] },
         ...this.notDeleted(),
       },
       _count: { _all: true },

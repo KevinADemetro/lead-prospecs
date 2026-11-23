@@ -108,6 +108,30 @@ describe('Leads listing and details', () => {
     expect(await listNames(`dorId=${ids.dor}`)).toEqual(['Alpha Pet']);
   });
 
+  it('updates and filters priority and notes', async () => {
+    const updated = await mutating(admin, 'patch', `/api/v1/leads/${ids.alpha}`, {
+      priority: true,
+      notes: 'Alto potencial — dono engajado no Instagram',
+    });
+    expect(updated.status).toBe(200);
+    expect(updated.body).toMatchObject({
+      priority: true,
+      notes: 'Alto potencial — dono engajado no Instagram',
+    });
+
+    expect(await listNames('priority=true')).toEqual(['Alpha Pet']);
+    expect(await listNames('priority=false')).toEqual(
+      expect.arrayContaining(['Beta Banho e Tosa Premium', 'Gamma Vet']),
+    );
+    expect((await admin.get('/api/v1/leads?priority=maybe')).status).toBe(400);
+
+    const cleared = await mutating(admin, 'patch', `/api/v1/leads/${ids.alpha}`, {
+      notes: null,
+    });
+    expect(cleared.status).toBe(200);
+    expect(cleared.body.notes).toBeNull();
+  });
+
   it('sorts by company fields and paginates', async () => {
     expect(await listNames('sort=companyName&order=asc')).toEqual([
       'Alpha Pet',
@@ -132,6 +156,7 @@ describe('Leads listing and details', () => {
     expect(res.body.company).toMatchObject({
       legalName: 'Alpha Comércio de Rações Ltda',
       cnpj: '11222333000181',
+      whatsappUrl: null,
       instagramUrl: 'https://instagram.com/alphapet',
       facebookUrl: null,
     });
@@ -159,5 +184,44 @@ describe('Leads listing and details', () => {
     expect(cleared.body.dorId).toBeNull();
     expect(cleared.body.dor).toBeNull();
     await mutating(admin, 'patch', `/api/v1/leads/${ids.alpha}`, { dorId: ids.dor });
+  });
+
+  it('updates qualification, website validity and company fields', async () => {
+    const updated = await mutating(admin, 'patch', `/api/v1/leads/${ids.beta}`, {
+      qualificationStatus: 'QUALIFIED',
+      websiteStatus: 'FOUND',
+      company: {
+        name: 'Beta Banho e Tosa Premium',
+        phone: '41999990000',
+        website: 'https://beta.example',
+        city: 'Curitiba',
+        state: 'PR',
+      },
+    });
+    expect(updated.status).toBe(200);
+    expect(updated.body).toMatchObject({
+      qualificationStatus: 'QUALIFIED',
+      websiteStatus: 'FOUND',
+      company: {
+        name: 'Beta Banho e Tosa Premium',
+        phone: '41999990000',
+        website: 'https://beta.example',
+        city: 'Curitiba',
+        state: 'PR',
+      },
+    });
+
+    const disqualified = await mutating(admin, 'patch', `/api/v1/leads/${ids.beta}`, {
+      qualificationStatus: 'DISQUALIFIED',
+      websiteStatus: 'NOT_FOUND',
+    });
+    expect(disqualified.status).toBe(200);
+    expect(disqualified.body.qualificationStatus).toBe('DISQUALIFIED');
+    expect(disqualified.body.websiteStatus).toBe('NOT_FOUND');
+
+    const autoQualified = await mutating(admin, 'patch', `/api/v1/leads/${ids.beta}`, {
+      qualificationStatus: 'AUTO_QUALIFIED',
+    });
+    expect(autoQualified.status).toBe(400);
   });
 });

@@ -36,9 +36,10 @@ export class PlacesClient {
 
   constructor(private readonly env: EnvService) {}
 
-  /** Fetches up to 60 places for a text query (3 pages × 20). */
+  /** Fetches up to 60 places for a text query (3 pages × 20), unique by place id. */
   async searchAll(textQuery: string): Promise<PlacesTextSearchPlace[]> {
     const places: PlacesTextSearchPlace[] = [];
+    const seenIds = new Set<string>();
     let pageToken: string | undefined;
 
     for (let page = 0; page < MAX_PAGES; page += 1) {
@@ -52,8 +53,15 @@ export class PlacesClient {
         pageSize: DEFAULT_PAGE_SIZE,
       });
 
-      if (response.places?.length) {
-        places.push(...response.places);
+      for (const place of response.places ?? []) {
+        const id = placeIdentity(place);
+        if (id && seenIds.has(id)) {
+          continue;
+        }
+        if (id) {
+          seenIds.add(id);
+        }
+        places.push(place);
       }
 
       pageToken = response.nextPageToken?.trim() || undefined;
@@ -110,6 +118,14 @@ async function safeErrorDetail(response: Response): Promise<string> {
   } catch {
     return response.statusText;
   }
+}
+
+function placeIdentity(place: PlacesTextSearchPlace): string | null {
+  const raw = place.id?.trim() || place.name?.trim() || '';
+  if (!raw) {
+    return null;
+  }
+  return raw.startsWith('places/') ? raw.slice('places/'.length).trim() || null : raw;
 }
 
 function sleep(ms: number): Promise<void> {

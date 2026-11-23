@@ -1,3 +1,4 @@
+import { Star } from 'lucide-react';
 import type {
   PresenceStatus,
   QualificationStatus,
@@ -23,6 +24,14 @@ function StatusBadge({ status }: { status: StatusLabel }) {
 
 export function QualificationBadge({ status }: { status: QualificationStatus }) {
   return <StatusBadge status={QUALIFICATION_STATUS_LABELS[status]} />;
+}
+
+export function PriorityBadge() {
+  return (
+    <Badge tone="warning" icon={Star} title="Lead prioritário — alto potencial">
+      Prioritário
+    </Badge>
+  );
 }
 
 export function WebsiteStatusBadge({ status }: { status: WebsiteStatus }) {

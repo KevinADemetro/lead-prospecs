@@ -91,13 +91,22 @@ export class LeadsRepository extends BaseRepository {
     return this.toRecord(lead);
   }
 
-  async updateDorId(id: string, dorId: string | null): Promise<LeadDetailRecord | null> {
+  async updateFields(
+    id: string,
+    data: {
+      dorId?: string | null;
+      websiteStatus?: LeadDetailRecord['websiteStatus'];
+      qualificationStatus?: LeadDetailRecord['qualificationStatus'];
+      priority?: boolean;
+      notes?: string | null;
+    },
+  ): Promise<LeadDetailRecord | null> {
     if (!this.isUsableId(id)) {
       return null;
     }
     const result = await this.prisma.lead.updateMany({
       where: { id, ...this.notDeleted() },
-      data: { dorId },
+      data,
     });
     if (result.count === 0) {
       return null;
@@ -207,6 +216,7 @@ export class LeadsRepository extends BaseRepository {
       ...(filter.qualificationStatus ? { qualificationStatus: filter.qualificationStatus } : {}),
       ...(filter.websiteStatus ? { websiteStatus: filter.websiteStatus } : {}),
       ...(filter.whatsappStatus ? { whatsappStatus: filter.whatsappStatus } : {}),
+      ...(filter.priority !== undefined ? { priority: filter.priority } : {}),
     };
   }
 
@@ -238,6 +248,7 @@ export class LeadsRepository extends BaseRepository {
         country: company.country,
         googlePlaceId: company.googlePlaceId,
         googleMapsUrl: company.googleMapsUrl,
+        whatsappUrl: company.whatsappUrl,
         instagramUrl: company.instagramUrl,
         facebookUrl: company.facebookUrl,
         openingHours: parseOpeningHours(company.openingHours),
@@ -261,6 +272,8 @@ export class LeadsRepository extends BaseRepository {
       instagramStatus: lead.instagramStatus,
       facebookStatus: lead.facebookStatus,
       qualificationStatus: lead.qualificationStatus,
+      priority: lead.priority,
+      notes: lead.notes,
       dor: lead.dor,
       campaign: lead.campaign,
       createdAt: lead.createdAt,

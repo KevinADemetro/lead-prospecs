@@ -50,6 +50,7 @@ enum QualificationStatus {
   PENDING
   QUALIFIED
   DISQUALIFIED
+  AUTO_QUALIFIED
 }
 
 model Role {
@@ -140,7 +141,7 @@ model Campaign {
   @@map("campaigns")
 }
 
-// Deduplication: cnpj > google_place_id > dedupe_key (normalized name + phone + address).
+// Deduplication: google_place_id > cnpj > dedupe_key (normalized name + phone + address).
 // Unique constraints include soft-deleted rows so identities are never reused.
 model Company {
   id                String    @id @default(uuid()) @db.Uuid
@@ -159,6 +160,7 @@ model Company {
   country           String?
   googlePlaceId     String?   @unique @map("google_place_id")
   googleMapsUrl     String?   @map("google_maps_url")
+  whatsappUrl       String?   @map("whatsapp_url")
   instagramUrl      String?   @map("instagram_url")
   facebookUrl       String?   @map("facebook_url")
   openingHours      Json?     @map("opening_hours")
@@ -201,6 +203,8 @@ model Lead {
   instagramStatus     PresenceStatus      @default(UNKNOWN) @map("instagram_status")
   facebookStatus      PresenceStatus      @default(UNKNOWN) @map("facebook_status")
   qualificationStatus QualificationStatus @default(PENDING) @map("qualification_status")
+  priority            Boolean             @default(false)
+  notes               String?             @db.Text
   createdAt           DateTime            @default(now()) @map("created_at")
   updatedAt           DateTime            @updatedAt @map("updated_at")
   deletedAt           DateTime?           @map("deleted_at")
@@ -210,6 +214,7 @@ model Lead {
   @@index([companyId])
   @@index([dorId])
   @@index([campaignId, qualificationStatus])
+  @@index([priority])
   @@index([deletedAt, createdAt])
   @@map("leads")
 }

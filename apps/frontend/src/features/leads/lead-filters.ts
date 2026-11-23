@@ -9,6 +9,7 @@ export type LeadFilterValues = {
   category: string;
   city: string;
   qualificationStatus: string;
+  priority: string;
 };
 
 export const EMPTY_LEAD_FILTERS: LeadFilterValues = {
@@ -20,6 +21,7 @@ export const EMPTY_LEAD_FILTERS: LeadFilterValues = {
   category: '',
   city: '',
   qualificationStatus: '',
+  priority: '',
 };
 
 export type LeadQueryFilters = Omit<LeadListQuery, 'page' | 'limit' | 'sort' | 'order'>;
@@ -36,6 +38,8 @@ export function toQueryFilters(values: LeadFilterValues): LeadQueryFilters {
     city: values.city || undefined,
     qualificationStatus: (values.qualificationStatus ||
       undefined) as LeadQueryFilters['qualificationStatus'],
+    priority:
+      values.priority === 'true' ? true : values.priority === 'false' ? false : undefined,
   };
 }
 

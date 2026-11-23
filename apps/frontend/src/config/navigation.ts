@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Megaphone,
+  MessageCircleWarning,
   Shield,
   Target,
   UserRound,
@@ -38,6 +39,13 @@ export const navigation: NavItem[] = [
     icon: Target,
     to: '/leads',
     permission: PERMISSIONS.LEADS_READ,
+  },
+  {
+    id: 'dores',
+    label: 'Dores',
+    icon: MessageCircleWarning,
+    to: '/dores',
+    permission: PERMISSIONS.DORES_READ,
   },
   {
     id: 'users',

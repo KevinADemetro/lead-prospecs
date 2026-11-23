@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { ExternalLink as ExternalLinkIcon } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ExternalLink as ExternalLinkIcon, Pencil } from 'lucide-react';
 import type {
   LeadFilterOptions,
   LeadListQuery,
@@ -31,11 +31,11 @@ import {
   type LeadFilterValues,
 } from '../lead-filters';
 import {
+  PriorityBadge,
   QualificationBadge,
   WebsiteStatusBadge,
   WhatsappStatusBadge,
 } from '../components/lead-badges';
-import { LeadDetailsDrawer } from '../components/lead-details-drawer';
 import { SortHeader } from '../components/sort-header';
 import { formatCityState } from '../lead-format';
 
@@ -74,8 +74,8 @@ export function LeadsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
-  const [detailId, setDetailId] = useState<string | null>(null);
   const canReadCampaigns = hasPermission(PERMISSIONS.CAMPAIGNS_READ);
+  const canUpdate = hasPermission(PERMISSIONS.LEADS_UPDATE);
 
   const { page, limit, sort, order, ...activeFilters } = query;
   const filtered = hasActiveFilters(activeFilters);
@@ -165,7 +165,6 @@ export function LeadsPage() {
     });
   }
 
-  const closeDetails = useCallback(() => setDetailId(null), []);
   const sortProps = { sort, order, onSort: changeSort };
   const firstItem = total === 0 ? 0 : (page - 1) * limit + 1;
   const lastItem = Math.min(page * limit, total);
@@ -267,13 +266,15 @@ export function LeadsPage() {
                   mobileLabel: 'Empresa',
                   header: <SortHeader field="companyName" label="Empresa" {...sortProps} />,
                   render: (row) => (
-                    <button
-                      type="button"
-                      className="text-left font-medium hover:text-primary hover:underline"
-                      onClick={() => setDetailId(row.id)}
-                    >
-                      {row.company.name}
-                    </button>
+                    <span className="inline-flex flex-wrap items-center gap-2">
+                      <Link
+                        to={`/leads/${row.id}`}
+                        className="font-medium hover:text-primary hover:underline"
+                      >
+                        {row.company.name}
+                      </Link>
+                      {row.priority ? <PriorityBadge /> : null}
+                    </span>
                   ),
                 },
                 {
@@ -333,6 +334,21 @@ export function LeadsPage() {
                   header: 'Status',
                   render: (row) => <QualificationBadge status={row.qualificationStatus} />,
                 },
+                {
+                  key: 'actions',
+                  header: 'Ações',
+                  className: 'w-24',
+                  render: (row) => (
+                    <Link
+                      to={`/leads/${row.id}`}
+                      className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                      aria-label={`${canUpdate ? 'Editar' : 'Ver'} ${row.company.name}`}
+                    >
+                      <Pencil className="h-3.5 w-3.5" aria-hidden />
+                      {canUpdate ? 'Editar' : 'Ver'}
+                    </Link>
+                  ),
+                },
               ]}
             />
             <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:items-end sm:justify-between">
@@ -371,24 +387,6 @@ export function LeadsPage() {
         )}
       </Card>
 
-      <LeadDetailsDrawer
-        leadId={detailId}
-        onClose={closeDetails}
-        onUpdated={(updated) => {
-          setRows((current) =>
-            current.map((row) =>
-              row.id === updated.id
-                ? {
-                    ...row,
-                    dorId: updated.dorId,
-                    dor: updated.dor,
-                    updatedAt: updated.updatedAt,
-                  }
-                : row,
-            ),
-          );
-        }}
-      />
     </div>
   );
 }

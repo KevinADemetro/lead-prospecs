@@ -57,6 +57,7 @@ export function CampaignActions({ campaign, onChanged, onDeleted, showView = tru
   const [pending, setPending] = useState<Action | null>(null);
   const canUpdate = hasPermission(PERMISSIONS.CAMPAIGNS_UPDATE);
   const canDelete = hasPermission(PERMISSIONS.CAMPAIGNS_DELETE);
+  const canValidateLeads = hasPermission(PERMISSIONS.LEADS_UPDATE);
 
   async function perform(action: Action) {
     const config = ACTIONS[action];
@@ -83,6 +84,13 @@ export function CampaignActions({ campaign, onChanged, onDeleted, showView = tru
         <Link to={`/campaigns/${campaign.id}`}>
           <Button size="sm" variant="secondary">
             Visualizar
+          </Button>
+        </Link>
+      ) : null}
+      {canValidateLeads && CAMPAIGN_RULES.canValidate(campaign.leadCount) ? (
+        <Link to={`/campaigns/${campaign.id}/validate`}>
+          <Button size="sm" variant="secondary">
+            Validar campanha
           </Button>
         </Link>
       ) : null}

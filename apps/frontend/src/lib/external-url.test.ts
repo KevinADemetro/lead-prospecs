@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { displayUrl, googleMapsLink, toExternalUrl, whatsappLink } from './external-url';
+import {
+  displayUrl,
+  googleMapsLink,
+  resolveWhatsappHref,
+  toExternalUrl,
+  whatsappLink,
+} from './external-url';
 
 describe('external urls', () => {
   it('normalizes http(s) urls and rejects unsafe values', () => {
@@ -34,5 +40,13 @@ describe('external urls', () => {
     expect(whatsappLink('(41) 99999-8888')).toBe('https://wa.me/5541999998888');
     expect(whatsappLink('+55 41 3333-4444')).toBe('https://wa.me/554133334444');
     expect(whatsappLink('123')).toBeNull();
+  });
+
+  it('resolves whatsapp from stored url, phone-like value or phone fallback', () => {
+    expect(resolveWhatsappHref('https://wa.me/5541999998888')).toBe('https://wa.me/5541999998888');
+    expect(resolveWhatsappHref('wa.me/5541999998888')).toBe('https://wa.me/5541999998888');
+    expect(resolveWhatsappHref('(41) 99999-8888')).toBe('https://wa.me/5541999998888');
+    expect(resolveWhatsappHref(null, '(41) 99999-8888')).toBe('https://wa.me/5541999998888');
+    expect(resolveWhatsappHref(null, null)).toBeNull();
   });
 });

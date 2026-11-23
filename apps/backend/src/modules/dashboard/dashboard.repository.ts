@@ -28,7 +28,12 @@ export class DashboardRepository extends BaseRepository {
           leads: { some: { ...this.notDeleted(), campaign: this.notDeleted() } },
         },
       }),
-      this.prisma.lead.count({ where: { ...visibleLead, qualificationStatus: 'QUALIFIED' } }),
+      this.prisma.lead.count({
+        where: {
+          ...visibleLead,
+          qualificationStatus: { in: ['QUALIFIED', 'AUTO_QUALIFIED'] },
+        },
+      }),
       this.prisma.lead.count({
         where: {
           ...visibleLead,

@@ -1,5 +1,5 @@
 import type { CompanyOpeningHours } from '@app/shared';
-import { CompanyInput } from '../companies/company-identity.util';
+import { CompanyInput, normalizeGooglePlaceId } from '../companies/company-identity.util';
 import type { PlacesAddressComponent, PlacesTextSearchPlace } from './places.types';
 
 function componentLong(
@@ -68,7 +68,8 @@ export function placeToCompanyInput(
   category: string,
 ): CompanyInput | null {
   const name = place.displayName?.text?.trim();
-  const googlePlaceId = place.id?.trim();
+  const googlePlaceId =
+    normalizeGooglePlaceId(place.id) ?? normalizeGooglePlaceId(place.name);
   if (!name || !googlePlaceId) {
     return null;
   }

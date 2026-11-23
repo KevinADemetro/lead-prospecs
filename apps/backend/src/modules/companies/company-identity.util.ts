@@ -15,6 +15,16 @@ export function normalizeCnpj(value?: string | null): string | null {
   return digits.length === 14 ? digits : null;
 }
 
+/** Accepts bare Place IDs or Places API resource names (`places/{id}`). */
+export function normalizeGooglePlaceId(value?: string | null): string | null {
+  const trimmed = (value ?? '').trim();
+  if (!trimmed) {
+    return null;
+  }
+  const withoutPrefix = trimmed.startsWith('places/') ? trimmed.slice('places/'.length).trim() : trimmed;
+  return withoutPrefix || null;
+}
+
 export function normalizeText(value?: string | null): string {
   return (value ?? '')
     .normalize('NFD')
@@ -48,10 +58,9 @@ export function buildDedupeKey(input: {
 }
 
 export function companyIdentity(input: CompanyInput): CompanyIdentity {
-  const googlePlaceId = input.googlePlaceId?.trim() || null;
   return {
     cnpj: normalizeCnpj(input.cnpj),
-    googlePlaceId,
+    googlePlaceId: normalizeGooglePlaceId(input.googlePlaceId),
     dedupeKey: buildDedupeKey(input),
   };
 }
@@ -74,6 +83,7 @@ export function toCompanyData(input: CompanyInput): CompanyData {
     country: input.country ?? null,
     googlePlaceId: identity.googlePlaceId,
     googleMapsUrl: input.googleMapsUrl ?? null,
+    whatsappUrl: input.whatsappUrl ?? null,
     instagramUrl: input.instagramUrl ?? null,
     facebookUrl: input.facebookUrl ?? null,
     openingHours: input.openingHours ?? null,

@@ -79,6 +79,7 @@ export type PublicCompany = {
   country: string | null;
   googlePlaceId: string | null;
   googleMapsUrl: string | null;
+  whatsappUrl: string | null;
   instagramUrl: string | null;
   facebookUrl: string | null;
   openingHours: CompanyOpeningHours | null;
@@ -117,6 +118,8 @@ export type PublicLead = {
   instagramStatus: PresenceStatus;
   facebookStatus: PresenceStatus;
   qualificationStatus: QualificationStatus;
+  priority: boolean;
+  notes: string | null;
   dor: PublicDorSummary | null;
   company: PublicCompanySummary;
   campaign: PublicCampaignSummary;

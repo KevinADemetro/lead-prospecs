@@ -32,14 +32,17 @@ export class CompaniesRepository extends BaseRepository {
     return company;
   }
 
-  /** Includes soft-deleted rows: identities are unique across the whole table. */
+  /**
+   * Includes soft-deleted rows: identities are unique across the whole table.
+   * Match order: Google Place ID → CNPJ → normalized name/phone/address.
+   */
   async findByIdentity(identity: CompanyIdentity): Promise<CompanyRecord | null> {
     const lookups: Prisma.CompanyWhereUniqueInput[] = [];
-    if (identity.cnpj) {
-      lookups.push({ cnpj: identity.cnpj });
-    }
     if (identity.googlePlaceId) {
       lookups.push({ googlePlaceId: identity.googlePlaceId });
+    }
+    if (identity.cnpj) {
+      lookups.push({ cnpj: identity.cnpj });
     }
     if (identity.dedupeKey) {
       lookups.push({ dedupeKey: identity.dedupeKey });
@@ -88,6 +91,45 @@ export class CompaniesRepository extends BaseRepository {
     return this.toRecord(company);
   }
 
+  /** Partial field update from lead editing (does not touch identity keys). */
+  async updateFields(
+    id: string,
+    data: Partial<
+      Pick<
+        CompanyData,
+        | 'name'
+        | 'legalName'
+        | 'cnpj'
+        | 'category'
+        | 'niche'
+        | 'phone'
+        | 'email'
+        | 'website'
+        | 'address'
+        | 'neighborhood'
+        | 'city'
+        | 'state'
+        | 'country'
+        | 'googleMapsUrl'
+        | 'whatsappUrl'
+        | 'instagramUrl'
+        | 'facebookUrl'
+      >
+    >,
+  ): Promise<CompanyRecord | null> {
+    if (!this.isUsableId(id)) {
+      return null;
+    }
+    const result = await this.prisma.company.updateMany({
+      where: { id, ...this.notDeleted() },
+      data,
+    });
+    if (result.count === 0) {
+      return null;
+    }
+    return this.findByIdOrFail(id);
+  }
+
   private toPrismaData(
     data: CompanyData & { dedupeKey: string | null },
   ): Prisma.CompanyUncheckedCreateInput {
@@ -117,6 +159,7 @@ export class CompaniesRepository extends BaseRepository {
       country: company.country,
       googlePlaceId: company.googlePlaceId,
       googleMapsUrl: company.googleMapsUrl,
+      whatsappUrl: company.whatsappUrl,
       instagramUrl: company.instagramUrl,
       facebookUrl: company.facebookUrl,
       openingHours: parseOpeningHours(company.openingHours),

@@ -137,6 +137,15 @@ export function LeadFilters({ values, options, campaigns, onChange, onSubmit, on
             </option>
           ))}
         </Select>
+        <Select
+          value={values.priority}
+          onChange={(event) => set('priority')(event.target.value)}
+          aria-label="Prioridade"
+        >
+          <option value="">Prioridade: todos</option>
+          <option value="true">Só prioritários</option>
+          <option value="false">Não prioritários</option>
+        </Select>
       </div>
       <div className="flex flex-wrap justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onClear}>

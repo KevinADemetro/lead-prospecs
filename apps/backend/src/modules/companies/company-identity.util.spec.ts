@@ -3,6 +3,7 @@ import {
   companyIdentity,
   mergeCompanyData,
   normalizeCnpj,
+  normalizeGooglePlaceId,
   normalizePhone,
   toCompanyData,
 } from './company-identity.util';
@@ -13,6 +14,13 @@ describe('company-identity.util', () => {
     expect(normalizeCnpj('12.345.678/0001-95')).toBe('12345678000195');
     expect(normalizeCnpj('123')).toBeNull();
     expect(normalizeCnpj(undefined)).toBeNull();
+  });
+
+  it('normalizes Google Place IDs including places/ resource names', () => {
+    expect(normalizeGooglePlaceId(' ChIJ123 ')).toBe('ChIJ123');
+    expect(normalizeGooglePlaceId('places/ChIJ123')).toBe('ChIJ123');
+    expect(normalizeGooglePlaceId('places/')).toBeNull();
+    expect(normalizeGooglePlaceId('')).toBeNull();
   });
 
   it('normalizes phones ignoring formatting and country code', () => {

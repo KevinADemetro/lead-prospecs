@@ -18,4 +18,5 @@ export const CAMPAIGN_RULES = {
   canRun: (status: CampaignStatus) => status === 'DRAFT' || status === 'FAILED',
   canCancel: (status: CampaignStatus) => status === 'DRAFT' || status === 'RUNNING',
   canDelete: (status: CampaignStatus) => status !== 'RUNNING',
+  canValidate: (leadCount: number) => leadCount > 0,
 };

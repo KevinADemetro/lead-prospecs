@@ -1,4 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
+import { Prisma } from '../../generated/prisma/client';
+import type { UpdateLeadCompanyInput } from '@app/shared';
 import { CompaniesRepository } from './companies.repository';
 import { LeadsRepository } from '../leads/leads.repository';
 import { toPublicCompanyDetail } from '../../common/mappers/public.mapper';
@@ -32,8 +34,25 @@ export class CompaniesService {
     return toPublicCompanyDetail(company, leads);
   }
 
+  /** Manual edits from the lead form; does not change googlePlaceId / dedupeKey. */
+  async updateFromLead(id: string, input: UpdateLeadCompanyInput): Promise<CompanyRecord> {
+    await this.companies.findByIdOrFail(id);
+    try {
+      const updated = await this.companies.updateFields(id, input);
+      if (!updated) {
+        throw new ConflictException('Não foi possível atualizar a empresa');
+      }
+      return updated;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        throw new ConflictException('CNPJ já cadastrado em outra empresa');
+      }
+      throw error;
+    }
+  }
+
   /**
-   * Returns the existing company matching by CNPJ, then Google Place ID, then
+   * Returns the existing company matching by Google Place ID, then CNPJ, then
    * normalized name + phone + address; creates one only when nothing matches.
    */
   async upsertByIdentity(input: CompanyInput): Promise<CompanyRecord> {
