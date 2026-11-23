@@ -41,11 +41,11 @@ export const navigation: NavItem[] = [
     permission: PERMISSIONS.LEADS_READ,
   },
   {
-    id: 'dores',
+    id: 'pain-points',
     label: 'Dores',
     icon: MessageCircleWarning,
-    to: '/dores',
-    permission: PERMISSIONS.DORES_READ,
+    to: '/pain-points',
+    permission: PERMISSIONS.PAIN_POINTS_READ,
   },
   {
     id: 'users',

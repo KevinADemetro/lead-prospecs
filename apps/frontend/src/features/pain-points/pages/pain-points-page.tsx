@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { DorListQuery, PublicDor } from '@app/shared';
+import type { PainPointListQuery, PublicPainPoint } from '@app/shared';
 import { PERMISSIONS } from '@app/shared';
-import { doresApi } from '@/services/api/dores';
+import { painPointsApi } from '@/services/api/pain-points';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,18 +14,23 @@ import { notify } from '@/lib/swal';
 import { isApiError } from '@/services/api/client';
 import { useAuth } from '@/stores/auth-context';
 
-export function DoresPage() {
+export function PainPointsPage() {
   const { hasPermission } = useAuth();
-  const [query, setQuery] = useState<DorListQuery>({ page: 1, limit: 10, order: 'asc', search: '' });
+  const [query, setQuery] = useState<PainPointListQuery>({
+    page: 1,
+    limit: 10,
+    order: 'asc',
+    search: '',
+  });
   const [search, setSearch] = useState('');
-  const [rows, setRows] = useState<PublicDor[]>([]);
+  const [rows, setRows] = useState<PublicPainPoint[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
   async function load(next = query) {
     setLoading(true);
     try {
-      const result = await doresApi.list(next);
+      const result = await painPointsApi.list(next);
       setRows(result.data);
       setTotalPages(result.meta.totalPages);
     } catch (error) {
@@ -40,11 +45,11 @@ export function DoresPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query.page, query.search]);
 
-  async function onDelete(dor: PublicDor) {
-    const confirmed = await notify.confirm(`Excluir dor "${dor.name}"?`);
+  async function onDelete(painPoint: PublicPainPoint) {
+    const confirmed = await notify.confirm(`Excluir dor "${painPoint.name}"?`);
     if (!confirmed) return;
     try {
-      await doresApi.remove(dor.id);
+      await painPointsApi.remove(painPoint.id);
       await notify.success('Dor excluída');
       await load();
     } catch (error) {
@@ -59,8 +64,8 @@ export function DoresPage() {
           <h1 className="text-2xl font-semibold">Dores</h1>
           <p className="text-sm text-muted">Catálogo de problemas/necessidades para classificar leads</p>
         </div>
-        {hasPermission(PERMISSIONS.DORES_CREATE) ? (
-          <Link to="/dores/new">
+        {hasPermission(PERMISSIONS.PAIN_POINTS_CREATE) ? (
+          <Link to="/pain-points/new">
             <Button>Nova dor</Button>
           </Link>
         ) : null}
@@ -106,14 +111,14 @@ export function DoresPage() {
                   header: 'Ações',
                   render: (row) => (
                     <div className="flex justify-end gap-2">
-                      {hasPermission(PERMISSIONS.DORES_UPDATE) ? (
-                        <Link to={`/dores/${row.id}`}>
+                      {hasPermission(PERMISSIONS.PAIN_POINTS_UPDATE) ? (
+                        <Link to={`/pain-points/${row.id}`}>
                           <Button size="sm" variant="secondary">
                             Editar
                           </Button>
                         </Link>
                       ) : null}
-                      {hasPermission(PERMISSIONS.DORES_DELETE) ? (
+                      {hasPermission(PERMISSIONS.PAIN_POINTS_DELETE) ? (
                         <Button size="sm" variant="danger" onClick={() => void onDelete(row)}>
                           Excluir
                         </Button>

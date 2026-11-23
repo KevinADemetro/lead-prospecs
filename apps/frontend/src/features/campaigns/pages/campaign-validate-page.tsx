@@ -34,7 +34,7 @@ import {
   listCampaignLeadQueue,
 } from '../campaign-validate';
 
-const EMPTY_DORES: LeadFilterOptions['dores'] = [];
+const EMPTY_PAIN_POINTS: LeadFilterOptions['painPoints'] = [];
 
 function FormSkeleton() {
   return (
@@ -59,7 +59,7 @@ export function CampaignValidatePage() {
   const [campaign, setCampaign] = useState<PublicCampaign | null>(null);
   const [queue, setQueue] = useState<PublicLead[]>([]);
   const [lead, setLead] = useState<PublicLeadDetail | null>(null);
-  const [dores, setDores] = useState(EMPTY_DORES);
+  const [painPoints, setPainPoints] = useState(EMPTY_PAIN_POINTS);
   const [queueLoading, setQueueLoading] = useState(true);
   const [leadLoading, setLeadLoading] = useState(false);
   const [queueError, setQueueError] = useState<{ status?: number; message: string } | null>(null);
@@ -99,7 +99,7 @@ export function CampaignValidatePage() {
       ]);
       setCampaign(campaignDetail);
       setQueue(leads);
-      setDores(options.dores);
+      setPainPoints(options.painPoints);
       if (leads.length > 0) {
         setSearchParams(
           (prev) => {
@@ -171,8 +171,8 @@ export function CampaignValidatePage() {
           ? {
               ...item,
               qualificationStatus: updated.qualificationStatus,
-              dorId: updated.dorId,
-              dor: updated.dor,
+              painPointId: updated.painPointId,
+              painPoint: updated.painPoint,
             }
           : item,
       );
@@ -322,7 +322,7 @@ export function CampaignValidatePage() {
             <LeadFormFields
               form={form}
               disabled={disabled}
-              dores={dores}
+              painPoints={painPoints}
               googlePlaceId={lead.company.googlePlaceId}
               companyNameFallback={lead.company.name}
             />

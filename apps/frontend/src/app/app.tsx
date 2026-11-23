@@ -18,8 +18,8 @@ import { CampaignDetailPage } from '@/features/campaigns/pages/campaign-detail-p
 import { CampaignValidatePage } from '@/features/campaigns/pages/campaign-validate-page';
 import { LeadsPage } from '@/features/leads/pages/leads-page';
 import { LeadFormPage } from '@/features/leads/pages/lead-form-page';
-import { DoresPage } from '@/features/dores/pages/dores-page';
-import { DorFormPage } from '@/features/dores/pages/dor-form-page';
+import { PainPointsPage } from '@/features/pain-points/pages/pain-points-page';
+import { PainPointFormPage } from '@/features/pain-points/pages/pain-point-form-page';
 import { ForbiddenPage, NotFoundPage, ServerErrorPage } from '@/features/errors/pages/error-pages';
 
 const router = createBrowserRouter([
@@ -86,16 +86,16 @@ const router = createBrowserRouter([
             ],
           },
           {
-            element: <PermissionGuard permission={PERMISSIONS.DORES_READ} />,
-            children: [{ path: '/dores', element: <DoresPage /> }],
+            element: <PermissionGuard permission={PERMISSIONS.PAIN_POINTS_READ} />,
+            children: [{ path: '/pain-points', element: <PainPointsPage /> }],
           },
           {
-            element: <PermissionGuard permission={PERMISSIONS.DORES_CREATE} />,
-            children: [{ path: '/dores/new', element: <DorFormPage /> }],
+            element: <PermissionGuard permission={PERMISSIONS.PAIN_POINTS_CREATE} />,
+            children: [{ path: '/pain-points/new', element: <PainPointFormPage /> }],
           },
           {
-            element: <PermissionGuard permission={PERMISSIONS.DORES_UPDATE} />,
-            children: [{ path: '/dores/:id', element: <DorFormPage /> }],
+            element: <PermissionGuard permission={PERMISSIONS.PAIN_POINTS_UPDATE} />,
+            children: [{ path: '/pain-points/:id', element: <PainPointFormPage /> }],
           },
         ],
       },

@@ -16,12 +16,12 @@ function lead(id: string, name: string, overrides: Partial<PublicLead> = {}): Pu
     id,
     companyId: `c-${id}`,
     campaignId: 'camp-1',
-    dorId: null,
+    painPointId: null,
     websiteStatus: 'NOT_FOUND',
     qualificationStatus: 'PENDING',
     priority: false,
     notes: null,
-    dor: null,
+    painPoint: null,
     company: {
       id: `c-${id}`,
       name,
@@ -62,7 +62,7 @@ describe('LeadsPage', () => {
     vi.mocked(leadsApi.filterOptions).mockResolvedValue({
       categories: ['Padaria'],
       cities: [],
-      dores: [{ id: 'dor-1', name: 'Baixa conversão' }],
+      painPoints: [{ id: 'pain-1', name: 'Baixa conversão' }],
     });
     vi.mocked(leadsApi.list).mockResolvedValue({
       data: [lead('1', 'Padaria Alpha'), lead('2', 'Padaria Beta')],

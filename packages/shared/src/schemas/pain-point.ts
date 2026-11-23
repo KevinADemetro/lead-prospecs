@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { NAME_MAX_LENGTH } from '../constants';
 import { paginationQuerySchema } from './pagination';
 
-export const createDorSchema = z
+export const createPainPointSchema = z
   .object({
     name: z
       .string()
@@ -13,7 +13,7 @@ export const createDorSchema = z
   })
   .strict();
 
-export const updateDorSchema = z
+export const updatePainPointSchema = z
   .object({
     name: z.string().trim().min(2).max(NAME_MAX_LENGTH).optional(),
     description: z.string().trim().max(500).optional(),
@@ -23,8 +23,8 @@ export const updateDorSchema = z
     message: 'Informe ao menos um campo para atualizar',
   });
 
-export const dorListQuerySchema = paginationQuerySchema;
+export const painPointListQuerySchema = paginationQuerySchema;
 
-export type CreateDorInput = z.infer<typeof createDorSchema>;
-export type UpdateDorInput = z.infer<typeof updateDorSchema>;
-export type DorListQuery = z.infer<typeof dorListQuerySchema>;
+export type CreatePainPointInput = z.infer<typeof createPainPointSchema>;
+export type UpdatePainPointInput = z.infer<typeof updatePainPointSchema>;
+export type PainPointListQuery = z.infer<typeof painPointListQuerySchema>;

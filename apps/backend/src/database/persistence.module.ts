@@ -6,7 +6,7 @@ import { RefreshTokensRepository } from '../modules/auth/refresh-tokens.reposito
 import { CampaignsRepository } from '../modules/campaigns/campaigns.repository';
 import { CompaniesRepository } from '../modules/companies/companies.repository';
 import { LeadsRepository } from '../modules/leads/leads.repository';
-import { DoresRepository } from '../modules/dores/dores.repository';
+import { PainPointsRepository } from '../modules/pain-points/pain-points.repository';
 import { DashboardRepository } from '../modules/dashboard/dashboard.repository';
 
 const repositories = [
@@ -16,7 +16,7 @@ const repositories = [
   CampaignsRepository,
   CompaniesRepository,
   LeadsRepository,
-  DoresRepository,
+  PainPointsRepository,
   DashboardRepository,
 ];
 

@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CampaignRecord } from '../../common/database/records';
-import { DoresRepository } from '../dores/dores.repository';
+import { PainPointsRepository } from '../pain-points/pain-points.repository';
 import { LeadsService } from '../leads/leads.service';
 import { PlacesClient } from '../places/places.client';
 import { placeToCompanyInput } from '../places/places.mapper';
 import {
-  AUTO_QUALIFY_DOR_NAMES,
-  resolveAutoQualifyDor,
-  type AutoQualifyDorName,
+  AUTO_QUALIFY_PAIN_POINT_NAMES,
+  resolveAutoQualifyPainPoint,
+  type AutoQualifyPainPointName,
 } from './auto-qualify.util';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class CampaignRunnerService {
   constructor(
     private readonly places: PlacesClient,
     private readonly leads: LeadsService,
-    private readonly dores: DoresRepository,
+    private readonly painPoints: PainPointsRepository,
   ) {}
 
   /**
@@ -31,7 +31,7 @@ export class CampaignRunnerService {
     const location = formatLocation(campaign);
     const seenPlaceIds = new Set<string>();
     let imported = 0;
-    const autoDores = await this.loadAutoQualifyDores();
+    const autoPainPoints = await this.loadAutoQualifyPainPoints();
 
     for (const category of campaign.categories) {
       const textQuery = `${category} em ${location}`;
@@ -50,7 +50,7 @@ export class CampaignRunnerService {
         await this.leads.addCompanyToCampaign(
           campaign.id,
           company,
-          this.buildAutoQualify(company.website, autoDores),
+          this.buildAutoQualify(company.website, autoPainPoints),
         );
         imported += 1;
       }
@@ -59,16 +59,16 @@ export class CampaignRunnerService {
     return { imported };
   }
 
-  private async loadAutoQualifyDores(): Promise<Map<AutoQualifyDorName, string>> {
-    const found = await this.dores.findActiveByNames([...AUTO_QUALIFY_DOR_NAMES]);
-    const map = new Map<AutoQualifyDorName, string>();
-    for (const name of AUTO_QUALIFY_DOR_NAMES) {
-      const dor = found.get(name);
-      if (dor) {
-        map.set(name, dor.id);
+  private async loadAutoQualifyPainPoints(): Promise<Map<AutoQualifyPainPointName, string>> {
+    const found = await this.painPoints.findActiveByNames([...AUTO_QUALIFY_PAIN_POINT_NAMES]);
+    const map = new Map<AutoQualifyPainPointName, string>();
+    for (const name of AUTO_QUALIFY_PAIN_POINT_NAMES) {
+      const painPoint = found.get(name);
+      if (painPoint) {
+        map.set(name, painPoint.id);
       } else {
         this.logger.warn(
-          `Dor "${name}" not found — leads matching this rule will stay PENDING`,
+          `Pain point "${name}" not found — leads matching this rule will stay PENDING`,
         );
       }
     }
@@ -77,19 +77,19 @@ export class CampaignRunnerService {
 
   private buildAutoQualify(
     website: string | null | undefined,
-    autoDores: Map<AutoQualifyDorName, string>,
-  ): { dorId: string; websiteStatus?: 'NOT_FOUND' } | undefined {
-    const dorName = resolveAutoQualifyDor(website);
-    if (!dorName) {
+    autoPainPoints: Map<AutoQualifyPainPointName, string>,
+  ): { painPointId: string; websiteStatus?: 'NOT_FOUND' } | undefined {
+    const painPointName = resolveAutoQualifyPainPoint(website);
+    if (!painPointName) {
       return undefined;
     }
-    const dorId = autoDores.get(dorName);
-    if (!dorId) {
+    const painPointId = autoPainPoints.get(painPointName);
+    if (!painPointId) {
       return undefined;
     }
     return {
-      dorId,
-      ...(dorName === 'Sem site' ? { websiteStatus: 'NOT_FOUND' as const } : {}),
+      painPointId,
+      ...(painPointName === 'Sem site' ? { websiteStatus: 'NOT_FOUND' as const } : {}),
     };
   }
 }

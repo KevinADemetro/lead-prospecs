@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createDorSchema, type CreateDorInput } from '@app/shared';
-import { doresApi } from '@/services/api/dores';
+import { createPainPointSchema, type CreatePainPointInput } from '@app/shared';
+import { painPointsApi } from '@/services/api/pain-points';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
@@ -13,14 +13,14 @@ import { Loading } from '@/components/ui/loading';
 import { notify } from '@/lib/swal';
 import { isApiError } from '@/services/api/client';
 
-export function DorFormPage() {
+export function PainPointFormPage() {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(isEdit);
 
-  const form = useForm<CreateDorInput>({
-    resolver: zodResolver(createDorSchema),
+  const form = useForm<CreatePainPointInput>({
+    resolver: zodResolver(createPainPointSchema),
     defaultValues: { name: '', description: '' },
   });
 
@@ -28,30 +28,30 @@ export function DorFormPage() {
     if (!id) return;
     void (async () => {
       try {
-        const dor = await doresApi.get(id);
+        const painPoint = await painPointsApi.get(id);
         form.reset({
-          name: dor.name,
-          description: dor.description,
+          name: painPoint.name,
+          description: painPoint.description,
         });
       } catch (error) {
         await notify.error('Erro', isApiError(error) ? error.message : 'Falha ao carregar dor');
-        navigate('/dores');
+        navigate('/pain-points');
       } finally {
         setLoading(false);
       }
     })();
   }, [id, form, navigate]);
 
-  async function onSubmit(values: CreateDorInput) {
+  async function onSubmit(values: CreatePainPointInput) {
     try {
       if (isEdit && id) {
-        await doresApi.update(id, values);
+        await painPointsApi.update(id, values);
         await notify.success('Dor atualizada');
       } else {
-        await doresApi.create(values);
+        await painPointsApi.create(values);
         await notify.success('Dor criada');
       }
-      navigate('/dores');
+      navigate('/pain-points');
     } catch (error) {
       await notify.error('Erro', isApiError(error) ? error.message : 'Falha ao salvar');
     }
@@ -76,7 +76,7 @@ export function DorFormPage() {
           <Button type="submit" loading={form.formState.isSubmitting}>
             Salvar
           </Button>
-          <Button type="button" variant="secondary" onClick={() => navigate('/dores')}>
+          <Button type="button" variant="secondary" onClick={() => navigate('/pain-points')}>
             Cancelar
           </Button>
         </div>

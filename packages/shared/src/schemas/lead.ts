@@ -53,7 +53,7 @@ export const leadListQuerySchema = paginationQuerySchema.extend({
   sort: z.enum(LEAD_SORT_FIELDS).optional(),
   campaignId: entityIdSchema.optional(),
   companyId: entityIdSchema.optional(),
-  dorId: entityIdSchema.optional(),
+  painPointId: entityIdSchema.optional(),
   qualificationStatus: queryEnumArraySchema(QUALIFICATION_STATUSES),
   websiteStatus: websiteStatusSchema.optional(),
   priority: booleanQuerySchema,
@@ -123,7 +123,7 @@ export const updateLeadCompanySchema = z
 
 export const updateLeadSchema = z
   .object({
-    dorId: entityIdSchema.nullable().optional(),
+    painPointId: entityIdSchema.nullable().optional(),
     websiteStatus: websiteStatusSchema.optional(),
     qualificationStatus: manualQualificationStatusSchema.optional(),
     priority: z.boolean().optional(),

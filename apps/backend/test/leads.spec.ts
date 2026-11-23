@@ -68,11 +68,13 @@ describe('Leads listing and details', () => {
       data: { websiteStatus: 'ERROR' },
     });
 
-    const dor = await mutating(admin, 'post', '/api/v1/dores', {
+    const painPoint = await mutating(admin, 'post', '/api/v1/pain-points', {
       name: 'Baixa conversão',
     });
-    ids.dor = dor.body.id as string;
-    await mutating(admin, 'patch', `/api/v1/leads/${alpha.id}`, { dorId: ids.dor });
+    ids.painPoint = painPoint.body.id as string;
+    await mutating(admin, 'patch', `/api/v1/leads/${alpha.id}`, {
+      painPointId: ids.painPoint,
+    });
   });
 
   afterAll(async () => {
@@ -91,7 +93,7 @@ describe('Leads listing and details', () => {
     expect(await listNames('search=11.222.333')).toEqual(['Alpha Pet']);
   });
 
-  it('filters by statuses, category, city and dor', async () => {
+  it('filters by statuses, category, city and pain point', async () => {
     expect(await listNames('websiteStatus=NOT_FOUND')).toEqual(['Beta Banho e Tosa']);
     expect(await listNames('websiteStatus=ERROR')).toEqual(['Gamma Vet']);
     expect(await listNames('qualificationStatus=QUALIFIED')).toEqual(['Alpha Pet']);
@@ -108,7 +110,7 @@ describe('Leads listing and details', () => {
       'Alpha Pet',
       'Gamma Vet',
     ]);
-    expect(await listNames(`dorId=${ids.dor}`)).toEqual(['Alpha Pet']);
+    expect(await listNames(`painPointId=${ids.painPoint}`)).toEqual(['Alpha Pet']);
   });
 
   it('updates and filters priority and notes', async () => {
@@ -153,7 +155,7 @@ describe('Leads listing and details', () => {
     expect((await admin.get('/api/v1/leads?sort=score')).status).toBe(400);
   });
 
-  it('returns lead details with the full company and dor', async () => {
+  it('returns lead details with the full company and pain point', async () => {
     const res = await admin.get(`/api/v1/leads/${ids.alpha}`);
     expect(res.status).toBe(200);
     expect(res.body.company).toMatchObject({
@@ -170,26 +172,32 @@ describe('Leads listing and details', () => {
     expect(res.body.facebookStatus).toBeUndefined();
     expect(res.body.trelloStatus).toBeUndefined();
     expect(res.body.campaign.name).toBe('Pets Curitiba');
-    expect(res.body.dor).toEqual({ id: ids.dor, name: 'Baixa conversão' });
-    expect(res.body.dorId).toBe(ids.dor);
+    expect(res.body.painPoint).toEqual({ id: ids.painPoint, name: 'Baixa conversão' });
+    expect(res.body.painPointId).toBe(ids.painPoint);
   });
 
-  it('lists distinct filter options including dores', async () => {
+  it('lists distinct filter options including pain points', async () => {
     const res = await admin.get('/api/v1/leads/filter-options');
     expect(res.status).toBe(200);
     expect(res.body.categories).toEqual(['Banho e tosa', 'Pet shop']);
     expect(res.body.cities).toEqual(expect.arrayContaining(['Curitiba', 'Pinhais']));
-    expect(res.body.dores).toEqual(
-      expect.arrayContaining([expect.objectContaining({ id: ids.dor, name: 'Baixa conversão' })]),
+    expect(res.body.painPoints).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: ids.painPoint, name: 'Baixa conversão' }),
+      ]),
     );
   });
 
-  it('clears dor via patch', async () => {
-    const cleared = await mutating(admin, 'patch', `/api/v1/leads/${ids.alpha}`, { dorId: null });
+  it('clears pain point via patch', async () => {
+    const cleared = await mutating(admin, 'patch', `/api/v1/leads/${ids.alpha}`, {
+      painPointId: null,
+    });
     expect(cleared.status).toBe(200);
-    expect(cleared.body.dorId).toBeNull();
-    expect(cleared.body.dor).toBeNull();
-    await mutating(admin, 'patch', `/api/v1/leads/${ids.alpha}`, { dorId: ids.dor });
+    expect(cleared.body.painPointId).toBeNull();
+    expect(cleared.body.painPoint).toBeNull();
+    await mutating(admin, 'patch', `/api/v1/leads/${ids.alpha}`, {
+      painPointId: ids.painPoint,
+    });
   });
 
   it('updates qualification, website validity and company fields', async () => {

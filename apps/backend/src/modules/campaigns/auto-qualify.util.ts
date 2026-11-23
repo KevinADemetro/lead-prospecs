@@ -1,14 +1,14 @@
-/** Dor names expected in the catalog for campaign auto-qualification. */
-export const AUTO_QUALIFY_DOR_NAMES = ['Sem site', 'Instagram', 'Linktree'] as const;
-export type AutoQualifyDorName = (typeof AUTO_QUALIFY_DOR_NAMES)[number];
+/** Pain-point names expected in the catalog for campaign auto-qualification. */
+export const AUTO_QUALIFY_PAIN_POINT_NAMES = ['Sem site', 'Instagram', 'Linktree'] as const;
+export type AutoQualifyPainPointName = (typeof AUTO_QUALIFY_PAIN_POINT_NAMES)[number];
 
 /**
  * Infers auto-qualification from the website Google returned for the place.
- * No URL → Sem site; Instagram / Linktree profile URLs → matching dor.
+ * No URL → Sem site; Instagram / Linktree profile URLs → matching pain point.
  */
-export function resolveAutoQualifyDor(
+export function resolveAutoQualifyPainPoint(
   website: string | null | undefined,
-): AutoQualifyDorName | null {
+): AutoQualifyPainPointName | null {
   const value = website?.trim() ?? '';
   if (!value) {
     return 'Sem site';

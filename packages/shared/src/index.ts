@@ -7,5 +7,5 @@ export * from './schemas/pagination';
 export * from './schemas/user';
 export * from './schemas/role';
 export * from './schemas/campaign';
-export * from './schemas/dor';
+export * from './schemas/pain-point';
 export * from './schemas/lead';

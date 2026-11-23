@@ -3,14 +3,14 @@ import {
   PublicCampaign,
   PublicCompany,
   PublicCompanyDetail,
-  PublicDor,
+  PublicPainPoint,
   PublicLead,
   PublicLeadDetail,
 } from '@app/shared';
 import {
   CampaignRecord,
   CompanyRecord,
-  DorRecord,
+  PainPointRecord,
   LeadDetailRecord,
   LeadRecord,
   RoleRecord,
@@ -111,13 +111,13 @@ export function toPublicCompany(company: CompanyRecord): PublicCompany {
   };
 }
 
-export function toPublicDor(dor: DorRecord): PublicDor {
+export function toPublicPainPoint(painPoint: PainPointRecord): PublicPainPoint {
   return {
-    id: dor.id,
-    name: dor.name,
-    description: dor.description,
-    createdAt: dor.createdAt.toISOString(),
-    updatedAt: dor.updatedAt.toISOString(),
+    id: painPoint.id,
+    name: painPoint.name,
+    description: painPoint.description,
+    createdAt: painPoint.createdAt.toISOString(),
+    updatedAt: painPoint.updatedAt.toISOString(),
   };
 }
 
@@ -126,12 +126,12 @@ export function toPublicLead(lead: LeadRecord): PublicLead {
     id: lead.id,
     companyId: lead.companyId,
     campaignId: lead.campaignId,
-    dorId: lead.dorId,
+    painPointId: lead.painPointId,
     websiteStatus: lead.websiteStatus,
     qualificationStatus: lead.qualificationStatus,
     priority: lead.priority,
     notes: lead.notes,
-    dor: lead.dor,
+    painPoint: lead.painPoint,
     company: lead.company,
     campaign: lead.campaign,
     createdAt: lead.createdAt.toISOString(),

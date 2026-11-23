@@ -58,7 +58,7 @@ export type RoleListFilter = {
   nameContains?: string;
 };
 
-export type DorRecord = {
+export type PainPointRecord = {
   id: string;
   name: string;
   description: string;
@@ -68,11 +68,11 @@ export type DorRecord = {
   deletedBy: string | null;
 };
 
-export type DorListFilter = {
+export type PainPointListFilter = {
   nameContains?: string;
 };
 
-export type DorSummaryRecord = Pick<DorRecord, 'id' | 'name'>;
+export type PainPointSummaryRecord = Pick<PainPointRecord, 'id' | 'name'>;
 
 export type CampaignRecord = {
   id: string;
@@ -144,12 +144,12 @@ export type LeadRecord = {
   id: string;
   companyId: string;
   campaignId: string;
-  dorId: string | null;
+  painPointId: string | null;
   websiteStatus: WebsiteStatus;
   qualificationStatus: QualificationStatus;
   priority: boolean;
   notes: string | null;
-  dor: DorSummaryRecord | null;
+  painPoint: PainPointSummaryRecord | null;
   company: CompanySummaryRecord;
   campaign: CampaignSummaryRecord;
   createdAt: Date;
@@ -165,7 +165,7 @@ export type LeadDetailRecord = Omit<LeadRecord, 'company'> & {
 export type LeadListFilter = {
   campaignId?: string;
   companyId?: string;
-  dorId?: string;
+  painPointId?: string;
   /** Matches company name, legal name, CNPJ, category or city. */
   search?: string;
   /** When set, matches leads whose status is any of the given values. */
@@ -179,7 +179,7 @@ export type LeadListFilter = {
 export type LeadFilterOptionsRecord = {
   categories: string[];
   cities: string[];
-  dores: DorSummaryRecord[];
+  painPoints: PainPointSummaryRecord[];
 };
 
 export type SortDirection = 'asc' | 'desc';

@@ -11,7 +11,7 @@ import { HealthModule } from './modules/health/health.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { LeadsModule } from './modules/leads/leads.module';
-import { DoresModule } from './modules/dores/dores.module';
+import { PainPointsModule } from './modules/pain-points/pain-points.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
@@ -35,7 +35,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     CampaignsModule,
     CompaniesModule,
     LeadsModule,
-    DoresModule,
+    PainPointsModule,
     DashboardModule,
     HealthModule,
   ],

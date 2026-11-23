@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { LeadFilterOptions, LeadListQuery, UpdateLeadInput } from '@app/shared';
 import { LeadsRepository } from './leads.repository';
-import { DoresRepository } from '../dores/dores.repository';
+import { PainPointsRepository } from '../pain-points/pain-points.repository';
 import { CampaignsRepository } from '../campaigns/campaigns.repository';
 import { CompaniesService } from '../companies/companies.service';
 import { CompanyInput } from '../companies/company-identity.util';
@@ -12,7 +12,7 @@ import { LeadListFilter } from '../../common/database/records';
 export class LeadsService {
   constructor(
     private readonly leads: LeadsRepository,
-    private readonly dores: DoresRepository,
+    private readonly painPoints: PainPointsRepository,
     private readonly campaigns: CampaignsRepository,
     private readonly companies: CompaniesService,
   ) {}
@@ -43,21 +43,21 @@ export class LeadsService {
 
   async update(id: string, input: UpdateLeadInput) {
     const current = await this.leads.findByIdOrFail(id);
-    if (input.dorId !== undefined && input.dorId !== null) {
-      await this.dores.findByIdOrFail(input.dorId);
+    if (input.painPointId !== undefined && input.painPointId !== null) {
+      await this.painPoints.findByIdOrFail(input.painPointId);
     }
     if (input.company) {
       await this.companies.updateFromLead(current.companyId, input.company);
     }
     const hasLeadFields =
-      input.dorId !== undefined ||
+      input.painPointId !== undefined ||
       input.websiteStatus !== undefined ||
       input.qualificationStatus !== undefined ||
       input.priority !== undefined ||
       input.notes !== undefined;
     if (hasLeadFields) {
       const updated = await this.leads.updateFields(id, {
-        ...(input.dorId !== undefined ? { dorId: input.dorId } : {}),
+        ...(input.painPointId !== undefined ? { painPointId: input.painPointId } : {}),
         ...(input.websiteStatus !== undefined ? { websiteStatus: input.websiteStatus } : {}),
         ...(input.qualificationStatus !== undefined
           ? { qualificationStatus: input.qualificationStatus }
@@ -85,7 +85,7 @@ export class LeadsService {
     campaignId: string,
     company: CompanyInput,
     autoQualify?: {
-      dorId: string;
+      painPointId: string;
       websiteStatus?: 'NOT_FOUND';
     },
   ) {
@@ -94,7 +94,7 @@ export class LeadsService {
     let lead = await this.leads.upsertForCampaign(campaign.id, saved.id);
     if (autoQualify && lead.qualificationStatus === 'PENDING') {
       const updated = await this.leads.updateFields(lead.id, {
-        dorId: autoQualify.dorId,
+        painPointId: autoQualify.painPointId,
         qualificationStatus: 'AUTO_QUALIFIED',
         ...(autoQualify.websiteStatus
           ? { websiteStatus: autoQualify.websiteStatus }
@@ -112,7 +112,7 @@ export class LeadsService {
       search: query.search || undefined,
       campaignId: query.campaignId,
       companyId: query.companyId,
-      dorId: query.dorId,
+      painPointId: query.painPointId,
       qualificationStatus: query.qualificationStatus,
       websiteStatus: query.websiteStatus,
       priority: query.priority,

@@ -96,7 +96,7 @@ export type PublicCompanySummary = Pick<
   | 'state'
 >;
 
-export type PublicDor = {
+export type PublicPainPoint = {
   id: string;
   name: string;
   description: string;
@@ -104,18 +104,18 @@ export type PublicDor = {
   updatedAt: string;
 };
 
-export type PublicDorSummary = Pick<PublicDor, 'id' | 'name'>;
+export type PublicPainPointSummary = Pick<PublicPainPoint, 'id' | 'name'>;
 
 export type PublicLead = {
   id: string;
   companyId: string;
   campaignId: string;
-  dorId: string | null;
+  painPointId: string | null;
   websiteStatus: WebsiteStatus;
   qualificationStatus: QualificationStatus;
   priority: boolean;
   notes: string | null;
-  dor: PublicDorSummary | null;
+  painPoint: PublicPainPointSummary | null;
   company: PublicCompanySummary;
   campaign: PublicCampaignSummary;
   createdAt: string;
@@ -129,7 +129,7 @@ export type PublicLeadDetail = Omit<PublicLead, 'company'> & {
 export type LeadFilterOptions = {
   categories: string[];
   cities: string[];
-  dores: PublicDorSummary[];
+  painPoints: PublicPainPointSummary[];
 };
 
 export type PublicCompanyDetail = PublicCompany & {

@@ -20,7 +20,7 @@ import {
   type LeadFormValues,
 } from '../lead-form';
 
-const EMPTY_DORES: LeadFilterOptions['dores'] = [];
+const EMPTY_PAIN_POINTS: LeadFilterOptions['painPoints'] = [];
 
 function FormSkeleton() {
   return (
@@ -43,7 +43,7 @@ export function LeadFormPage() {
   const canReadCampaigns = hasPermission(PERMISSIONS.CAMPAIGNS_READ);
 
   const [lead, setLead] = useState<PublicLeadDetail | null>(null);
-  const [dores, setDores] = useState(EMPTY_DORES);
+  const [painPoints, setPainPoints] = useState(EMPTY_PAIN_POINTS);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<{ status?: number; message: string } | null>(null);
   const [saving, setSaving] = useState(false);
@@ -59,7 +59,7 @@ export function LeadFormPage() {
     try {
       const [detail, options] = await Promise.all([leadsApi.get(id), leadsApi.filterOptions()]);
       setLead(detail);
-      setDores(options.dores);
+      setPainPoints(options.painPoints);
       form.reset(toLeadFormValues(detail));
     } catch (error) {
       setLoadError(
@@ -139,7 +139,7 @@ export function LeadFormPage() {
           <LeadFormFields
             form={form}
             disabled={disabled}
-            dores={dores}
+            painPoints={painPoints}
             googlePlaceId={lead.company.googlePlaceId}
             companyNameFallback={lead.company.name}
           />

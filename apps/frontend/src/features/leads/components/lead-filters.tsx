@@ -101,14 +101,14 @@ export function LeadFilters({ values, options, campaigns, onChange, onSubmit, on
           ))}
         </Select>
         <Select
-          value={values.dorId}
-          onChange={(event) => set('dorId')(event.target.value)}
+          value={values.painPointId}
+          onChange={(event) => set('painPointId')(event.target.value)}
           aria-label="Dor"
         >
           <option value="">Todas as dores</option>
-          {options.dores.map((dor) => (
-            <option key={dor.id} value={dor.id}>
-              {dor.name}
+          {options.painPoints.map((painPoint) => (
+            <option key={painPoint.id} value={painPoint.id}>
+              {painPoint.name}
             </option>
           ))}
         </Select>

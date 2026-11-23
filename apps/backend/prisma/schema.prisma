@@ -163,7 +163,7 @@ model Company {
   @@map("companies")
 }
 
-model Dor {
+model PainPoint {
   id          String    @id @default(uuid()) @db.Uuid
   name        String
   description String    @default("")
@@ -175,17 +175,17 @@ model Dor {
 
   @@unique([name])
   @@index([deletedAt, createdAt])
-  @@map("dores")
+  @@map("pain_points")
 }
 
 model Lead {
   id                  String              @id @default(uuid()) @db.Uuid
   companyId           String              @map("company_id") @db.Uuid
   campaignId          String              @map("campaign_id") @db.Uuid
-  dorId               String?             @map("dor_id") @db.Uuid
+  painPointId         String?             @map("pain_point_id") @db.Uuid
   company             Company             @relation(fields: [companyId], references: [id], onDelete: Restrict)
   campaign            Campaign            @relation(fields: [campaignId], references: [id], onDelete: Restrict)
-  dor                 Dor?                @relation(fields: [dorId], references: [id], onDelete: Restrict)
+  painPoint           PainPoint?          @relation(fields: [painPointId], references: [id], onDelete: Restrict)
   websiteStatus       WebsiteStatus       @default(UNKNOWN) @map("website_status")
   qualificationStatus QualificationStatus @default(PENDING) @map("qualification_status")
   priority            Boolean             @default(false)
@@ -197,7 +197,7 @@ model Lead {
 
   @@unique([campaignId, companyId])
   @@index([companyId])
-  @@index([dorId])
+  @@index([painPointId])
   @@index([campaignId, qualificationStatus])
   @@index([priority])
   @@index([deletedAt, createdAt])

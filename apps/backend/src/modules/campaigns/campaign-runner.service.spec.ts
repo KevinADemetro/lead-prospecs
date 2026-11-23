@@ -2,7 +2,7 @@ import { CampaignRunnerService } from './campaign-runner.service';
 import type { CampaignRecord } from '../../common/database/records';
 import type { PlacesClient } from '../places/places.client';
 import type { LeadsService } from '../leads/leads.service';
-import type { DoresRepository } from '../dores/dores.repository';
+import type { PainPointsRepository } from '../pain-points/pain-points.repository';
 
 describe('CampaignRunnerService', () => {
   const campaign: CampaignRecord = {
@@ -22,24 +22,24 @@ describe('CampaignRunnerService', () => {
     qualifiedLeadCount: 0,
   };
 
-  const dorIds = {
-    'Sem site': 'dor-sem-site',
-    Instagram: 'dor-instagram',
-    Linktree: 'dor-linktree',
+  const painPointIds = {
+    'Sem site': 'pain-sem-site',
+    Instagram: 'pain-instagram',
+    Linktree: 'pain-linktree',
   };
 
   function buildRunner(searchAll: jest.Mock, addCompanyToCampaign: jest.Mock) {
     const findActiveByNames = jest.fn().mockResolvedValue(
       new Map([
-        ['Sem site', { id: dorIds['Sem site'], name: 'Sem site' }],
-        ['Instagram', { id: dorIds.Instagram, name: 'Instagram' }],
-        ['Linktree', { id: dorIds.Linktree, name: 'Linktree' }],
+        ['Sem site', { id: painPointIds['Sem site'], name: 'Sem site' }],
+        ['Instagram', { id: painPointIds.Instagram, name: 'Instagram' }],
+        ['Linktree', { id: painPointIds.Linktree, name: 'Linktree' }],
       ]),
     );
     return new CampaignRunnerService(
       { searchAll } as unknown as PlacesClient,
       { addCompanyToCampaign } as unknown as LeadsService,
-      { findActiveByNames } as unknown as DoresRepository,
+      { findActiveByNames } as unknown as PainPointsRepository,
     );
   }
 
@@ -117,19 +117,19 @@ describe('CampaignRunnerService', () => {
       1,
       'campaign-1',
       expect.objectContaining({ googlePlaceId: 'ChIJ-1', website: null }),
-      { dorId: dorIds['Sem site'], websiteStatus: 'NOT_FOUND' },
+      { painPointId: painPointIds['Sem site'], websiteStatus: 'NOT_FOUND' },
     );
     expect(addCompanyToCampaign).toHaveBeenNthCalledWith(
       2,
       'campaign-1',
       expect.objectContaining({ googlePlaceId: 'ChIJ-2' }),
-      { dorId: dorIds.Instagram },
+      { painPointId: painPointIds.Instagram },
     );
     expect(addCompanyToCampaign).toHaveBeenNthCalledWith(
       3,
       'campaign-1',
       expect.objectContaining({ googlePlaceId: 'ChIJ-3' }),
-      { dorId: dorIds.Linktree },
+      { painPointId: painPointIds.Linktree },
     );
     expect(addCompanyToCampaign).toHaveBeenNthCalledWith(
       4,

@@ -4,7 +4,7 @@ import { ExternalLink as ExternalLinkIcon } from 'lucide-react';
 import {
   BRAZILIAN_STATES,
   MANUAL_QUALIFICATION_STATUSES,
-  type PublicDorSummary,
+  type PublicPainPointSummary,
 } from '@app/shared';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FormField } from '@/components/ui/form-field';
@@ -77,7 +77,7 @@ function FieldWithLinks({
 type Props = {
   form: UseFormReturn<LeadFormValues>;
   disabled: boolean;
-  dores: PublicDorSummary[];
+  painPoints: PublicPainPointSummary[];
   googlePlaceId?: string | null;
   companyNameFallback?: string;
 };
@@ -85,7 +85,7 @@ type Props = {
 export function LeadFormFields({
   form,
   disabled,
-  dores,
+  painPoints,
   googlePlaceId,
   companyNameFallback,
 }: Props) {
@@ -144,14 +144,18 @@ export function LeadFormFields({
         </FormField>
         <FormField
           label="Dor"
-          error={errors.dorId?.message}
+          error={errors.painPointId?.message}
           hint="Problema ou necessidade do cliente"
         >
-          <Select disabled={disabled} aria-label="Dor do lead" {...form.register('dorId')}>
+          <Select
+            disabled={disabled}
+            aria-label="Dor do lead"
+            {...form.register('painPointId')}
+          >
             <option value="">Sem dor</option>
-            {dores.map((dor) => (
-              <option key={dor.id} value={dor.id}>
-                {dor.name}
+            {painPoints.map((painPoint) => (
+              <option key={painPoint.id} value={painPoint.id}>
+                {painPoint.name}
               </option>
             ))}
           </Select>

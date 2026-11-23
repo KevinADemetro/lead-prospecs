@@ -24,14 +24,14 @@ const leadWithRelations = {
     },
   },
   campaign: { select: { id: true, name: true, status: true } },
-  dor: { select: { id: true, name: true } },
+  painPoint: { select: { id: true, name: true } },
 } as const;
 type LeadRow = Prisma.LeadGetPayload<{ include: typeof leadWithRelations }>;
 
 const leadWithDetail = {
   company: true,
   campaign: { select: { id: true, name: true, status: true } },
-  dor: { select: { id: true, name: true } },
+  painPoint: { select: { id: true, name: true } },
 } as const;
 type LeadDetailRow = Prisma.LeadGetPayload<{ include: typeof leadWithDetail }>;
 
@@ -94,7 +94,7 @@ export class LeadsRepository extends BaseRepository {
   async updateFields(
     id: string,
     data: {
-      dorId?: string | null;
+      painPointId?: string | null;
       websiteStatus?: LeadDetailRecord['websiteStatus'];
       qualificationStatus?: LeadDetailRecord['qualificationStatus'];
       priority?: boolean;
@@ -135,13 +135,13 @@ export class LeadsRepository extends BaseRepository {
     return leads.map((lead) => this.toRecord(lead));
   }
 
-  /** Distinct categories/cities among visible leads, plus active Dor catalog entries. */
+  /** Distinct categories/cities among visible leads, plus active pain-point catalog entries. */
   async filterOptions(): Promise<LeadFilterOptionsRecord> {
     const companyWhere: Prisma.CompanyWhereInput = {
       ...this.notDeleted(),
       leads: { some: { ...this.notDeleted(), campaign: { deletedAt: null } } },
     };
-    const [categories, cities, dores] = await Promise.all([
+    const [categories, cities, painPoints] = await Promise.all([
       this.prisma.company.findMany({
         where: { ...companyWhere, category: { not: null } },
         distinct: ['category'],
@@ -156,7 +156,7 @@ export class LeadsRepository extends BaseRepository {
         orderBy: { city: 'asc' },
         take: FILTER_OPTIONS_LIMIT,
       }),
-      this.prisma.dor.findMany({
+      this.prisma.painPoint.findMany({
         where: this.notDeleted(),
         select: { id: true, name: true },
         orderBy: { name: 'asc' },
@@ -166,7 +166,7 @@ export class LeadsRepository extends BaseRepository {
     return {
       categories: categories.flatMap((row) => (row.category?.trim() ? [row.category] : [])),
       cities: cities.flatMap((row) => (row.city?.trim() ? [row.city] : [])),
-      dores,
+      painPoints,
     };
   }
 
@@ -212,7 +212,7 @@ export class LeadsRepository extends BaseRepository {
       },
       ...(filter.campaignId ? { campaignId: filter.campaignId } : {}),
       ...(filter.companyId ? { companyId: filter.companyId } : {}),
-      ...(filter.dorId ? { dorId: filter.dorId } : {}),
+      ...(filter.painPointId ? { painPointId: filter.painPointId } : {}),
       ...(filter.qualificationStatus?.length
         ? { qualificationStatus: { in: filter.qualificationStatus } }
         : {}),
@@ -267,12 +267,12 @@ export class LeadsRepository extends BaseRepository {
       id: lead.id,
       companyId: lead.companyId,
       campaignId: lead.campaignId,
-      dorId: lead.dorId,
+      painPointId: lead.painPointId,
       websiteStatus: lead.websiteStatus,
       qualificationStatus: lead.qualificationStatus,
       priority: lead.priority,
       notes: lead.notes,
-      dor: lead.dor,
+      painPoint: lead.painPoint,
       campaign: lead.campaign,
       createdAt: lead.createdAt,
       updatedAt: lead.updatedAt,

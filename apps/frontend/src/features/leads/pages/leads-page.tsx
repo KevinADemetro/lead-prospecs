@@ -48,7 +48,7 @@ const DEFAULT_ORDER: Record<LeadSortField, 'asc' | 'desc'> = {
   city: 'asc',
 };
 
-const EMPTY_OPTIONS: LeadFilterOptions = { categories: [], cities: [], dores: [] };
+const EMPTY_OPTIONS: LeadFilterOptions = { categories: [], cities: [], painPoints: [] };
 
 export function LeadsPage() {
   const { hasPermission } = useAuth();
@@ -293,11 +293,11 @@ export function LeadsPage() {
                     ),
                 },
                 {
-                  key: 'dor',
+                  key: 'painPoint',
                   mobileLabel: 'Dor',
                   hideOnMobile: true,
                   header: 'Dor',
-                  render: (row) => row.dor?.name ?? <span className="text-muted">—</span>,
+                  render: (row) => row.painPoint?.name ?? <span className="text-muted">—</span>,
                 },
                 {
                   key: 'website',

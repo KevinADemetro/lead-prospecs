@@ -43,12 +43,12 @@ function leadSummary(id: string, name: string): PublicLead {
     id,
     companyId: `c-${id}`,
     campaignId: 'camp-1',
-    dorId: null,
+    painPointId: null,
     websiteStatus: 'NOT_FOUND',
     qualificationStatus: 'PENDING',
     priority: false,
     notes: null,
-    dor: null,
+    painPoint: null,
     company: {
       id: `c-${id}`,
       name,
@@ -123,7 +123,7 @@ describe('CampaignValidatePage', () => {
     vi.mocked(leadsApi.filterOptions).mockResolvedValue({
       categories: [],
       cities: [],
-      dores: [{ id: 'dor-1', name: 'Baixa conversão' }],
+      painPoints: [{ id: 'pain-1', name: 'Baixa conversão' }],
     });
     vi.mocked(leadsApi.list).mockResolvedValue({
       data: [leadSummary('1', 'Padaria Alpha'), leadSummary('2', 'Padaria Beta')],
@@ -135,8 +135,10 @@ describe('CampaignValidatePage', () => {
     vi.mocked(leadsApi.update).mockImplementation(async (id, input) => ({
       ...leadDetail(id, id === '1' ? 'Padaria Alpha' : 'Padaria Beta'),
       qualificationStatus: input.qualificationStatus ?? 'PENDING',
-      dorId: input.dorId ?? null,
-      dor: input.dorId ? { id: input.dorId, name: 'Baixa conversão' } : null,
+      painPointId: input.painPointId ?? null,
+      painPoint: input.painPointId
+        ? { id: input.painPointId, name: 'Baixa conversão' }
+        : null,
     }));
   });
 

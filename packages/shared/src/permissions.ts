@@ -14,10 +14,10 @@ export const PERMISSIONS = {
   LEADS_READ: 'leads.read',
   LEADS_UPDATE: 'leads.update',
   COMPANIES_READ: 'companies.read',
-  DORES_READ: 'dores.read',
-  DORES_CREATE: 'dores.create',
-  DORES_UPDATE: 'dores.update',
-  DORES_DELETE: 'dores.delete',
+  PAIN_POINTS_READ: 'pain-points.read',
+  PAIN_POINTS_CREATE: 'pain-points.create',
+  PAIN_POINTS_UPDATE: 'pain-points.update',
+  PAIN_POINTS_DELETE: 'pain-points.delete',
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -61,12 +61,12 @@ export const PERMISSION_GROUPS: { resource: string; actions: Permission[] }[] = 
     actions: [PERMISSIONS.COMPANIES_READ],
   },
   {
-    resource: 'dores',
+    resource: 'pain-points',
     actions: [
-      PERMISSIONS.DORES_READ,
-      PERMISSIONS.DORES_CREATE,
-      PERMISSIONS.DORES_UPDATE,
-      PERMISSIONS.DORES_DELETE,
+      PERMISSIONS.PAIN_POINTS_READ,
+      PERMISSIONS.PAIN_POINTS_CREATE,
+      PERMISSIONS.PAIN_POINTS_UPDATE,
+      PERMISSIONS.PAIN_POINTS_DELETE,
     ],
   },
 ];

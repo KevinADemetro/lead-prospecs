@@ -13,7 +13,7 @@ import { formatCnpj } from './lead-format';
 const optionalText = (max: number) => z.string().trim().max(max);
 
 export const leadFormSchema = z.object({
-  dorId: z.string(),
+  painPointId: z.string(),
   qualificationStatus: qualificationStatusSchema,
   priority: z.boolean(),
   notes: optionalText(LEAD_NOTES_MAX_LENGTH),
@@ -48,7 +48,7 @@ export type LeadFormValues = z.infer<typeof leadFormSchema>;
 
 export function emptyLeadFormValues(): LeadFormValues {
   return {
-    dorId: '',
+    painPointId: '',
     qualificationStatus: 'PENDING',
     priority: false,
     notes: '',
@@ -85,7 +85,7 @@ function isBrazilianState(value: string | null): value is BrazilianState {
 export function toLeadFormValues(lead: PublicLeadDetail): LeadFormValues {
   const { company } = lead;
   return {
-    dorId: lead.dorId ?? '',
+    painPointId: lead.painPointId ?? '',
     qualificationStatus: lead.qualificationStatus,
     priority: lead.priority,
     notes: textOrEmpty(lead.notes),
@@ -118,7 +118,7 @@ function blankToNull(value: string): string | null {
 
 export function toUpdateLeadInput(values: LeadFormValues): UpdateLeadInput {
   return {
-    dorId: values.dorId || null,
+    painPointId: values.painPointId || null,
     // AUTO_QUALIFIED is system-only; omit so a no-op save does not fail validation.
     ...(values.qualificationStatus === 'AUTO_QUALIFIED'
       ? {}
