@@ -16,7 +16,7 @@ Os scripts `db:*` também existem na raiz (`pnpm db:migrate`, …) e no pacote `
 | `docker compose up -d postgres` | Sobe só o PostgreSQL 17 na porta `5432`, com volume persistente. Necessário antes de `pnpm dev` ou de migrations. |
 | `pnpm install` | Instala dependências e roda `prisma generate` (postinstall) para criar o cliente tipado. |
 | `pnpm db:migrate` | Cria/aplica migrations de **desenvolvimento** a partir de `apps/backend/prisma/schema.prisma`, atualiza o banco e gera o client. |
-| `pnpm db:seed` | Executa `apps/backend/prisma/seed.ts`: cria o papel `administrator` e o usuário inicial (`INITIAL_ADMIN_*`), de forma idempotente. |
+| `pnpm db:seed` | Executa `apps/backend/prisma/seed.ts`: garante o admin (`INITIAL_ADMIN_*`) e aplica o snapshot em `prisma/seed-data.json` (campanhas, empresas, leads, pain points, outreach), de forma idempotente. |
 | `pnpm dev` | Compila `@app/shared` e sobe API + SPA em watch. No boot, o backend também garante o admin (mesmo efeito do seed) se ainda não existir. |
 
 URLs: frontend http://localhost:3000 — API http://localhost:3001/api/v1.
@@ -36,7 +36,7 @@ Configuração da CLI (URL, pasta de migrations, seed): `apps/backend/prisma.con
 | `pnpm db:migrate` | `prisma migrate dev`. Compara o schema com o banco, pede um nome, grava SQL em `prisma/migrations/`, aplica no Postgres local e gera o client. Use no desenvolvimento. |
 | `pnpm db:migrate:deploy` | `prisma migrate deploy`. Aplica migrations **já versionadas**, sem criar arquivo novo. É o que o container de produção executa no start. |
 | `pnpm db:reset` | `prisma migrate reset`. **Apaga todos os dados**, reaplica migrations e roda o seed. Só em desenvolvimento. |
-| `pnpm db:seed` | Roda o seed configurado em `prisma.config.ts` (`tsx prisma/seed.ts`). Idempotente: não duplica admin. |
+| `pnpm db:seed` | Roda o seed configurado em `prisma.config.ts` (`tsx prisma/seed.ts`). Idempotente: não duplica admin nem o snapshot de domínio. Para regenerar o JSON a partir do banco local: `pnpm --filter @app/backend exec tsx prisma/export-seed-data.ts`. |
 | `pnpm db:studio` | Abre o Prisma Studio (UI) para inspecionar tabelas. Não use em produção com secrets fracos. |
 
 Fluxo típico ao mudar o modelo:
