@@ -173,7 +173,8 @@ export type LeadListFilter = {
   dorId?: string;
   /** Matches company name, legal name, CNPJ, category or city. */
   search?: string;
-  qualificationStatus?: QualificationStatus;
+  /** When set, matches leads whose status is any of the given values. */
+  qualificationStatus?: QualificationStatus[];
   websiteStatus?: WebsiteStatus;
   whatsappStatus?: WhatsappStatus;
   priority?: boolean;

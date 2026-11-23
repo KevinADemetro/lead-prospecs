@@ -6,11 +6,13 @@ import {
   WHATSAPP_STATUSES,
   type LeadFilterOptions,
   type PublicCampaign,
+  type QualificationStatus,
 } from '@app/shared';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import type { LeadFilterValues } from '../lead-filters';
+import { toggleQualificationStatus, type LeadFilterValues } from '../lead-filters';
 import {
   QUALIFICATION_STATUS_LABELS,
   WEBSITE_STATUS_LABELS,
@@ -26,9 +28,20 @@ type Props = {
   onClear: () => void;
 };
 
+type StringFilterKey = {
+  [K in keyof LeadFilterValues]: LeadFilterValues[K] extends string ? K : never;
+}[keyof LeadFilterValues];
+
 export function LeadFilters({ values, options, campaigns, onChange, onSubmit, onClear }: Props) {
-  const set = (key: keyof LeadFilterValues) => (value: string) =>
+  const set = (key: StringFilterKey) => (value: string) =>
     onChange({ ...values, [key]: value });
+
+  function toggleStatus(status: QualificationStatus) {
+    onChange({
+      ...values,
+      qualificationStatus: toggleQualificationStatus(values.qualificationStatus, status),
+    });
+  }
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -102,18 +115,6 @@ export function LeadFilters({ values, options, campaigns, onChange, onSubmit, on
           ))}
         </Select>
         <Select
-          value={values.qualificationStatus}
-          onChange={(event) => set('qualificationStatus')(event.target.value)}
-          aria-label="Status"
-        >
-          <option value="">Todos os status</option>
-          {QUALIFICATION_STATUSES.map((status) => (
-            <option key={status} value={status}>
-              {QUALIFICATION_STATUS_LABELS[status].label}
-            </option>
-          ))}
-        </Select>
-        <Select
           value={values.websiteStatus}
           onChange={(event) => set('websiteStatus')(event.target.value)}
           aria-label="Website"
@@ -146,6 +147,22 @@ export function LeadFilters({ values, options, campaigns, onChange, onSubmit, on
           <option value="true">Só prioritários</option>
           <option value="false">Não prioritários</option>
         </Select>
+        <div
+          className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-border bg-surface px-3 py-2 sm:col-span-2 lg:col-span-4"
+          role="group"
+          aria-label="Status"
+        >
+          <span className="text-sm text-muted">Status</span>
+          {QUALIFICATION_STATUSES.map((status) => (
+            <label key={status} className="flex items-center gap-1.5 text-sm">
+              <Checkbox
+                checked={values.qualificationStatus.includes(status)}
+                onChange={() => toggleStatus(status)}
+              />
+              {QUALIFICATION_STATUS_LABELS[status].label}
+            </label>
+          ))}
+        </div>
       </div>
       <div className="flex flex-wrap justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onClear}>

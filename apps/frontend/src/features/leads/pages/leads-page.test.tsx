@@ -99,10 +99,16 @@ describe('LeadsPage', () => {
 
     await user.type(screen.getByLabelText('Buscar leads'), 'alpha');
     await user.selectOptions(screen.getByLabelText('Website'), 'ERROR');
+    await user.click(screen.getByLabelText('Qualificado'));
+    await user.click(screen.getByLabelText('Pendente'));
     await user.click(screen.getByRole('button', { name: 'Filtrar' }));
     await waitFor(() =>
       expect(leadsApi.list).toHaveBeenLastCalledWith(
-        expect.objectContaining({ search: 'alpha', websiteStatus: 'ERROR' }),
+        expect.objectContaining({
+          search: 'alpha',
+          websiteStatus: 'ERROR',
+          qualificationStatus: ['QUALIFIED', 'PENDING'],
+        }),
       ),
     );
   });

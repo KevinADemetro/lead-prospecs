@@ -27,12 +27,36 @@ const booleanQuerySchema = z
     return value === 'true';
   });
 
+/**
+ * Accepts one value, repeated query keys, or a comma-separated string;
+ * normalizes to a non-empty unique array.
+ */
+function queryEnumArraySchema<T extends readonly [string, ...string[]]>(values: T) {
+  const itemSchema = z.enum(values);
+  return z.preprocess((value) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    const parts = Array.isArray(value)
+      ? value
+      : typeof value === 'string'
+        ? value.split(',')
+        : [value];
+    const normalized = [
+      ...new Set(
+        parts
+          .map((part) => (typeof part === 'string' ? part.trim() : part))
+          .filter((part) => part !== '' && part != null),
+      ),
+    ];
+    return normalized.length > 0 ? normalized : undefined;
+  }, z.array(itemSchema).min(1).optional());
+}
+
 export const leadListQuerySchema = paginationQuerySchema.extend({
   sort: z.enum(LEAD_SORT_FIELDS).optional(),
   campaignId: entityIdSchema.optional(),
   companyId: entityIdSchema.optional(),
   dorId: entityIdSchema.optional(),
-  qualificationStatus: qualificationStatusSchema.optional(),
+  qualificationStatus: queryEnumArraySchema(QUALIFICATION_STATUSES),
   websiteStatus: websiteStatusSchema.optional(),
   whatsappStatus: whatsappStatusSchema.optional(),
   priority: booleanQuerySchema,

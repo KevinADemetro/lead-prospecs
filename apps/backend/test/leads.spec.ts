@@ -97,6 +97,11 @@ describe('Leads listing and details', () => {
     expect(await listNames('websiteStatus=ERROR')).toEqual(['Gamma Vet']);
     expect(await listNames('whatsappStatus=CONFIRMED')).toEqual(['Alpha Pet']);
     expect(await listNames('qualificationStatus=QUALIFIED')).toEqual(['Alpha Pet']);
+    expect(
+      await listNames(
+        'qualificationStatus=QUALIFIED&qualificationStatus=PENDING&sort=companyName&order=asc',
+      ),
+    ).toEqual(['Alpha Pet', 'Beta Banho e Tosa', 'Gamma Vet']);
     expect(await listNames('category=pet%20shop&sort=companyName&order=asc')).toEqual([
       'Alpha Pet',
       'Gamma Vet',

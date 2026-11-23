@@ -8,6 +8,13 @@ export function toQuery(params: Record<string, unknown>): string {
       search.set(key, value.toISOString());
       return;
     }
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        if (item === undefined || item === null || item === '') return;
+        search.append(key, String(item));
+      });
+      return;
+    }
     search.set(key, String(value));
   });
   const qs = search.toString();

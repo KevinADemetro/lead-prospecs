@@ -1,4 +1,4 @@
-import type { LeadListQuery } from '@app/shared';
+import type { LeadListQuery, QualificationStatus } from '@app/shared';
 
 export type LeadFilterValues = {
   search: string;
@@ -8,7 +8,7 @@ export type LeadFilterValues = {
   whatsappStatus: string;
   category: string;
   city: string;
-  qualificationStatus: string;
+  qualificationStatus: QualificationStatus[];
   priority: string;
 };
 
@@ -20,7 +20,7 @@ export const EMPTY_LEAD_FILTERS: LeadFilterValues = {
   whatsappStatus: '',
   category: '',
   city: '',
-  qualificationStatus: '',
+  qualificationStatus: [],
   priority: '',
 };
 
@@ -36,13 +36,26 @@ export function toQueryFilters(values: LeadFilterValues): LeadQueryFilters {
     whatsappStatus: (values.whatsappStatus || undefined) as LeadQueryFilters['whatsappStatus'],
     category: values.category || undefined,
     city: values.city || undefined,
-    qualificationStatus: (values.qualificationStatus ||
-      undefined) as LeadQueryFilters['qualificationStatus'],
+    qualificationStatus:
+      values.qualificationStatus.length > 0 ? values.qualificationStatus : undefined,
     priority:
       values.priority === 'true' ? true : values.priority === 'false' ? false : undefined,
   };
 }
 
 export function hasActiveFilters(filters: LeadQueryFilters): boolean {
-  return Object.values(filters).some((value) => value !== undefined);
+  return Object.values(filters).some((value) => {
+    if (value === undefined) return false;
+    if (Array.isArray(value)) return value.length > 0;
+    return true;
+  });
+}
+
+export function toggleQualificationStatus(
+  selected: QualificationStatus[],
+  status: QualificationStatus,
+): QualificationStatus[] {
+  return selected.includes(status)
+    ? selected.filter((value) => value !== status)
+    : [...selected, status];
 }

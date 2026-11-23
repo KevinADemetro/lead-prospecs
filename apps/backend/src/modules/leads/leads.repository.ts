@@ -213,7 +213,9 @@ export class LeadsRepository extends BaseRepository {
       ...(filter.campaignId ? { campaignId: filter.campaignId } : {}),
       ...(filter.companyId ? { companyId: filter.companyId } : {}),
       ...(filter.dorId ? { dorId: filter.dorId } : {}),
-      ...(filter.qualificationStatus ? { qualificationStatus: filter.qualificationStatus } : {}),
+      ...(filter.qualificationStatus?.length
+        ? { qualificationStatus: { in: filter.qualificationStatus } }
+        : {}),
       ...(filter.websiteStatus ? { websiteStatus: filter.websiteStatus } : {}),
       ...(filter.whatsappStatus ? { whatsappStatus: filter.whatsappStatus } : {}),
       ...(filter.priority !== undefined ? { priority: filter.priority } : {}),
