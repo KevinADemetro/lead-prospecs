@@ -1,6 +1,6 @@
 process.env.NODE_ENV = 'test';
 process.env.PORT = '3001';
-process.env.DATABASE_URL = 'postgresql://app:app@127.0.0.1:5432/fullstack_base_test';
+process.env.DATABASE_URL = 'postgresql://app:app@127.0.0.1:5432/lead_prospecs_test';
 process.env.JWT_ACCESS_SECRET = 'test-jwt-access-secret-32-characters-min';
 process.env.JWT_ACCESS_EXPIRES_IN = '15m';
 process.env.REFRESH_TOKEN_DAYS = '7';

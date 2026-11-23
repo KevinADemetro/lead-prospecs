@@ -1,8 +1,6 @@
-# Fullstack Base
+# Lead Prospecs
 
-Base empresarial reutilizável para sistemas internos: **React SPA + NestJS + PostgreSQL (Prisma)**, com autenticação por cookies, RBAC e Docker.
-
-Use este repositório como template: faça fork, altere a marca e comece a adicionar entidades de negócio.
+Sistema de prospecção de leads: **React SPA + NestJS + PostgreSQL (Prisma)**, com autenticação por cookies, RBAC e Docker.
 
 ## Stack
 

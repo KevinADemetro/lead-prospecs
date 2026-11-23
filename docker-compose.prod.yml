@@ -5,11 +5,11 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB:-fullstack_base}
+      POSTGRES_DB: ${POSTGRES_DB:-lead_prospecs}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-fullstack_base}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-lead_prospecs}"]
       interval: 15s
       timeout: 5s
       retries: 10
@@ -28,7 +28,7 @@ services:
       NODE_ENV: production
       COOKIE_SECURE: "true"
       COOKIE_SAMESITE: strict
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-fullstack_base}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-lead_prospecs}
     depends_on:
       postgres:
         condition: service_healthy

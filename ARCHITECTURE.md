@@ -1,6 +1,6 @@
-# Arquitetura — Fullstack Base
+# Arquitetura — Lead Prospecs
 
-Template empresarial reutilizável (React SPA + NestJS + PostgreSQL) para novos sistemas.
+Sistema de prospecção de leads (React SPA + NestJS + PostgreSQL).
 Este documento registra decisões tomadas **antes** da implementação.
 
 ## 1. Objetivo

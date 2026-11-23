@@ -45,7 +45,7 @@ const envSchema = z.object({
   CORS_ORIGINS: z.string().min(1),
   INITIAL_ADMIN_LOGIN: z.string().min(3).max(64),
   INITIAL_ADMIN_PASSWORD: passwordSchema,
-  APP_NAME: z.string().min(1).default('Fullstack Base'),
+  APP_NAME: z.string().min(1).default('Lead Prospecs'),
   ARGON2_MEMORY_COST: z.coerce.number().int().min(1024).max(1048576).default(65536),
   ARGON2_TIME_COST: z.coerce.number().int().min(2).max(10).default(3),
   GOOGLE_PLACES_API_KEY: z.string().min(1, 'GOOGLE_PLACES_API_KEY is required'),
