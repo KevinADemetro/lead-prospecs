@@ -60,12 +60,12 @@ function asDate(value: unknown): Date | null | undefined {
   return new Date(String(value));
 }
 
-function remapUserId(
+function remapId(
   value: string | null | undefined,
-  userIdMap: Map<string, string>,
+  idMap: Map<string, string>,
 ): string | null | undefined {
   if (value == null) return value;
-  return userIdMap.get(value) ?? value;
+  return idMap.get(value) ?? value;
 }
 
 loadEnvFromRepo();
@@ -88,11 +88,27 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
 
   const data = JSON.parse(readFileSync(snapshotPath, 'utf8')) as SeedSnapshot;
   const userIdMap = new Map<string, string>();
+  const roleIdMap = new Map<string, string>();
+  const painPointIdMap = new Map<string, string>();
 
   for (const role of data.roles) {
-    await prisma.role.upsert({
-      where: { id: role.id },
-      create: {
+    const existingByName = await prisma.role.findUnique({ where: { name: role.name } });
+    if (existingByName) {
+      roleIdMap.set(role.id, existingByName.id);
+      await prisma.role.update({
+        where: { id: existingByName.id },
+        data: {
+          description: role.description,
+          permissions: role.permissions,
+          isSystem: role.isSystem,
+          deletedAt: asDate(role.deletedAt),
+        },
+      });
+      continue;
+    }
+
+    await prisma.role.create({
+      data: {
         id: role.id,
         name: role.name,
         description: role.description,
@@ -103,15 +119,8 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
         deletedAt: asDate(role.deletedAt),
         deletedBy: role.deletedBy,
       },
-      update: {
-        name: role.name,
-        description: role.description,
-        permissions: role.permissions,
-        isSystem: role.isSystem,
-        deletedAt: asDate(role.deletedAt),
-        deletedBy: role.deletedBy,
-      },
     });
+    roleIdMap.set(role.id, role.id);
   }
 
   for (const user of data.users) {
@@ -125,7 +134,6 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
           failedLoginAttempts: 0,
           lockedUntil: null,
           deletedAt: asDate(user.deletedAt),
-          deletedBy: user.deletedBy,
         },
       });
       continue;
@@ -150,9 +158,10 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
 
   for (const link of data.userRoles) {
     const userId = userIdMap.get(link.userId) ?? link.userId;
+    const roleId = roleIdMap.get(link.roleId) ?? link.roleId;
     await prisma.userRole.upsert({
-      where: { userId_roleId: { userId, roleId: link.roleId } },
-      create: { userId, roleId: link.roleId },
+      where: { userId_roleId: { userId, roleId } },
+      create: { userId, roleId },
       update: {},
     });
   }
@@ -173,7 +182,7 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
         createdAt: asDate(campaign.createdAt)!,
         updatedAt: asDate(campaign.updatedAt)!,
         deletedAt: asDate(campaign.deletedAt),
-        deletedBy: remapUserId(campaign.deletedBy as string | null, userIdMap) ?? null,
+        deletedBy: remapId(campaign.deletedBy as string | null, userIdMap) ?? null,
       },
       update: {
         name: String(campaign.name),
@@ -184,7 +193,7 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
         categories: (campaign.categories as string[]) ?? [],
         status: campaign.status as never,
         deletedAt: asDate(campaign.deletedAt),
-        deletedBy: remapUserId(campaign.deletedBy as string | null, userIdMap) ?? null,
+        deletedBy: remapId(campaign.deletedBy as string | null, userIdMap) ?? null,
       },
     });
   }
@@ -221,7 +230,7 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
         createdAt: asDate(company.createdAt)!,
         updatedAt: asDate(company.updatedAt)!,
         deletedAt: asDate(company.deletedAt),
-        deletedBy: remapUserId(company.deletedBy as string | null, userIdMap) ?? null,
+        deletedBy: remapId(company.deletedBy as string | null, userIdMap) ?? null,
       },
       update: {
         name: String(company.name),
@@ -248,42 +257,55 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
             : ((company.openingHours as Prisma.InputJsonValue | null) ?? Prisma.JsonNull),
         dedupeKey: (company.dedupeKey as string | null) ?? null,
         deletedAt: asDate(company.deletedAt),
-        deletedBy: remapUserId(company.deletedBy as string | null, userIdMap) ?? null,
+        deletedBy: remapId(company.deletedBy as string | null, userIdMap) ?? null,
       },
     });
   }
 
   for (const painPoint of data.painPoints) {
     const id = String(painPoint.id);
-    await prisma.painPoint.upsert({
-      where: { id },
-      create: {
+    const name = String(painPoint.name);
+    const existingByName = await prisma.painPoint.findUnique({ where: { name } });
+    if (existingByName) {
+      painPointIdMap.set(id, existingByName.id);
+      await prisma.painPoint.update({
+        where: { id: existingByName.id },
+        data: {
+          description: String(painPoint.description ?? ''),
+          deletedAt: asDate(painPoint.deletedAt),
+          deletedBy: remapId(painPoint.deletedBy as string | null, userIdMap) ?? null,
+        },
+      });
+      continue;
+    }
+
+    await prisma.painPoint.create({
+      data: {
         id,
-        name: String(painPoint.name),
+        name,
         description: String(painPoint.description ?? ''),
         createdAt: asDate(painPoint.createdAt)!,
         updatedAt: asDate(painPoint.updatedAt)!,
         deletedAt: asDate(painPoint.deletedAt),
-        deletedBy: remapUserId(painPoint.deletedBy as string | null, userIdMap) ?? null,
-      },
-      update: {
-        name: String(painPoint.name),
-        description: String(painPoint.description ?? ''),
-        deletedAt: asDate(painPoint.deletedAt),
-        deletedBy: remapUserId(painPoint.deletedBy as string | null, userIdMap) ?? null,
+        deletedBy: remapId(painPoint.deletedBy as string | null, userIdMap) ?? null,
       },
     });
+    painPointIdMap.set(id, id);
   }
 
   for (const lead of data.leads) {
     const id = String(lead.id);
+    const rawPainPointId = (lead.painPointId as string | null) ?? null;
+    const painPointId = rawPainPointId
+      ? (painPointIdMap.get(rawPainPointId) ?? rawPainPointId)
+      : null;
     await prisma.lead.upsert({
       where: { id },
       create: {
         id,
         companyId: String(lead.companyId),
         campaignId: String(lead.campaignId),
-        painPointId: (lead.painPointId as string | null) ?? null,
+        painPointId,
         websiteStatus: lead.websiteStatus as never,
         qualificationStatus: lead.qualificationStatus as never,
         priority: Boolean(lead.priority),
@@ -291,18 +313,18 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
         createdAt: asDate(lead.createdAt)!,
         updatedAt: asDate(lead.updatedAt)!,
         deletedAt: asDate(lead.deletedAt),
-        deletedBy: remapUserId(lead.deletedBy as string | null, userIdMap) ?? null,
+        deletedBy: remapId(lead.deletedBy as string | null, userIdMap) ?? null,
       },
       update: {
         companyId: String(lead.companyId),
         campaignId: String(lead.campaignId),
-        painPointId: (lead.painPointId as string | null) ?? null,
+        painPointId,
         websiteStatus: lead.websiteStatus as never,
         qualificationStatus: lead.qualificationStatus as never,
         priority: Boolean(lead.priority),
         notes: (lead.notes as string | null) ?? null,
         deletedAt: asDate(lead.deletedAt),
-        deletedBy: remapUserId(lead.deletedBy as string | null, userIdMap) ?? null,
+        deletedBy: remapId(lead.deletedBy as string | null, userIdMap) ?? null,
       },
     });
   }
@@ -320,7 +342,7 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
         createdAt: asDate(item.createdAt)!,
         updatedAt: asDate(item.updatedAt)!,
         deletedAt: asDate(item.deletedAt),
-        deletedBy: remapUserId(item.deletedBy as string | null, userIdMap) ?? null,
+        deletedBy: remapId(item.deletedBy as string | null, userIdMap) ?? null,
       },
       update: {
         leadId: String(item.leadId),
@@ -328,7 +350,7 @@ async function seedSnapshot(passwordHash: string): Promise<void> {
         startedAt: asDate(item.startedAt)!,
         nextFollowUpAt: asDate(item.nextFollowUpAt),
         deletedAt: asDate(item.deletedAt),
-        deletedBy: remapUserId(item.deletedBy as string | null, userIdMap) ?? null,
+        deletedBy: remapId(item.deletedBy as string | null, userIdMap) ?? null,
       },
     });
   }

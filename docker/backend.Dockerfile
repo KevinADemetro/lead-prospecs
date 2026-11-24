@@ -32,6 +32,7 @@ COPY --chown=appuser:appuser docker/backend-entrypoint.sh /app/backend-entrypoin
 RUN chmod +x /app/backend-entrypoint.sh
 USER appuser
 WORKDIR /app/apps/backend
+ENV PATH="/app/apps/backend/node_modules/.bin:/app/node_modules/.bin:${PATH}"
 EXPOSE 3001
 HEALTHCHECK --interval=20s --timeout=5s --retries=5 CMD node -e "fetch('http://127.0.0.1:3001/api/v1/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 ENTRYPOINT ["/app/backend-entrypoint.sh"]

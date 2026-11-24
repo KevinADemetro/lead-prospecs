@@ -85,10 +85,11 @@ Secrets do ambiente `production`:
 
 O workflow `.github/workflows/deploy.yml` só roda em `master` (e `workflow_dispatch`). `develop` não faz deploy.
 
-Depois do primeiro `up`, rode o seed uma vez no container do backend (ou na VM com `DATABASE_URL` apontando para o Postgres interno) para carregar o snapshot inicial:
+Depois do primeiro `up`, rode o seed uma vez no container do backend para carregar o snapshot inicial:
 
 ```bash
-docker compose -f docker-compose.prod.yml exec backend pnpm db:seed
+docker compose -f docker-compose.prod.yml exec -w /app/apps/backend backend \
+  /app/apps/backend/node_modules/.bin/tsx prisma/seed.ts
 ```
 
 No servidor, o clone deve ter `origin` apontando para o repositório e o usuário precisa conseguir `git pull` + `docker compose`.
