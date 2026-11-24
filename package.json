@@ -30,6 +30,12 @@
     "prettier": "^3.5.3"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["argon2", "esbuild"]
+    "onlyBuiltDependencies": [
+      "argon2",
+      "esbuild",
+      "prisma",
+      "@prisma/engines",
+      "@prisma/client"
+    ]
   }
 }

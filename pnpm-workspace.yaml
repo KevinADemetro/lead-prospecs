@@ -5,3 +5,6 @@ packages:
 onlyBuiltDependencies:
   - argon2
   - esbuild
+  - prisma
+  - '@prisma/engines'
+  - '@prisma/client'
